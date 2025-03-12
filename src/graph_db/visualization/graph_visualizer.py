@@ -229,11 +229,22 @@ class GraphVisualizer:
                 <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
                 <div style="display: flex; align-items: center; margin-top: 5px;">
                     <span style="margin-right: 5px; font-size: 12px;">A</span>
-                    <input type="range" id="textSizeSlider" min="8" max="32" value="14" style="flex-grow: 1;">
+                    <input type="range" id="textSizeSlider" min="8" max="64" value="14" style="flex-grow: 1;">
                     <span style="margin-left: 5px; font-size: 18px;">A</span>
                 </div>
                 <div style="text-align: center; margin-top: 5px;">
                     <span id="currentTextSize">14px</span>
+                </div>
+            </div>
+            <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <h4 style="margin-top: 0; text-align: center;">Display Options</h4>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
+                    <span>Show Tooltips:</span>
+                    <label class="switch" style="position: relative; display: inline-block; width: 40px; height: 20px;">
+                        <input type="checkbox" id="tooltipToggle" checked style="opacity: 0; width: 0; height: 0;">
+                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
+                        <span style="position: absolute; cursor: pointer; top: 2px; left: 2px; height: 16px; width: 16px; background-color: white; transition: .4s; border-radius: 50%;"></span>
+                    </label>
                 </div>
             </div>
             <script>
@@ -241,6 +252,7 @@ class GraphVisualizer:
                 document.addEventListener('DOMContentLoaded', function() {
                     var slider = document.getElementById('textSizeSlider');
                     var sizeDisplay = document.getElementById('currentTextSize');
+                    var tooltipToggle = document.getElementById('tooltipToggle');
                     
                     // Function to update text size
                     function updateTextSize(size) {
@@ -270,13 +282,44 @@ class GraphVisualizer:
                         network.setOptions({ edges: edgeOptions });
                     }
                     
+                    // Function to toggle tooltips
+                    function toggleTooltips(enabled) {
+                        // Update the toggle switch appearance
+                        var toggleSwitch = tooltipToggle.nextElementSibling.nextElementSibling;
+                        if (enabled) {
+                            toggleSwitch.style.transform = 'translateX(20px)';
+                            tooltipToggle.nextElementSibling.style.backgroundColor = '#4CAF50';
+                        } else {
+                            toggleSwitch.style.transform = 'translateX(0)';
+                            tooltipToggle.nextElementSibling.style.backgroundColor = '#ccc';
+                        }
+                        
+                        // Set global variable to control tooltip display
+                        window.tooltipsEnabled = enabled;
+                        
+                        // Update network interaction options
+                        if (typeof network !== 'undefined') {
+                            network.setOptions({
+                                interaction: {
+                                    hover: enabled
+                                }
+                            });
+                        }
+                    }
+                    
                     // Add event listener for slider changes
                     slider.addEventListener('input', function() {
                         updateTextSize(parseInt(this.value));
                     });
                     
-                    // Initialize with default value
+                    // Add event listener for tooltip toggle
+                    tooltipToggle.addEventListener('change', function() {
+                        toggleTooltips(this.checked);
+                    });
+                    
+                    // Initialize with default values
                     updateTextSize(parseInt(slider.value));
+                    toggleTooltips(tooltipToggle.checked);
                 });
             </script>
         </div>
@@ -404,6 +447,9 @@ class GraphVisualizer:
         </style>
         <div id="custom-tooltip" class="custom-tooltip"></div>
         <script>
+        // Initialize global variable for tooltip control
+        window.tooltipsEnabled = true;
+        
         // Add the tooltip functionality after the page has fully loaded
         window.addEventListener('load', function() {
             // Make sure the network variable exists
@@ -416,6 +462,11 @@ class GraphVisualizer:
             
             // Function to show tooltip
             function showTooltip(html, x, y) {
+                // Only show tooltip if tooltips are enabled
+                if (!window.tooltipsEnabled) {
+                    return;
+                }
+                
                 tooltip.innerHTML = html;
                 tooltip.style.display = 'block';
                 tooltip.style.left = (x + 10) + 'px';
