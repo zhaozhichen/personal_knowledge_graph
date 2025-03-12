@@ -2,7 +2,8 @@
 LLM-based Entity Extractor Module
 
 This module uses LLM models to extract entities and relationships from text.
-Supports multiple LLM providers with a waterfall approach: Gemini -> Deepseek -> OpenAI.
+Supports multiple LLM providers with a waterfall approach: Gemini -> Deepseek.
+OpenAI is currently disabled.
 """
 
 import os
@@ -11,7 +12,7 @@ import logging
 from typing import Dict, List, Set, Tuple, Any, Optional
 from dotenv import load_dotenv
 import google.generativeai as genai
-from openai import OpenAI
+# from openai import OpenAI  # Commented out OpenAI
 import requests
 
 # Import prompts
@@ -34,19 +35,21 @@ class LLMEntityExtractor:
             model (str): LLM model to use (e.g., "gemini-1.5-pro", "gpt-4o")
         """
         self.model = model
-        self.provider = self._determine_provider(model)
+        # Initialize logger first before using it in other methods
         self.logger = logging.getLogger(__name__)
+        self.provider = self._determine_provider(model)
         
         # Configure API keys for all providers
         self.gemini_api_key = os.getenv("GOOGLE_API_KEY")
-        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        # self.openai_api_key = os.getenv("OPENAI_API_KEY")  # Commented out OpenAI
         self.deepseek_api_key = os.getenv("DEEPSEEK_API_KEY")
         
         # Configure the primary provider
         self._configure_provider(self.provider)
         
-        # Define fallback order - try Gemini first, then Deepseek, then OpenAI
-        self.fallback_providers = ["gemini", "deepseek", "openai"]
+        # Define fallback order - try Gemini first, then Deepseek
+        # OpenAI is commented out
+        self.fallback_providers = ["gemini", "deepseek"]
         
         # Remove the primary provider from fallbacks to avoid duplication
         if self.provider in self.fallback_providers:
@@ -67,12 +70,12 @@ class LLMEntityExtractor:
                 self.logger.warning("GOOGLE_API_KEY environment variable not set")
             else:
                 genai.configure(api_key=self.gemini_api_key)
-        elif provider == "openai":
-            if not self.openai_api_key:
-                self.logger.warning("OPENAI_API_KEY environment variable not set")
-            else:
-                # Create a new OpenAI client instance
-                self.openai_client = OpenAI(api_key=self.openai_api_key)
+        # elif provider == "openai":  # Commented out OpenAI
+        #     if not self.openai_api_key:
+        #         self.logger.warning("OPENAI_API_KEY environment variable not set")
+        #     else:
+        #         # Create a new OpenAI client instance
+        #         self.openai_client = OpenAI(api_key=self.openai_api_key)
         elif provider == "deepseek":
             if not self.deepseek_api_key:
                 self.logger.warning("DEEPSEEK_API_KEY environment variable not set")
@@ -92,7 +95,9 @@ class LLMEntityExtractor:
         elif model.startswith("deepseek"):
             return "deepseek"
         elif model.startswith("gpt") or model.startswith("text-davinci"):
-            return "openai"
+            # Return "gemini" as default since OpenAI is disabled
+            self.logger.warning("OpenAI is currently disabled. Using Gemini instead.")
+            return "gemini"
         else:
             # Default to gemini
             return "gemini"
@@ -120,8 +125,8 @@ class LLMEntityExtractor:
                     return self._extract_entities_gemini(prompt, text)
                 elif provider == "deepseek":
                     return self._extract_entities_deepseek(prompt, text)
-                elif provider == "openai":
-                    return self._extract_entities_openai(prompt, text)
+                # elif provider == "openai":  # Commented out OpenAI
+                #     return self._extract_entities_openai(prompt, text)
             except Exception as e:
                 self.logger.warning(f"Failed to extract entities with {provider}: {str(e)}")
                 continue
@@ -229,48 +234,48 @@ class LLMEntityExtractor:
             
         return filtered_entities
     
-    def _extract_entities_openai(self, prompt: str, text: str) -> List[Dict[str, Any]]:
-        """Extract entities using OpenAI API"""
-        # Call the OpenAI API using the client instance
-        response = self.openai_client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {"role": "system", "content": ENTITY_EXTRACTION_SYSTEM_MESSAGE},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.2
-        )
-        
-        # Parse the response
-        content = response.choices[0].message.content
-        
-        # Try to extract JSON from the response
-        try:
-            # Look for JSON object in the response
-            json_start = content.find('{')
-            json_end = content.rfind('}') + 1
-            if json_start >= 0 and json_end > json_start:
-                json_str = content[json_start:json_end]
-                result = json.loads(json_str)
-            else:
-                # If no JSON object found, try to parse the entire response
-                result = json.loads(content)
-        except json.JSONDecodeError:
-            self.logger.warning(f"Failed to parse JSON from response: {content}")
-            # Attempt to extract entities from text response
-            result = {"entities": []}
-        
-        # Extract entities from the result
-        entities = result.get("entities", [])
-        
-        # Filter out DATE and TIME entities
-        filtered_entities = [entity for entity in entities if entity.get("type") not in ["DATE", "TIME"]]
-        
-        # Add source information
-        for entity in filtered_entities:
-            entity["source"] = "llm"
-            
-        return filtered_entities
+    # def _extract_entities_openai(self, prompt: str, text: str) -> List[Dict[str, Any]]:
+    #     """Extract entities using OpenAI API"""
+    #     # Call the OpenAI API using the client instance
+    #     response = self.openai_client.chat.completions.create(
+    #         model="gpt-4o",
+    #         messages=[
+    #             {"role": "system", "content": ENTITY_EXTRACTION_SYSTEM_MESSAGE},
+    #             {"role": "user", "content": prompt}
+    #         ],
+    #         temperature=0.2
+    #     )
+    #     
+    #     # Parse the response
+    #     content = response.choices[0].message.content
+    #     
+    #     # Try to extract JSON from the response
+    #     try:
+    #         # Look for JSON object in the response
+    #         json_start = content.find('{')
+    #         json_end = content.rfind('}') + 1
+    #         if json_start >= 0 and json_end > json_start:
+    #             json_str = content[json_start:json_end]
+    #             result = json.loads(json_str)
+    #         else:
+    #             # If no JSON object found, try to parse the entire response
+    #             result = json.loads(content)
+    #     except json.JSONDecodeError:
+    #         self.logger.warning(f"Failed to parse JSON from response: {content}")
+    #         # Attempt to extract entities from text response
+    #         result = {"entities": []}
+    #     
+    #     # Extract entities from the result
+    #     entities = result.get("entities", [])
+    #     
+    #     # Filter out DATE and TIME entities
+    #     filtered_entities = [entity for entity in entities if entity.get("type") not in ["DATE", "TIME"]]
+    #     
+    #     # Add source information
+    #     for entity in filtered_entities:
+    #         entity["source"] = "llm"
+    #         
+    #     return filtered_entities
     
     def extract_relations(self, text: str, entities: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
@@ -306,8 +311,8 @@ class LLMEntityExtractor:
                     return self._extract_relations_gemini(prompt, text, entity_map)
                 elif provider == "deepseek":
                     return self._extract_relations_deepseek(prompt, text, entity_map)
-                elif provider == "openai":
-                    return self._extract_relations_openai(prompt, text, entity_map)
+                # elif provider == "openai":  # Commented out OpenAI
+                #     return self._extract_relations_openai(prompt, text, entity_map)
             except Exception as e:
                 self.logger.warning(f"Failed to extract relations with {provider}: {str(e)}")
                 continue
