@@ -230,15 +230,15 @@ class GraphVisualizer:
         if not raw_text:
             return ""
             
-        # Use the full text instead of capping it
+        # Initially hide the text and show a button to display it
         raw_text_html = f"""
         <div id="textSection" style="position: relative; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <h3>Source Text</h3>
-                <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 5px 10px; cursor: pointer;">Hide Text</button>
+                <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 5px 10px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px;">Show Text</button>
             </div>
-            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px; display: block;">
-                <p style="white-space: pre-wrap;">{raw_text}</p>
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px; display: none;">
+                <p style="white-space: pre-wrap;">{html.escape(raw_text)}</p>
             </div>
         </div>
         <script>
@@ -247,6 +247,18 @@ class GraphVisualizer:
                 // Ensure network variable is accessible
                 if (typeof network === 'undefined') {{
                     console.warn('Network variable not found. Some features may not work properly.');
+                }}
+                
+                // Initially maximize the network container height since text is hidden
+                var networkContainer = document.getElementById('mynetwork');
+                var windowHeight = window.innerHeight;
+                var networkTop = networkContainer.getBoundingClientRect().top;
+                var newHeight = windowHeight - networkTop - 20; // 20px padding
+                networkContainer.style.height = newHeight + 'px';
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {{
+                    network.fit();
                 }}
             }});
             
@@ -261,6 +273,7 @@ class GraphVisualizer:
                     container.style.display = 'block';
                     textSection.style.display = 'block';
                     btn.innerText = 'Hide Text';
+                    btn.style.backgroundColor = '#f44336'; // Red color for hide button
                     
                     // Restore original network container height
                     networkContainer.style.height = '750px';
@@ -269,6 +282,7 @@ class GraphVisualizer:
                     container.style.display = 'none';
                     textSection.style.borderTop = 'none';
                     btn.innerText = 'Show Text';
+                    btn.style.backgroundColor = '#4CAF50'; // Green color for show button
                     
                     // Maximize network container height
                     var windowHeight = window.innerHeight;
