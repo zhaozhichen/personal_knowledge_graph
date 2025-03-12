@@ -156,7 +156,10 @@ class GraphVisualizer:
                     }
                 },
                 "interaction": {
-                    "hover": true,
+                    "hover": {
+                        "enabled": true,
+                        "title": false
+                    },
                     "navigationButtons": true,
                     "keyboard": true,
                     "tooltipDelay": 200,
@@ -300,7 +303,10 @@ class GraphVisualizer:
                         if (typeof network !== 'undefined') {
                             network.setOptions({
                                 interaction: {
-                                    hover: enabled
+                                    hover: {
+                                        enabled: enabled,
+                                        title: false
+                                    }
                                 }
                             });
                             
@@ -310,6 +316,11 @@ class GraphVisualizer:
                                 if (customTooltip) {
                                     customTooltip.style.display = 'none';
                                 }
+                            }
+                            
+                            // Re-apply the title attribute removal
+                            if (typeof disableDefaultTooltips === 'function') {
+                                disableDefaultTooltips();
                             }
                         }
                     }
@@ -451,6 +462,14 @@ class GraphVisualizer:
             max-width: 300px;
             word-wrap: break-word;
         }
+        
+        /* Hide default browser tooltips */
+        #mynetwork [title] {
+            position: relative;
+        }
+        #mynetwork [title]:hover::after {
+            content: none !important;
+        }
         </style>
         <div id="custom-tooltip" class="custom-tooltip"></div>
         <script>
@@ -467,7 +486,7 @@ class GraphVisualizer:
             
             var tooltip = document.getElementById('custom-tooltip');
             
-            // Disable default tooltips by removing title attributes
+            // Completely disable default tooltips by removing title attributes and preventing default behavior
             function disableDefaultTooltips() {
                 // For nodes
                 var nodeIds = network.body.data.nodes.getIds();
@@ -492,6 +511,15 @@ class GraphVisualizer:
                 canvasElements.forEach(function(canvas) {
                     canvas.removeAttribute('title');
                 });
+                
+                // Remove titles from all elements in the network container
+                var networkContainer = document.getElementById('mynetwork');
+                if (networkContainer) {
+                    var allElements = networkContainer.querySelectorAll('*');
+                    allElements.forEach(function(element) {
+                        element.removeAttribute('title');
+                    });
+                }
             }
             
             // Call once at initialization
@@ -499,6 +527,18 @@ class GraphVisualizer:
             
             // Also call when network is redrawn
             network.on("afterDrawing", disableDefaultTooltips);
+            
+            // Prevent default title behavior for the entire network container
+            var networkContainer = document.getElementById('mynetwork');
+            if (networkContainer) {
+                // Prevent default title behavior
+                networkContainer.addEventListener('mouseover', function(event) {
+                    if (event.target.hasAttribute('title')) {
+                        event.target.dataset.originalTitle = event.target.getAttribute('title');
+                        event.target.removeAttribute('title');
+                    }
+                }, true);
+            }
             
             // Function to show tooltip
             function showTooltip(html, x, y) {
