@@ -360,7 +360,29 @@ class GraphVisualizer:
                 var nodeId = params.node;
                 var node = network.body.data.nodes.get(nodeId);
                 if (node && node.title) {
-                    showTooltip(node.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                    // Create a div to parse the HTML and extract text
+                    var div = document.createElement('div');
+                    div.innerHTML = node.title;
+                    
+                    // Format the tooltip content properly
+                    var entityName = div.querySelector('b').textContent;
+                    var tooltipContent = '<div><strong>' + entityName + '</strong>';
+                    
+                    // Check if there are properties
+                    if (div.innerHTML.includes('Properties:')) {
+                        tooltipContent += '<br><br><strong>Properties:</strong><ul>';
+                        var propertyItems = div.innerHTML.split('•').slice(1);
+                        propertyItems.forEach(function(item) {
+                            if (item.trim()) {
+                                var propText = item.split('<br>')[0].trim();
+                                tooltipContent += '<li>' + propText + '</li>';
+                            }
+                        });
+                        tooltipContent += '</ul>';
+                    }
+                    
+                    tooltipContent += '</div>';
+                    showTooltip(tooltipContent, params.pointer.DOM.x, params.pointer.DOM.y);
                 }
             });
             
@@ -372,7 +394,29 @@ class GraphVisualizer:
                 var edgeId = params.edge;
                 var edge = network.body.data.edges.get(edgeId);
                 if (edge && edge.title) {
-                    showTooltip(edge.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                    // Create a div to parse the HTML and extract text
+                    var div = document.createElement('div');
+                    div.innerHTML = edge.title;
+                    
+                    // Format the tooltip content properly
+                    var relationName = div.querySelector('b').textContent;
+                    var tooltipContent = '<div><strong>' + relationName + '</strong>';
+                    
+                    // Check if there are properties
+                    if (div.innerHTML.includes('Properties:')) {
+                        tooltipContent += '<br><br><strong>Properties:</strong><ul>';
+                        var propertyItems = div.innerHTML.split('•').slice(1);
+                        propertyItems.forEach(function(item) {
+                            if (item.trim()) {
+                                var propText = item.split('<br>')[0].trim();
+                                tooltipContent += '<li>' + propText + '</li>';
+                            }
+                        });
+                        tooltipContent += '</ul>';
+                    }
+                    
+                    tooltipContent += '</div>';
+                    showTooltip(tooltipContent, params.pointer.DOM.x, params.pointer.DOM.y);
                 }
             });
             

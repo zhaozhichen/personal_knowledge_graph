@@ -8,6 +8,7 @@ import argparse
 import logging
 import os
 import sys
+import glob
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 
@@ -771,6 +772,98 @@ def process_multiple_urls(urls: List[str],
         logger.error(f"Error processing URLs: {str(e)}")
         return False
 
+def process_directory(input_dir: str, output_file: str, visualization_only: bool, llm_model: str = "gemini", verbose: bool = False) -> None:
+    """Process all files in a directory and generate a merged graph visualization."""
+    # Find all files in the directory
+    files = [os.path.join(input_dir, f) for f in os.listdir(input_dir) if os.path.isfile(os.path.join(input_dir, f))]
+    logger.info(f"Found {len(files)} files to process in {input_dir}")
+    
+    # Initialize the graph builder
+    if visualization_only:
+        # For visualization-only mode, we don't need to connect to Neo4j
+        graph_builder = GraphBuilder(db_uri="", db_username="", db_password="", llm_model=llm_model)
+    else:
+        graph_builder = GraphBuilder(llm_model=llm_model)
+    
+    # Initialize the entity extractor
+    # Use the real LLMEntityExtractor
+    from src.graph_db.nlp.llm_entity_extractor import LLMEntityExtractor
+    from src.graph_db.nlp.mock_entity_extractor import MockEntityExtractor
+    entity_extractor = LLMEntityExtractor(model=llm_model)
+    
+    # Initialize the visualizer
+    visualizer = GraphVisualizer()
+    
+    # Lists to store all entities, relations, and texts
+    all_entities = []
+    all_relations = []
+    all_texts = []
+    
+    # Process each file
+    for file_path in files:
+        try:
+            # Read the file
+            with open(file_path, 'r', encoding='utf-8') as f:
+                text = f.read()
+            
+            try:
+                logger.info(f"Attempting to extract entities and relations from {file_path} using LLMEntityExtractor")
+                # Use the process_text method which handles both entity and relation extraction
+                entities, relations = entity_extractor.process_text(text)
+                logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations from {file_path}")
+                
+            except Exception as e:
+                logger.error(f"LLMEntityExtractor failed with error: {str(e)}")
+                logger.error(f"Error type: {type(e).__name__}")
+                import traceback
+                logger.error(f"Traceback: {traceback.format_exc()}")
+                logger.warning(f"Falling back to MockEntityExtractor.")
+                
+                # Fall back to MockEntityExtractor
+                mock_extractor = MockEntityExtractor()
+                entities, relations = mock_extractor.process_text(text)
+                logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations using MockEntityExtractor")
+            
+            logger.info(f"Processing file: {file_path}")
+            
+            # Log extracted entities and relations
+            if verbose:
+                logger.info(f"Extracted {len(entities)} entities from {file_path}:")
+                for entity in entities:
+                    logger.info(f"  - {entity['name']} ({entity['type']})")
+                
+                logger.info(f"Extracted {len(relations)} relations from {file_path}:")
+                for relation in relations:
+                    logger.info(f"  - {relation['from_entity']['name']} --[{relation['relation']}]--> {relation['to_entity']['name']} (confidence: {relation.get('confidence', 1.0):.2f})")
+            
+            # Add to the combined lists
+            all_entities.extend(entities)
+            all_relations.extend(relations)
+            all_texts.append(f"# {os.path.basename(file_path)}\n\n{text}")
+            
+        except Exception as e:
+            logger.error(f"Error processing file {file_path}: {str(e)}")
+    
+    # Deduplicate entities and relations
+    unique_entities = deduplicate_entities(all_entities)
+    unique_relations = deduplicate_relations(all_relations)
+    
+    # Create visualization
+    combined_text = "\n\n---\n\n".join(all_texts)
+    
+    success = visualizer.create_visualization_from_data(
+        entities=unique_entities,
+        relations=unique_relations,
+        output_path=output_file,
+        title=f"Combined Graph: {input_dir}",
+        raw_text=combined_text
+    )
+    
+    if success:
+        logger.info(f"Combined graph visualization saved to {output_file}")
+    else:
+        logger.error("Failed to create visualization")
+
 def main():
     """Main entry point for the application."""
     # Define global variables
@@ -780,12 +873,13 @@ def main():
     parser.add_argument("--text", help="Text to process")
     parser.add_argument("--file", help="File to process")
     parser.add_argument("--url", action="append", help="URL to process (can be specified multiple times)")
+    parser.add_argument("--input-dir", help="Directory containing files to process")
     parser.add_argument("--output", default="graph.html", help="Output file path")
     parser.add_argument("--db-uri", default="bolt://localhost:7687", help="Neo4j URI")
     parser.add_argument("--db-user", default="neo4j", help="Neo4j username")
     parser.add_argument("--db-pass", default="password", help="Neo4j password")
     parser.add_argument("--clear", action="store_true", help="Clear existing data")
-    parser.add_argument("--llm-model", default="gemini-1.5-pro", help="LLM model to use")
+    parser.add_argument("--llm-model", default="gpt-4o", help="LLM model to use")
     parser.add_argument("--visualization-only", action="store_true", help="Skip Neo4j connection and only create visualization")
     parser.add_argument("--verbose", action="store_true", help="Display detailed information about extracted entities and relations")
     parser.add_argument("--chunk-size", type=int, default=MAX_CHUNK_SIZE, help=f"Maximum chunk size for processing large texts (default: {MAX_CHUNK_SIZE})")
@@ -799,9 +893,31 @@ def main():
     if args.chunk_overlap:
         CHUNK_OVERLAP = args.chunk_overlap
     
-    if not args.text and not args.file and not args.url:
+    if not args.text and not args.file and not args.url and not args.input_dir:
         parser.print_help()
         return False
+    
+    # Process input directory
+    if args.input_dir:
+        if args.visualization_only:
+            return process_directory(
+                args.input_dir,
+                args.output,
+                args.visualization_only,
+                args.llm_model,
+                args.verbose
+            )
+        else:
+            # For non-visualization-only mode, we would need to implement Neo4j integration
+            # For now, we'll just use the visualization-only mode
+            logger.info("Processing directory with Neo4j integration is not implemented yet. Using visualization-only mode.")
+            return process_directory(
+                args.input_dir,
+                args.output,
+                args.visualization_only,
+                args.llm_model,
+                args.verbose
+            )
     
     if args.text:
         if args.visualization_only:
