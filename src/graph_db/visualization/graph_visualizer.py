@@ -74,36 +74,33 @@ class GraphVisualizer:
                 used_entity_types.add(entity_type)
                 color = self.entity_colors.get(entity_type, self.default_color)
                 
-                # Create a formatted title with all properties
-                properties = entity.get("properties", {})
-                title = f"<b>{entity['name']} ({entity_type})</b>"
-                if properties:
-                    title += "<br><br><b>Properties:</b><br>"
-                    for prop_key, prop_value in properties.items():
-                        title += f"• {prop_key}: {prop_value}<br>"
+                # Store the raw data for tooltips without HTML formatting
+                tooltip_data = {
+                    "name": entity['name'],
+                    "type": entity_type,
+                    "properties": entity.get("properties", {})
+                }
                 
                 G.add_node(
                     entity["name"],
                     label=entity["name"],
-                    title=title,
+                    tooltip_data=tooltip_data,  # Store raw data for tooltips
                     color=color,
                     font={'color': color}  # Set font color to match node color
                 )
                 
             # Add edges (relations)
             for relation in graph_data["relations"]:
-                # Create a formatted title with all properties
-                properties = relation.get("properties", {})
-                title = f"<b>{relation['relation']}</b>"
-                if properties:
-                    title += "<br><br><b>Properties:</b><br>"
-                    for prop_key, prop_value in properties.items():
-                        title += f"• {prop_key}: {prop_value}<br>"
+                # Store the raw data for tooltips without HTML formatting
+                tooltip_data = {
+                    "relation": relation['relation'],
+                    "properties": relation.get("properties", {})
+                }
                 
                 G.add_edge(
                     relation["from_name"],
                     relation["to_name"],
-                    title=title,
+                    tooltip_data=tooltip_data,  # Store raw data for tooltips
                     label=relation["relation"],
                     arrows="to",
                     color="#000000"  # Set edge color to black
@@ -510,8 +507,14 @@ class GraphVisualizer:
                 var nodeIds = network.body.data.nodes.getIds();
                 nodeIds.forEach(function(nodeId) {
                     var node = network.body.data.nodes.get(nodeId);
-                    if (node && node.title) {
-                        window.nodeTooltips[nodeId] = node.title;
+                    if (node) {
+                        if (node.tooltip_data) {
+                            // Use the raw tooltip data
+                            window.nodeTooltips[nodeId] = node.tooltip_data;
+                        } else if (node.title) {
+                            // For backward compatibility
+                            window.nodeTooltips[nodeId] = node.title;
+                        }
                         // Remove the title attribute
                         delete node.title;
                     }
@@ -521,8 +524,14 @@ class GraphVisualizer:
                 var edgeIds = network.body.data.edges.getIds();
                 edgeIds.forEach(function(edgeId) {
                     var edge = network.body.data.edges.get(edgeId);
-                    if (edge && edge.title) {
-                        window.edgeTooltips[edgeId] = edge.title;
+                    if (edge) {
+                        if (edge.tooltip_data) {
+                            // Use the raw tooltip data
+                            window.edgeTooltips[edgeId] = edge.tooltip_data;
+                        } else if (edge.title) {
+                            // For backward compatibility
+                            window.edgeTooltips[edgeId] = edge.title;
+                        }
                         // Remove the title attribute
                         delete edge.title;
                     }
@@ -597,42 +606,62 @@ class GraphVisualizer:
                 }, true);
             }
             
-            // Function to extract plain text from HTML
-            function extractTextFromHTML(html) {
-                var temp = document.createElement('div');
-                temp.innerHTML = html;
-                return temp.textContent || temp.innerText || '';
-            }
-            
-            // Function to parse tooltip HTML and return clean text
-            function parseTooltipHTML(html) {
-                if (!html) return '';
+            // Function to format tooltip text from raw data
+            function formatTooltipText(data) {
+                if (!data) return '';
                 
-                var div = document.createElement('div');
-                div.innerHTML = html;
+                var result = '';
                 
-                // Extract entity/relation name (from the first <b> tag)
-                var nameElement = div.querySelector('b');
-                var name = nameElement ? nameElement.textContent.trim() : '';
-                
-                // Build the tooltip content
-                var result = name;
-                
-                // Check if there are properties
-                if (html.includes('Properties:')) {
-                    result += '\n\nProperties:';
+                // Handle both raw data and HTML string (for backward compatibility)
+                if (typeof data === 'object') {
+                    // For nodes
+                    if (data.name && data.type) {
+                        result = data.name + ' (' + data.type + ')';
+                    } 
+                    // For edges
+                    else if (data.relation) {
+                        result = data.relation;
+                    }
                     
-                    // Extract property items (they follow bullet points)
-                    var propertyItems = html.split('•').slice(1);
-                    propertyItems.forEach(function(item) {
-                        if (item.trim()) {
-                            // Extract just the property text before any <br> tag
-                            var propText = item.split('<br>')[0].trim();
-                            // Clean any remaining HTML
-                            var cleanProp = extractTextFromHTML('•' + propText);
-                            result += '\n' + cleanProp;
+                    // Add properties if they exist
+                    if (data.properties && Object.keys(data.properties).length > 0) {
+                        result += '\n\nProperties:';
+                        for (var key in data.properties) {
+                            result += '\n• ' + key + ': ' + data.properties[key];
                         }
-                    });
+                    }
+                } 
+                // For backward compatibility with HTML strings
+                else if (typeof data === 'string') {
+                    // First, completely strip all HTML tags
+                    var strippedText = data.replace(/<[^>]*>/g, '');
+                    
+                    // Replace HTML entities
+                    strippedText = strippedText.replace(/&lt;/g, '<')
+                                              .replace(/&gt;/g, '>')
+                                              .replace(/&amp;/g, '&')
+                                              .replace(/&quot;/g, '"')
+                                              .replace(/&apos;/g, "'")
+                                              .replace(/&nbsp;/g, ' ');
+                    
+                    // Now extract meaningful parts
+                    var lines = strippedText.split('\n').map(line => line.trim()).filter(line => line);
+                    
+                    // The first line should be the entity/relation name and type
+                    result = lines[0];
+                    
+                    // Look for properties
+                    var propertiesIndex = lines.findIndex(line => line.includes('Properties:'));
+                    if (propertiesIndex !== -1) {
+                        result += '\n\nProperties:';
+                        
+                        // Add all properties (lines that start with •)
+                        for (var i = propertiesIndex + 1; i < lines.length; i++) {
+                            if (lines[i].trim().startsWith('•')) {
+                                result += '\n' + lines[i].trim();
+                            }
+                        }
+                    }
                 }
                 
                 return result;
@@ -659,21 +688,21 @@ class GraphVisualizer:
             // Add event listeners to the network
             network.on('hoverNode', function(params) {
                 var nodeId = params.node;
-                var tooltipHtml = window.nodeTooltips[nodeId];
+                var tooltipData = window.nodeTooltips[nodeId];
                 
-                if (tooltipHtml) {
-                    var cleanText = parseTooltipHTML(tooltipHtml);
-                    showTooltip(cleanText, params.pointer.DOM.x, params.pointer.DOM.y);
+                if (tooltipData) {
+                    var formattedText = formatTooltipText(tooltipData);
+                    showTooltip(formattedText, params.pointer.DOM.x, params.pointer.DOM.y);
                 }
             });
             
             network.on('hoverEdge', function(params) {
                 var edgeId = params.edge;
-                var tooltipHtml = window.edgeTooltips[edgeId];
+                var tooltipData = window.edgeTooltips[edgeId];
                 
-                if (tooltipHtml) {
-                    var cleanText = parseTooltipHTML(tooltipHtml);
-                    showTooltip(cleanText, params.pointer.DOM.x, params.pointer.DOM.y);
+                if (tooltipData) {
+                    var formattedText = formatTooltipText(tooltipData);
+                    showTooltip(formattedText, params.pointer.DOM.x, params.pointer.DOM.y);
                 }
             });
             
@@ -755,21 +784,20 @@ class GraphVisualizer:
                 entity_type = entity["type"].upper()  # Ensure uppercase for color matching
                 color = self.entity_colors.get(entity_type, self.default_color)
                 
-                # Create a formatted title with all properties
-                properties = entity.get("properties", {})
-                title = f"<b>{entity['name']} ({entity['type']})</b>"
-                if properties:
-                    title += "<br><br><b>Properties:</b><br>"
-                    for prop_key, prop_value in properties.items():
-                        title += f"• {prop_key}: {prop_value}<br>"
+                # Store the raw data for tooltips without HTML formatting
+                tooltip_data = {
+                    "name": entity['name'],
+                    "type": entity['type'],
+                    "properties": entity.get("properties", {})
+                }
                 
                 G.add_node(
                     node_id, 
                     label=entity["name"], 
-                    title=title,
+                    tooltip_data=tooltip_data,  # Store raw data for tooltips
                     color=color,  # Explicitly set color instead of group
                     font={'color': color},  # Set font color to match node color
-                    properties=properties
+                    properties=entity.get("properties", {})
                 )
             
             # Add edges
@@ -777,20 +805,18 @@ class GraphVisualizer:
                 from_id = relation["from_entity"].get("id", hash(relation["from_entity"]["name"]))
                 to_id = relation["to_entity"].get("id", hash(relation["to_entity"]["name"]))
                 
-                # Create a formatted title with all properties
-                properties = relation.get("properties", {})
-                title = f"<b>{relation['relation']}</b>"
-                if properties:
-                    title += "<br><br><b>Properties:</b><br>"
-                    for prop_key, prop_value in properties.items():
-                        title += f"• {prop_key}: {prop_value}<br>"
+                # Store the raw data for tooltips without HTML formatting
+                tooltip_data = {
+                    "relation": relation['relation'],
+                    "properties": relation.get("properties", {})
+                }
                 
                 G.add_edge(
                     from_id, 
                     to_id, 
                     label=relation["relation"],
-                    title=title,
-                    properties=properties,
+                    tooltip_data=tooltip_data,  # Store raw data for tooltips
+                    properties=relation.get("properties", {}),
                     color="#000000"  # Set edge color to black
                 )
             
