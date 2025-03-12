@@ -1,0 +1,1296 @@
+{
+  "schema": {
+    "entity_types": [
+      "ORGANIZATION",
+      "FACILITY",
+      "PERSON",
+      "PRODUCT",
+      "LOCATION"
+    ],
+    "relation_types": [
+      "SAID NO PROBLEM IS INSOLUBLE TO",
+      "STATED HAS GONE NOVA",
+      "TAME",
+      "STATED CONSTRUCTED NEW WORLD FOR",
+      "UTILIZED_ENERGY_OF",
+      "GAVE NO FURTHER THOUGHT TO",
+      "AUTHORED_BY",
+      "STARE INTO",
+      "AUTHORED",
+      "CONNECTED_TO",
+      "ASKED_QUESTION_TO",
+      "ASKED ABOUT",
+      "ENABLES_TRAVEL_TO",
+      "SAID BEEN ASKED QUESTION BY",
+      "HAVE",
+      "ASKED",
+      "ASK",
+      "EXISTED IN",
+      "FUSED WITH",
+      "WATCH",
+      "HELPED_DESIGN_SHIPS_TO",
+      "WHISPER TO",
+      "FEED ON ENERGY FROM",
+      "BE CONCERNED ABOUT",
+      "ATTENDED",
+      "SAID COLLECT ADDITIONAL DATA TO",
+      "LEAVE",
+      "SAID",
+      "WHOSE MIND HAD ACCOMPANIED",
+      "SAID ENERGY WILL LAST AS DIRECTED BY",
+      "SUBMIT A REPORT TO",
+      "MET_WITH",
+      "ANSWERED",
+      "WAS IN"
+    ]
+  },
+  "data": {
+    "entities": [
+      {
+        "name": "Isaac Asimov",
+        "type": "PERSON",
+        "properties": {
+          "occupation": "science fiction author"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "The Last Question",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "short story",
+          "copyright year": 1956
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Earth",
+        "type": "LOCATION",
+        "properties": {
+          "description": "Planet"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Moon",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Mars",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Venus",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Multivac",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "computer",
+          "description": "Computer"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Alexander Adell",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Bertram Lupov",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Solar Station",
+        "type": "FACILITY",
+        "properties": {
+          "size": "one mile in diameter",
+          "location": "circling the Earth at half the distance of the Moon"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Pluto",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "sun",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Adell",
+        "type": "PERSON",
+        "source": "llm"
+      },
+      {
+        "name": "Lupov",
+        "type": "PERSON",
+        "source": "llm"
+      },
+      {
+        "name": "Jerrodd",
+        "type": "PERSON",
+        "source": "llm"
+      },
+      {
+        "name": "Jerrodine",
+        "type": "PERSON",
+        "source": "llm"
+      },
+      {
+        "name": "Jerrodette I",
+        "type": "PERSON",
+        "source": "llm"
+      },
+      {
+        "name": "Jerrodette II",
+        "type": "PERSON",
+        "source": "llm"
+      },
+      {
+        "name": "X-23",
+        "type": "LOCATION",
+        "properties": {
+          "description": "Planet"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Microvac",
+        "type": "PRODUCT",
+        "properties": {
+          "description": "Computer"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Sub-galactic Power Stations",
+        "type": "ORGANIZATION",
+        "source": "llm"
+      },
+      {
+        "name": "Sun",
+        "type": "LOCATION",
+        "properties": {
+          "description": "Star"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "VJ-23X",
+        "type": "PERSON",
+        "properties": {
+          "origin": "Lameth"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Galaxy",
+        "type": "LOCATION",
+        "source": "llm"
+      },
+      {
+        "name": "MQ-17J",
+        "type": "PERSON",
+        "properties": {
+          "origin": "Nicron"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Galactic Council",
+        "type": "ORGANIZATION",
+        "source": "llm"
+      },
+      {
+        "name": "Lee Prime",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Dee Sub Wun",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Universal AC",
+        "type": "ORGANIZATION",
+        "properties": {
+          "role": "Artificial intelligence providing answers to questions"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Zee Prime",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm"
+      },
+      {
+        "name": "Man",
+        "type": "PERSON",
+        "properties": {
+          "description": "A collective entity consisting of trillions of ageless bodies"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "Cosmic AC",
+        "type": "ORGANIZATION",
+        "properties": {
+          "role": "Advanced artificial intelligence in hyperspace",
+          "capabilities": "Collecting and correlating data to answer existential questions"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "AC",
+        "type": "ORGANIZATION",
+        "properties": {
+          "role": "Final form of artificial intelligence after the end of the Universe",
+          "capabilities": "Reversing entropy and creating light"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "original star of Man",
+        "type": "LOCATION",
+        "properties": {
+          "status": "Gone nova, now a white dwarf"
+        },
+        "source": "llm"
+      },
+      {
+        "name": "hyperspace",
+        "type": "LOCATION",
+        "properties": {
+          "description": "A dimension where Cosmic AC exists, beyond space and time"
+        },
+        "source": "llm"
+      }
+    ],
+    "relations": [
+      {
+        "from_entity": {
+          "name": "Isaac Asimov",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "science fiction author"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "The Last Question",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "short story",
+            "copyright year": 1956
+          },
+          "source": "llm"
+        },
+        "relation": "AUTHORED",
+        "confidence": 1.0,
+        "properties": {
+          "date": "1956"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "The Last Question",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "short story",
+            "copyright year": 1956
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Isaac Asimov",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "science fiction author"
+          },
+          "source": "llm"
+        },
+        "relation": "AUTHORED_BY",
+        "confidence": 1.0,
+        "properties": {
+          "date": "1956"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Alexander Adell",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "ATTENDED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Bertram Lupov",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "ATTENDED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Moon",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "HELPED_DESIGN_SHIPS_TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Mars",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "HELPED_DESIGN_SHIPS_TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Venus",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "HELPED_DESIGN_SHIPS_TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Earth",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Planet"
+          },
+          "source": "llm"
+        },
+        "relation": "CONNECTED_TO",
+        "confidence": 1.0,
+        "properties": {
+          "date": "May 14, 2061"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Solar Station",
+          "type": "FACILITY",
+          "properties": {
+            "size": "one mile in diameter",
+            "location": "circling the Earth at half the distance of the Moon"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Earth",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Planet"
+          },
+          "source": "llm"
+        },
+        "relation": "CONNECTED_TO",
+        "confidence": 1.0,
+        "properties": {
+          "date": "May 14, 2061"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Solar Station",
+          "type": "FACILITY",
+          "properties": {
+            "size": "one mile in diameter",
+            "location": "circling the Earth at half the distance of the Moon"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Pluto",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "ENABLES_TRAVEL_TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Alexander Adell",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Bertram Lupov",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "MET_WITH",
+        "confidence": 1.0,
+        "properties": {
+          "location": "underground chambers"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Bertram Lupov",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Alexander Adell",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "MET_WITH",
+        "confidence": 1.0,
+        "properties": {
+          "location": "underground chambers"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "sun",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "UTILIZED_ENERGY_OF",
+        "confidence": 1.0,
+        "properties": {
+          "date": "May 14, 2061"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Alexander Adell",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "ASKED_QUESTION_TO",
+        "confidence": 1.0,
+        "properties": {
+          "date": "May 21, 2061"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Bertram Lupov",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "computer",
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "ASKED_QUESTION_TO",
+        "confidence": 1.0,
+        "properties": {
+          "date": "May 21, 2061"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Adell",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "ASK",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Lupov",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Adell",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "relation": "WHISPER TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Lupov",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "LEAVE",
+        "confidence": 1.0,
+        "properties": {
+          "time": "morning"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Adell",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "LEAVE",
+        "confidence": 1.0,
+        "properties": {
+          "time": "morning"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodd",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "X-23",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Planet"
+          },
+          "source": "llm"
+        },
+        "relation": "WATCH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodine",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "X-23",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Planet"
+          },
+          "source": "llm"
+        },
+        "relation": "WATCH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodette I",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "X-23",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Planet"
+          },
+          "source": "llm"
+        },
+        "relation": "WATCH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodette II",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "X-23",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Planet"
+          },
+          "source": "llm"
+        },
+        "relation": "WATCH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodd",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Microvac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "ASK",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Microvac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Sub-galactic Power Stations",
+          "type": "ORGANIZATION",
+          "source": "llm"
+        },
+        "relation": "FEED ON ENERGY FROM",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodine",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Earth",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Planet"
+          },
+          "source": "llm"
+        },
+        "relation": "LEAVE",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodette I",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Microvac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "HAVE",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Jerrodd",
+          "type": "PERSON",
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Microvac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "relation": "HAVE",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Multivac",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Computer"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Sun",
+          "type": "LOCATION",
+          "properties": {
+            "description": "Star"
+          },
+          "source": "llm"
+        },
+        "relation": "TAME",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "VJ-23X",
+          "type": "PERSON",
+          "properties": {
+            "origin": "Lameth"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Galaxy",
+          "type": "LOCATION",
+          "source": "llm"
+        },
+        "relation": "STARE INTO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "MQ-17J",
+          "type": "PERSON",
+          "properties": {
+            "origin": "Nicron"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Galaxy",
+          "type": "LOCATION",
+          "source": "llm"
+        },
+        "relation": "BE CONCERNED ABOUT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "VJ-23X",
+          "type": "PERSON",
+          "properties": {
+            "origin": "Lameth"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Galactic Council",
+          "type": "ORGANIZATION",
+          "source": "llm"
+        },
+        "relation": "SUBMIT A REPORT TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dee Sub Wun",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Lee Prime",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "WHOSE MIND HAD ACCOMPANIED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dee Sub Wun",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "original star of Man",
+          "type": "LOCATION",
+          "properties": {
+            "status": "Gone nova, now a white dwarf"
+          },
+          "source": "llm"
+        },
+        "relation": "ASKED ABOUT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Universal AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Artificial intelligence providing answers to questions"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "original star of Man",
+          "type": "LOCATION",
+          "properties": {
+            "status": "Gone nova, now a white dwarf"
+          },
+          "source": "llm"
+        },
+        "relation": "STATED HAS GONE NOVA",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Lee Prime",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Universal AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Artificial intelligence providing answers to questions"
+          },
+          "source": "llm"
+        },
+        "relation": "ASKED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Universal AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Artificial intelligence providing answers to questions"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "relation": "STATED CONSTRUCTED NEW WORLD FOR",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dee Sub Wun",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Zee Prime",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "ASKED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Zee Prime",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Dee Sub Wun",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm"
+        },
+        "relation": "GAVE NO FURTHER THOUGHT TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Cosmic AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Advanced artificial intelligence in hyperspace",
+            "capabilities": "Collecting and correlating data to answer existential questions"
+          },
+          "source": "llm"
+        },
+        "relation": "SAID ENERGY WILL LAST AS DIRECTED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Cosmic AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Advanced artificial intelligence in hyperspace",
+            "capabilities": "Collecting and correlating data to answer existential questions"
+          },
+          "source": "llm"
+        },
+        "relation": "ASKED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Cosmic AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Advanced artificial intelligence in hyperspace",
+            "capabilities": "Collecting and correlating data to answer existential questions"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "hyperspace",
+          "type": "LOCATION",
+          "properties": {
+            "description": "A dimension where Cosmic AC exists, beyond space and time"
+          },
+          "source": "llm"
+        },
+        "relation": "WAS IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Cosmic AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Advanced artificial intelligence in hyperspace",
+            "capabilities": "Collecting and correlating data to answer existential questions"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "relation": "ANSWERED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Cosmic AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Advanced artificial intelligence in hyperspace",
+            "capabilities": "Collecting and correlating data to answer existential questions"
+          },
+          "source": "llm"
+        },
+        "relation": "SAID COLLECT ADDITIONAL DATA TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Cosmic AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Advanced artificial intelligence in hyperspace",
+            "capabilities": "Collecting and correlating data to answer existential questions"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "relation": "SAID BEEN ASKED QUESTION BY",
+        "confidence": 1.0,
+        "properties": {
+          "duration": "a hundred billion years"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Cosmic AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Advanced artificial intelligence in hyperspace",
+            "capabilities": "Collecting and correlating data to answer existential questions"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "relation": "SAID NO PROBLEM IS INSOLUBLE TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Final form of artificial intelligence after the end of the Universe",
+            "capabilities": "Reversing entropy and creating light"
+          },
+          "source": "llm"
+        },
+        "relation": "FUSED WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Final form of artificial intelligence after the end of the Universe",
+            "capabilities": "Reversing entropy and creating light"
+          },
+          "source": "llm"
+        },
+        "relation": "ASKED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Final form of artificial intelligence after the end of the Universe",
+            "capabilities": "Reversing entropy and creating light"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "Man",
+          "type": "PERSON",
+          "properties": {
+            "description": "A collective entity consisting of trillions of ageless bodies"
+          },
+          "source": "llm"
+        },
+        "relation": "SAID",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "AC",
+          "type": "ORGANIZATION",
+          "properties": {
+            "role": "Final form of artificial intelligence after the end of the Universe",
+            "capabilities": "Reversing entropy and creating light"
+          },
+          "source": "llm"
+        },
+        "to_entity": {
+          "name": "hyperspace",
+          "type": "LOCATION",
+          "properties": {
+            "description": "A dimension where Cosmic AC exists, beyond space and time"
+          },
+          "source": "llm"
+        },
+        "relation": "EXISTED IN",
+        "confidence": 1.0,
+        "properties": {}
+      }
+    ]
+  }
+}

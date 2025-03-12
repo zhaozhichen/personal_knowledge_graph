@@ -14,10 +14,15 @@ A tool for automatically extracting entities and relationships from text to buil
 
 Check out these examples to see the tool in action:
 
+### Scientists Knowledge Graph
 - [Example Graph Visualization](example/combined_graph.html) - An interactive visualization showing connections between Newton, Einstein, and Descartes
 - [Example Graph Data (JSON)](example/combined_graph.json) - The raw graph data in JSON format
 
-These examples demonstrate how the system extracts entities and relationships from text about famous scientists and creates connections between their subgraphs.
+### "The Last Question" by Isaac Asimov
+- [LLM-Generated Graph](example/thelastq_graph.html) - Knowledge graph extracted from the full text of the story using LLM
+- [Mock Graph](example/thelastq_mock_graph.html) - A mock graph generated for UI testing purposes
+
+These examples demonstrate how the system extracts entities and relationships from text and creates connections between them.
 
 ## Installation
 

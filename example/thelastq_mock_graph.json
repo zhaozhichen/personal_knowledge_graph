@@ -1,0 +1,1642 @@
+{
+  "schema": {
+    "entity_types": [
+      "EVENT",
+      "WORK_OF_ART",
+      "FIELD",
+      "LOCATION",
+      "ORGANIZATION",
+      "PRODUCT",
+      "PERSON"
+    ],
+    "relation_types": [
+      "WROTE",
+      "LIVED IN",
+      "ROSE TO POWER IN",
+      "DIED IN",
+      "INFLUENCED BY",
+      "CONTRIBUTED TO",
+      "MOVED TO",
+      "EARNED",
+      "EXTENDED",
+      "FORMULATED",
+      "FLED",
+      "BECAME PRESIDENT OF",
+      "INTRODUCED",
+      "EXPLAINED",
+      "BORN IN",
+      "EXPERIMENTED WITH",
+      "EDUCATED AT",
+      "REFERENCED",
+      "KNIGHTED",
+      "SERVED AS WARDEN OF",
+      "DEVELOPED",
+      "INVITED TO COURT",
+      "STUDIED AT",
+      "ELECTED AS FOREIGN MEMBER",
+      "DISCOVERED",
+      "INVENTED",
+      "BUILT UPON",
+      "GRADUATED FROM",
+      "BECAME PROFESSOR AT",
+      "FOUNDED AFTER DEATH OF",
+      "MARRIED",
+      "BECAME CITIZEN OF",
+      "SERVED AS MASTER OF",
+      "LOCATED IN",
+      "CHALLENGED"
+    ]
+  },
+  "data": {
+    "entities": [
+      {
+        "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+        "name": "Isaac Newton",
+        "type": "PERSON",
+        "properties": {
+          "birth_year": "1642",
+          "death_year": "1727"
+        }
+      },
+      {
+        "id": "a691a91b-2367-40fb-9e37-c74b751bbfbb",
+        "name": "Woolsthorpe",
+        "type": "LOCATION",
+        "properties": {
+          "country": "England"
+        }
+      },
+      {
+        "id": "5825a590-1eed-432a-bdff-ad90d2ed7dd0",
+        "name": "Trinity College, Cambridge",
+        "type": "ORGANIZATION",
+        "properties": {
+          "founded": "1546"
+        }
+      },
+      {
+        "id": "be5fcc5d-30e3-40f0-a547-90fb28b0c7f4",
+        "name": "Calculus",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "field": "Mathematics"
+        }
+      },
+      {
+        "id": "09fd664a-2abc-41b1-8576-0b03be69f583",
+        "name": "Gottfried Wilhelm Leibniz",
+        "type": "PERSON",
+        "properties": {
+          "birth_year": "1646",
+          "death_year": "1716"
+        }
+      },
+      {
+        "id": "62c93ce5-2b44-4863-b94b-750e74a28845",
+        "name": "Principia Mathematica",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "published": "1687",
+          "field": "Physics"
+        }
+      },
+      {
+        "id": "7ca8f154-0d72-46bc-9b70-3bdb0d9e93a5",
+        "name": "Three Laws of Motion",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "field": "Physics"
+        }
+      },
+      {
+        "id": "d4416920-c39f-49eb-9a50-9b2c019e3e58",
+        "name": "Law of Universal Gravitation",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "field": "Physics"
+        }
+      },
+      {
+        "id": "f74cf7f9-4e2d-496a-80f6-416178c22246",
+        "name": "Reflecting Telescope",
+        "type": "PRODUCT",
+        "properties": {
+          "invented": "1668"
+        }
+      },
+      {
+        "id": "ff529507-53da-4c5a-aef6-16694501dcb3",
+        "name": "Prism",
+        "type": "PRODUCT",
+        "properties": {}
+      },
+      {
+        "id": "b14121d3-500f-4b7c-bc12-b294589b3c12",
+        "name": "Royal Mint",
+        "type": "ORGANIZATION",
+        "properties": {
+          "country": "England"
+        }
+      },
+      {
+        "id": "2789e2bf-e2cb-4e9f-a7ac-58a38522a71a",
+        "name": "Royal Society",
+        "type": "ORGANIZATION",
+        "properties": {
+          "founded": "1660"
+        }
+      },
+      {
+        "id": "6b587c34-2903-4b8c-8403-03ace1ea7d3f",
+        "name": "Queen Anne",
+        "type": "PERSON",
+        "properties": {
+          "reign": "1702-1714"
+        }
+      },
+      {
+        "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+        "name": "Albert Einstein",
+        "type": "PERSON",
+        "properties": {
+          "birth_year": "1879",
+          "death_year": "1955"
+        }
+      },
+      {
+        "id": "ac530e42-ef82-49df-91f9-1e1a9c3ae8d4",
+        "name": "Ulm",
+        "type": "LOCATION",
+        "properties": {
+          "country": "Germany"
+        }
+      },
+      {
+        "id": "9729edb4-0236-4f3d-9cd9-a409252f129e",
+        "name": "Germany",
+        "type": "LOCATION",
+        "properties": {}
+      },
+      {
+        "id": "4b275460-fdd1-4968-a3c0-792e0228a4e2",
+        "name": "United States",
+        "type": "LOCATION",
+        "properties": {}
+      },
+      {
+        "id": "21add06a-c5f6-4cb9-b0c6-10ed9a2da835",
+        "name": "Swiss Federal Polytechnic School",
+        "type": "ORGANIZATION",
+        "properties": {}
+      },
+      {
+        "id": "c0d439c8-4eb5-463f-b519-8d1aa55c5d3f",
+        "name": "Theory of Special Relativity",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "year": "1905"
+        }
+      },
+      {
+        "id": "f56e85ee-aa29-4c7c-8775-c3515eab70e1",
+        "name": "General Theory of Relativity",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "year": "1915"
+        }
+      },
+      {
+        "id": "3c5be29c-9516-429a-996f-3c0e98e8749a",
+        "name": "Photoelectric Effect",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "year": "1905"
+        }
+      },
+      {
+        "id": "ad237de1-b05e-47e2-a171-a116f90877ac",
+        "name": "Brownian Motion",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "year": "1905"
+        }
+      },
+      {
+        "id": "c5ee163c-f7cb-44fa-b4bc-af050d4f90da",
+        "name": "Mass-Energy Equivalence",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "equation": "E=mc²"
+        }
+      },
+      {
+        "id": "c71adb89-1ee7-4df3-9f8c-ac8822571896",
+        "name": "1921 Nobel Prize in Physics",
+        "type": "EVENT",
+        "properties": {}
+      },
+      {
+        "id": "daa26606-daf8-481e-bc1f-1b1b9cf51725",
+        "name": "Institute for Advanced Study in Princeton",
+        "type": "ORGANIZATION",
+        "properties": {}
+      },
+      {
+        "id": "74a605b0-e35f-4eec-8c3f-1701da2bf0f5",
+        "name": "Mileva Marić",
+        "type": "PERSON",
+        "properties": {}
+      },
+      {
+        "id": "d4059e9b-8c48-4009-8b5f-c91bd5b43b7c",
+        "name": "Elsa Löwenthal",
+        "type": "PERSON",
+        "properties": {}
+      },
+      {
+        "id": "9c3ffccd-aacf-4622-9afd-f1a38f0bfa83",
+        "name": "Adolf Hitler",
+        "type": "PERSON",
+        "properties": {}
+      },
+      {
+        "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+        "name": "René Descartes",
+        "type": "PERSON",
+        "properties": {
+          "birth_year": "1596",
+          "death_year": "1650"
+        }
+      },
+      {
+        "id": "9d9a4d0a-a4ea-4d89-956d-bc9a2b32dc2d",
+        "name": "La Haye en Touraine",
+        "type": "LOCATION",
+        "properties": {
+          "country": "France"
+        }
+      },
+      {
+        "id": "2477c365-bf53-43f1-850a-374ef6a6d54f",
+        "name": "France",
+        "type": "LOCATION",
+        "properties": {}
+      },
+      {
+        "id": "e1e8f04a-d4a2-4f9c-9b8d-27d8462228f5",
+        "name": "Netherlands",
+        "type": "LOCATION",
+        "properties": {}
+      },
+      {
+        "id": "025221df-808a-49a4-bd42-4ca3d5f1f114",
+        "name": "Sweden",
+        "type": "LOCATION",
+        "properties": {}
+      },
+      {
+        "id": "f502aa19-17be-4e8f-8d9a-6296b8e4132d",
+        "name": "Jesuit College of La Flèche",
+        "type": "ORGANIZATION",
+        "properties": {}
+      },
+      {
+        "id": "08db6562-0fd0-4ea2-b645-6efebbdad0a5",
+        "name": "University of Poitiers",
+        "type": "ORGANIZATION",
+        "properties": {}
+      },
+      {
+        "id": "4c887a0f-9d4a-4328-a20f-5f47cbfe7ad0",
+        "name": "Cogito, ergo sum",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "translation": "I think, therefore I am"
+        }
+      },
+      {
+        "id": "850906a4-a6ed-4244-9e51-6bd889b889e2",
+        "name": "Discourse on the Method",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "year": "1637"
+        }
+      },
+      {
+        "id": "7b0ca94f-7bda-4432-a524-228124f4b8c6",
+        "name": "Meditations on First Philosophy",
+        "type": "WORK_OF_ART",
+        "properties": {
+          "year": "1641"
+        }
+      },
+      {
+        "id": "02be16c9-0e76-41b7-85e6-c76a11a121e7",
+        "name": "Cartesian Dualism",
+        "type": "WORK_OF_ART",
+        "properties": {}
+      },
+      {
+        "id": "307b6705-b1cc-4a44-bda5-8e2272502b25",
+        "name": "Analytical Geometry",
+        "type": "WORK_OF_ART",
+        "properties": {}
+      },
+      {
+        "id": "daa756dd-9f64-480b-b4f0-9249328f7d5a",
+        "name": "Queen Christina",
+        "type": "PERSON",
+        "properties": {
+          "country": "Sweden"
+        }
+      },
+      {
+        "id": "cb737819-1b0e-469f-bb61-79bc78e3fe01",
+        "name": "Mathematics",
+        "type": "FIELD",
+        "properties": {
+          "description": "The study of numbers, quantities, and shapes"
+        }
+      },
+      {
+        "id": "59f49210-7b68-41dd-9f48-db55a2cdc7ec",
+        "name": "Physics",
+        "type": "FIELD",
+        "properties": {
+          "description": "The study of matter, energy, and their interactions"
+        }
+      }
+    ],
+    "relations": [
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "a691a91b-2367-40fb-9e37-c74b751bbfbb",
+          "name": "Woolsthorpe",
+          "type": "LOCATION",
+          "properties": {
+            "country": "England"
+          }
+        },
+        "relation": "BORN IN",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1642"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "5825a590-1eed-432a-bdff-ad90d2ed7dd0",
+          "name": "Trinity College, Cambridge",
+          "type": "ORGANIZATION",
+          "properties": {
+            "founded": "1546"
+          }
+        },
+        "relation": "STUDIED AT",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1661"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "be5fcc5d-30e3-40f0-a547-90fb28b0c7f4",
+          "name": "Calculus",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "field": "Mathematics"
+          }
+        },
+        "relation": "DEVELOPED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1665-1666"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "09fd664a-2abc-41b1-8576-0b03be69f583",
+          "name": "Gottfried Wilhelm Leibniz",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1646",
+            "death_year": "1716"
+          }
+        },
+        "to_entity": {
+          "id": "be5fcc5d-30e3-40f0-a547-90fb28b0c7f4",
+          "name": "Calculus",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "field": "Mathematics"
+          }
+        },
+        "relation": "DEVELOPED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1675-1676"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "62c93ce5-2b44-4863-b94b-750e74a28845",
+          "name": "Principia Mathematica",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "published": "1687",
+            "field": "Physics"
+          }
+        },
+        "relation": "WROTE",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1687"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "7ca8f154-0d72-46bc-9b70-3bdb0d9e93a5",
+          "name": "Three Laws of Motion",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "field": "Physics"
+          }
+        },
+        "relation": "FORMULATED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "d4416920-c39f-49eb-9a50-9b2c019e3e58",
+          "name": "Law of Universal Gravitation",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "field": "Physics"
+          }
+        },
+        "relation": "DISCOVERED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "f74cf7f9-4e2d-496a-80f6-416178c22246",
+          "name": "Reflecting Telescope",
+          "type": "PRODUCT",
+          "properties": {
+            "invented": "1668"
+          }
+        },
+        "relation": "INVENTED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1668"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "ff529507-53da-4c5a-aef6-16694501dcb3",
+          "name": "Prism",
+          "type": "PRODUCT",
+          "properties": {}
+        },
+        "relation": "EXPERIMENTED WITH",
+        "confidence": 1.0,
+        "properties": {
+          "discovery": "Light Spectrum"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "b14121d3-500f-4b7c-bc12-b294589b3c12",
+          "name": "Royal Mint",
+          "type": "ORGANIZATION",
+          "properties": {
+            "country": "England"
+          }
+        },
+        "relation": "SERVED AS WARDEN OF",
+        "confidence": 1.0,
+        "properties": {
+          "period": "1696-1699"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "b14121d3-500f-4b7c-bc12-b294589b3c12",
+          "name": "Royal Mint",
+          "type": "ORGANIZATION",
+          "properties": {
+            "country": "England"
+          }
+        },
+        "relation": "SERVED AS MASTER OF",
+        "confidence": 1.0,
+        "properties": {
+          "period": "1699-1727"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "2789e2bf-e2cb-4e9f-a7ac-58a38522a71a",
+          "name": "Royal Society",
+          "type": "ORGANIZATION",
+          "properties": {
+            "founded": "1660"
+          }
+        },
+        "relation": "BECAME PRESIDENT OF",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1703"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6b587c34-2903-4b8c-8403-03ace1ea7d3f",
+          "name": "Queen Anne",
+          "type": "PERSON",
+          "properties": {
+            "reign": "1702-1714"
+          }
+        },
+        "to_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "relation": "KNIGHTED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1705"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "ac530e42-ef82-49df-91f9-1e1a9c3ae8d4",
+          "name": "Ulm",
+          "type": "LOCATION",
+          "properties": {
+            "country": "Germany"
+          }
+        },
+        "relation": "BORN IN",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1879"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "ac530e42-ef82-49df-91f9-1e1a9c3ae8d4",
+          "name": "Ulm",
+          "type": "LOCATION",
+          "properties": {
+            "country": "Germany"
+          }
+        },
+        "to_entity": {
+          "id": "9729edb4-0236-4f3d-9cd9-a409252f129e",
+          "name": "Germany",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "LOCATED IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "21add06a-c5f6-4cb9-b0c6-10ed9a2da835",
+          "name": "Swiss Federal Polytechnic School",
+          "type": "ORGANIZATION",
+          "properties": {}
+        },
+        "relation": "STUDIED AT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "c0d439c8-4eb5-463f-b519-8d1aa55c5d3f",
+          "name": "Theory of Special Relativity",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "year": "1905"
+          }
+        },
+        "relation": "INTRODUCED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1905"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "f56e85ee-aa29-4c7c-8775-c3515eab70e1",
+          "name": "General Theory of Relativity",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "year": "1915"
+          }
+        },
+        "relation": "DEVELOPED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1915"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "3c5be29c-9516-429a-996f-3c0e98e8749a",
+          "name": "Photoelectric Effect",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "year": "1905"
+          }
+        },
+        "relation": "EXPLAINED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1905"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "ad237de1-b05e-47e2-a171-a116f90877ac",
+          "name": "Brownian Motion",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "year": "1905"
+          }
+        },
+        "relation": "EXPLAINED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1905"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "c5ee163c-f7cb-44fa-b4bc-af050d4f90da",
+          "name": "Mass-Energy Equivalence",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "equation": "E=mc²"
+          }
+        },
+        "relation": "FORMULATED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1905"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "c71adb89-1ee7-4df3-9f8c-ac8822571896",
+          "name": "1921 Nobel Prize in Physics",
+          "type": "EVENT",
+          "properties": {}
+        },
+        "relation": "EARNED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1921"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "74a605b0-e35f-4eec-8c3f-1701da2bf0f5",
+          "name": "Mileva Marić",
+          "type": "PERSON",
+          "properties": {}
+        },
+        "relation": "MARRIED",
+        "confidence": 1.0,
+        "properties": {
+          "period": "1903-1919"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "d4059e9b-8c48-4009-8b5f-c91bd5b43b7c",
+          "name": "Elsa Löwenthal",
+          "type": "PERSON",
+          "properties": {}
+        },
+        "relation": "MARRIED",
+        "confidence": 1.0,
+        "properties": {
+          "period": "1919-1936"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "9729edb4-0236-4f3d-9cd9-a409252f129e",
+          "name": "Germany",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "FLED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1933"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "4b275460-fdd1-4968-a3c0-792e0228a4e2",
+          "name": "United States",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "MOVED TO",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1933"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "4b275460-fdd1-4968-a3c0-792e0228a4e2",
+          "name": "United States",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "BECAME CITIZEN OF",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1940"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "daa26606-daf8-481e-bc1f-1b1b9cf51725",
+          "name": "Institute for Advanced Study in Princeton",
+          "type": "ORGANIZATION",
+          "properties": {}
+        },
+        "relation": "BECAME PROFESSOR AT",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1933"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "9c3ffccd-aacf-4622-9afd-f1a38f0bfa83",
+          "name": "Adolf Hitler",
+          "type": "PERSON",
+          "properties": {}
+        },
+        "to_entity": {
+          "id": "9729edb4-0236-4f3d-9cd9-a409252f129e",
+          "name": "Germany",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "ROSE TO POWER IN",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1933"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "9d9a4d0a-a4ea-4d89-956d-bc9a2b32dc2d",
+          "name": "La Haye en Touraine",
+          "type": "LOCATION",
+          "properties": {
+            "country": "France"
+          }
+        },
+        "relation": "BORN IN",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1596"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "9d9a4d0a-a4ea-4d89-956d-bc9a2b32dc2d",
+          "name": "La Haye en Touraine",
+          "type": "LOCATION",
+          "properties": {
+            "country": "France"
+          }
+        },
+        "to_entity": {
+          "id": "2477c365-bf53-43f1-850a-374ef6a6d54f",
+          "name": "France",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "LOCATED IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "f502aa19-17be-4e8f-8d9a-6296b8e4132d",
+          "name": "Jesuit College of La Flèche",
+          "type": "ORGANIZATION",
+          "properties": {}
+        },
+        "relation": "EDUCATED AT",
+        "confidence": 1.0,
+        "properties": {
+          "period": "1607-1614"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "08db6562-0fd0-4ea2-b645-6efebbdad0a5",
+          "name": "University of Poitiers",
+          "type": "ORGANIZATION",
+          "properties": {}
+        },
+        "relation": "GRADUATED FROM",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1616",
+          "degree": "Law"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "e1e8f04a-d4a2-4f9c-9b8d-27d8462228f5",
+          "name": "Netherlands",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "LIVED IN",
+        "confidence": 1.0,
+        "properties": {
+          "period": "1628-1649"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "4c887a0f-9d4a-4328-a20f-5f47cbfe7ad0",
+          "name": "Cogito, ergo sum",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "translation": "I think, therefore I am"
+          }
+        },
+        "relation": "FORMULATED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "850906a4-a6ed-4244-9e51-6bd889b889e2",
+          "name": "Discourse on the Method",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "year": "1637"
+          }
+        },
+        "relation": "WROTE",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1637"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "7b0ca94f-7bda-4432-a524-228124f4b8c6",
+          "name": "Meditations on First Philosophy",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "year": "1641"
+          }
+        },
+        "relation": "WROTE",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1641"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "02be16c9-0e76-41b7-85e6-c76a11a121e7",
+          "name": "Cartesian Dualism",
+          "type": "WORK_OF_ART",
+          "properties": {}
+        },
+        "relation": "DEVELOPED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "307b6705-b1cc-4a44-bda5-8e2272502b25",
+          "name": "Analytical Geometry",
+          "type": "WORK_OF_ART",
+          "properties": {}
+        },
+        "relation": "INVENTED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "id": "daa756dd-9f64-480b-b4f0-9249328f7d5a",
+          "name": "Queen Christina",
+          "type": "PERSON",
+          "properties": {
+            "country": "Sweden"
+          }
+        },
+        "to_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "relation": "INVITED TO COURT",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1649"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "025221df-808a-49a4-bd42-4ca3d5f1f114",
+          "name": "Sweden",
+          "type": "LOCATION",
+          "properties": {}
+        },
+        "relation": "DIED IN",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1650",
+          "cause": "Pneumonia"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "relation": "INFLUENCED BY",
+        "confidence": 1.0,
+        "properties": {
+          "area": "Physics",
+          "significance": "High"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "f56e85ee-aa29-4c7c-8775-c3515eab70e1",
+          "name": "General Theory of Relativity",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "year": "1915"
+          }
+        },
+        "to_entity": {
+          "id": "d4416920-c39f-49eb-9a50-9b2c019e3e58",
+          "name": "Law of Universal Gravitation",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "field": "Physics"
+          }
+        },
+        "relation": "EXTENDED",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1915",
+          "note": "Einstein's theory provided a more complete description of gravity"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "relation": "INFLUENCED BY",
+        "confidence": 1.0,
+        "properties": {
+          "area": "Mathematics and Philosophy",
+          "significance": "Moderate"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "be5fcc5d-30e3-40f0-a547-90fb28b0c7f4",
+          "name": "Calculus",
+          "type": "WORK_OF_ART",
+          "properties": {
+            "field": "Mathematics"
+          }
+        },
+        "to_entity": {
+          "id": "307b6705-b1cc-4a44-bda5-8e2272502b25",
+          "name": "Analytical Geometry",
+          "type": "WORK_OF_ART",
+          "properties": {}
+        },
+        "relation": "BUILT UPON",
+        "confidence": 1.0,
+        "properties": {
+          "note": "Calculus extended concepts from analytical geometry"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "relation": "REFERENCED",
+        "confidence": 1.0,
+        "properties": {
+          "area": "Philosophy of Science",
+          "significance": "Low"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "02be16c9-0e76-41b7-85e6-c76a11a121e7",
+          "name": "Cartesian Dualism",
+          "type": "WORK_OF_ART",
+          "properties": {}
+        },
+        "relation": "CHALLENGED",
+        "confidence": 1.0,
+        "properties": {
+          "note": "Einstein's work on relativity questioned absolute space and time"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "2789e2bf-e2cb-4e9f-a7ac-58a38522a71a",
+          "name": "Royal Society",
+          "type": "ORGANIZATION",
+          "properties": {
+            "founded": "1660"
+          }
+        },
+        "to_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "relation": "FOUNDED AFTER DEATH OF",
+        "confidence": 1.0,
+        "properties": {
+          "years_after": "10",
+          "note": "Royal Society founded in 1660, Descartes died in 1650"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "2789e2bf-e2cb-4e9f-a7ac-58a38522a71a",
+          "name": "Royal Society",
+          "type": "ORGANIZATION",
+          "properties": {
+            "founded": "1660"
+          }
+        },
+        "to_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "relation": "ELECTED AS FOREIGN MEMBER",
+        "confidence": 1.0,
+        "properties": {
+          "year": "1921",
+          "note": "Same year as Nobel Prize"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "cb737819-1b0e-469f-bb61-79bc78e3fe01",
+          "name": "Mathematics",
+          "type": "FIELD",
+          "properties": {
+            "description": "The study of numbers, quantities, and shapes"
+          }
+        },
+        "relation": "CONTRIBUTED TO",
+        "confidence": 1.0,
+        "properties": {
+          "significance": "Major"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "6dddc3d1-bc17-40be-8f5d-fe9241f173b7",
+          "name": "Isaac Newton",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1642",
+            "death_year": "1727"
+          }
+        },
+        "to_entity": {
+          "id": "59f49210-7b68-41dd-9f48-db55a2cdc7ec",
+          "name": "Physics",
+          "type": "FIELD",
+          "properties": {
+            "description": "The study of matter, energy, and their interactions"
+          }
+        },
+        "relation": "CONTRIBUTED TO",
+        "confidence": 1.0,
+        "properties": {
+          "significance": "Major"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "cb737819-1b0e-469f-bb61-79bc78e3fe01",
+          "name": "Mathematics",
+          "type": "FIELD",
+          "properties": {
+            "description": "The study of numbers, quantities, and shapes"
+          }
+        },
+        "relation": "CONTRIBUTED TO",
+        "confidence": 1.0,
+        "properties": {
+          "significance": "Major"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "15ec9144-f7c1-45bb-bc5c-0515e7a46d59",
+          "name": "Albert Einstein",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1879",
+            "death_year": "1955"
+          }
+        },
+        "to_entity": {
+          "id": "59f49210-7b68-41dd-9f48-db55a2cdc7ec",
+          "name": "Physics",
+          "type": "FIELD",
+          "properties": {
+            "description": "The study of matter, energy, and their interactions"
+          }
+        },
+        "relation": "CONTRIBUTED TO",
+        "confidence": 1.0,
+        "properties": {
+          "significance": "Major"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "cb737819-1b0e-469f-bb61-79bc78e3fe01",
+          "name": "Mathematics",
+          "type": "FIELD",
+          "properties": {
+            "description": "The study of numbers, quantities, and shapes"
+          }
+        },
+        "relation": "CONTRIBUTED TO",
+        "confidence": 1.0,
+        "properties": {
+          "significance": "Major"
+        }
+      },
+      {
+        "from_entity": {
+          "id": "e6064a27-f0fe-4575-a484-cf46df90d643",
+          "name": "René Descartes",
+          "type": "PERSON",
+          "properties": {
+            "birth_year": "1596",
+            "death_year": "1650"
+          }
+        },
+        "to_entity": {
+          "id": "59f49210-7b68-41dd-9f48-db55a2cdc7ec",
+          "name": "Physics",
+          "type": "FIELD",
+          "properties": {
+            "description": "The study of matter, energy, and their interactions"
+          }
+        },
+        "relation": "CONTRIBUTED TO",
+        "confidence": 1.0,
+        "properties": {
+          "significance": "Moderate"
+        }
+      }
+    ]
+  }
+}
