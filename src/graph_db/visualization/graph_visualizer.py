@@ -232,9 +232,9 @@ class GraphVisualizer:
             
         # Initially hide the text and show a button to display it
         raw_text_html = f"""
-        <div id="textSection" style="position: relative; margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3>Source Text</h3>
+        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0;">Source Text</h3>
                 <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 5px 10px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px;">Show Text</button>
             </div>
             <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px; display: none;">
@@ -264,14 +264,12 @@ class GraphVisualizer:
             
             function toggleSourceText() {{
                 var container = document.getElementById('sourceTextContainer');
-                var textSection = document.getElementById('textSection');
                 var btn = document.getElementById('toggleTextBtn');
                 var networkContainer = document.getElementById('mynetwork');
                 
                 if (container.style.display === 'none') {{
                     // Show text
                     container.style.display = 'block';
-                    textSection.style.display = 'block';
                     btn.innerText = 'Hide Text';
                     btn.style.backgroundColor = '#f44336'; // Red color for hide button
                     
@@ -280,7 +278,6 @@ class GraphVisualizer:
                 }} else {{
                     // Hide text
                     container.style.display = 'none';
-                    textSection.style.borderTop = 'none';
                     btn.innerText = 'Show Text';
                     btn.style.backgroundColor = '#4CAF50'; // Green color for show button
                     
