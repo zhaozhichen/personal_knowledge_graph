@@ -504,6 +504,8 @@ class GraphVisualizer:
             # Add nodes
             for entity in entities:
                 node_id = entity.get("id", hash(entity["name"]))
+                entity_type = entity["type"].upper()  # Ensure uppercase for color matching
+                color = self.entity_colors.get(entity_type, self.default_color)
                 
                 # Create a formatted title with all properties
                 properties = entity.get("properties", {})
@@ -517,7 +519,7 @@ class GraphVisualizer:
                     node_id, 
                     label=entity["name"], 
                     title=title,
-                    group=entity["type"],
+                    color=color,  # Explicitly set color instead of group
                     properties=properties
                 )
             
