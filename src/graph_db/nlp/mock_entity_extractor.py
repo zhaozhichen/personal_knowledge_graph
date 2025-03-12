@@ -63,6 +63,12 @@ class MockEntityExtractor:
             all_relations.extend(einstein_relations)
             all_relations.extend(descartes_relations)
         
+        # Add cross-connections between scientists if multiple scientists are present
+        if len(all_entities) > 15:  # A simple heuristic to check if we have multiple scientists
+            cross_relations = self._generate_cross_connections(all_entities)
+            all_relations.extend(cross_relations)
+            self.logger.info(f"Added {len(cross_relations)} cross-connections between scientists")
+        
         return all_entities, all_relations
     
     def _generate_newton_data(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
@@ -207,4 +213,111 @@ class MockEntityExtractor:
             "relation": relation_type,
             "confidence": 1.0,
             "properties": properties
-        } 
+        }
+    
+    def _generate_cross_connections(self, entities: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Generate connections between the three scientists' subgraphs"""
+        cross_relations = []
+        
+        # Find key entities by name
+        entity_map = {entity["name"]: entity for entity in entities}
+        
+        # Newton-Einstein connections
+        if "Isaac Newton" in entity_map and "Albert Einstein" in entity_map:
+            newton = entity_map["Isaac Newton"]
+            einstein = entity_map["Albert Einstein"]
+            calculus = entity_map.get("Calculus")
+            gravity = entity_map.get("Law of Universal Gravitation")
+            relativity = entity_map.get("General Theory of Relativity")
+            
+            # Einstein was influenced by Newton's work
+            cross_relations.append(
+                self._create_relation(einstein, newton, "INFLUENCED BY", 
+                                     {"area": "Physics", "significance": "High"})
+            )
+            
+            # Einstein's work built upon and extended Newton's theories
+            if gravity and relativity:
+                cross_relations.append(
+                    self._create_relation(relativity, gravity, "EXTENDED", 
+                                         {"year": "1915", "note": "Einstein's theory provided a more complete description of gravity"})
+                )
+        
+        # Newton-Descartes connections
+        if "Isaac Newton" in entity_map and "René Descartes" in entity_map:
+            newton = entity_map["Isaac Newton"]
+            descartes = entity_map["René Descartes"]
+            analytical_geometry = entity_map.get("Analytical Geometry")
+            calculus = entity_map.get("Calculus")
+            
+            # Newton was influenced by Descartes' work
+            cross_relations.append(
+                self._create_relation(newton, descartes, "INFLUENCED BY", 
+                                     {"area": "Mathematics and Philosophy", "significance": "Moderate"})
+            )
+            
+            # Newton's calculus built upon Descartes' analytical geometry
+            if analytical_geometry and calculus:
+                cross_relations.append(
+                    self._create_relation(calculus, analytical_geometry, "BUILT UPON", 
+                                         {"note": "Calculus extended concepts from analytical geometry"})
+                )
+        
+        # Einstein-Descartes connections
+        if "Albert Einstein" in entity_map and "René Descartes" in entity_map:
+            einstein = entity_map["Albert Einstein"]
+            descartes = entity_map["René Descartes"]
+            cartesian_dualism = entity_map.get("Cartesian Dualism")
+            
+            # Einstein was influenced by Descartes' philosophical approach
+            cross_relations.append(
+                self._create_relation(einstein, descartes, "REFERENCED", 
+                                     {"area": "Philosophy of Science", "significance": "Low"})
+            )
+            
+            # Einstein challenged aspects of Cartesian thinking
+            if cartesian_dualism:
+                cross_relations.append(
+                    self._create_relation(einstein, cartesian_dualism, "CHALLENGED", 
+                                         {"note": "Einstein's work on relativity questioned absolute space and time"})
+                )
+        
+        # Historical timeline connections
+        royal_society = entity_map.get("Royal Society")
+        if royal_society:
+            if "René Descartes" in entity_map:
+                descartes = entity_map["René Descartes"]
+                # Descartes died before the Royal Society was founded
+                cross_relations.append(
+                    self._create_relation(royal_society, descartes, "FOUNDED AFTER DEATH OF", 
+                                         {"years_after": "10", "note": "Royal Society founded in 1660, Descartes died in 1650"})
+                )
+            
+            if "Albert Einstein" in entity_map:
+                einstein = entity_map["Albert Einstein"]
+                # Einstein was a foreign member of the Royal Society
+                cross_relations.append(
+                    self._create_relation(royal_society, einstein, "ELECTED AS FOREIGN MEMBER", 
+                                         {"year": "1921", "note": "Same year as Nobel Prize"})
+                )
+        
+        # Shared concepts
+        mathematics = self._create_entity("Mathematics", "FIELD", {"description": "The study of numbers, quantities, and shapes"})
+        physics = self._create_entity("Physics", "FIELD", {"description": "The study of matter, energy, and their interactions"})
+        entities.append(mathematics)
+        entities.append(physics)
+        
+        # Connect all three scientists to mathematics and physics
+        for scientist_name in ["Isaac Newton", "Albert Einstein", "René Descartes"]:
+            if scientist_name in entity_map:
+                scientist = entity_map[scientist_name]
+                cross_relations.append(
+                    self._create_relation(scientist, mathematics, "CONTRIBUTED TO", 
+                                         {"significance": "Major"})
+                )
+                cross_relations.append(
+                    self._create_relation(scientist, physics, "CONTRIBUTED TO", 
+                                         {"significance": "Major" if scientist_name != "René Descartes" else "Moderate"})
+                )
+        
+        return cross_relations 
