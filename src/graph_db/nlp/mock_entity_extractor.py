@@ -29,18 +29,41 @@ class MockEntityExtractor:
             Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]: Tuple of (entities, relations)
         """
         # Generate mock entities based on the text content
-        entities = []
-        relations = []
+        all_entities = []
+        all_relations = []
         
         # Check for keywords to determine which entities to create
         if "Newton" in text:
             entities, relations = self._generate_newton_data()
-        elif "Einstein" in text:
+            all_entities.extend(entities)
+            all_relations.extend(relations)
+            
+        if "Einstein" in text:
             entities, relations = self._generate_einstein_data()
-        elif "Descartes" in text:
+            all_entities.extend(entities)
+            all_relations.extend(relations)
+            
+        if "Descartes" in text:
             entities, relations = self._generate_descartes_data()
+            all_entities.extend(entities)
+            all_relations.extend(relations)
         
-        return entities, relations
+        # If no specific scientists were found, generate data for all three
+        if not all_entities:
+            self.logger.info("No specific scientists found in text, generating data for all three")
+            newton_entities, newton_relations = self._generate_newton_data()
+            einstein_entities, einstein_relations = self._generate_einstein_data()
+            descartes_entities, descartes_relations = self._generate_descartes_data()
+            
+            all_entities.extend(newton_entities)
+            all_entities.extend(einstein_entities)
+            all_entities.extend(descartes_entities)
+            
+            all_relations.extend(newton_relations)
+            all_relations.extend(einstein_relations)
+            all_relations.extend(descartes_relations)
+        
+        return all_entities, all_relations
     
     def _generate_newton_data(self) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
         """Generate mock data for Newton"""
