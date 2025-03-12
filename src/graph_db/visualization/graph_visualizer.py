@@ -131,7 +131,7 @@ class GraphVisualizer:
             var options = {
                 "nodes": {
                     "font": {
-                        "size": 20,
+                        "size": 14,
                         "face": "Tahoma"
                     },
                     "borderWidth": 2,
@@ -140,7 +140,7 @@ class GraphVisualizer:
                 },
                 "edges": {
                     "font": {
-                        "size": 16,
+                        "size": 14,
                         "face": "Tahoma"
                     },
                     "width": 2,
@@ -225,6 +225,60 @@ class GraphVisualizer:
             
         legend_html += """
             </table>
+            <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
+                <div style="display: flex; align-items: center; margin-top: 5px;">
+                    <span style="margin-right: 5px; font-size: 12px;">A</span>
+                    <input type="range" id="textSizeSlider" min="8" max="32" value="14" style="flex-grow: 1;">
+                    <span style="margin-left: 5px; font-size: 18px;">A</span>
+                </div>
+                <div style="text-align: center; margin-top: 5px;">
+                    <span id="currentTextSize">14px</span>
+                </div>
+            </div>
+            <script>
+                // Add event listener to the slider
+                document.addEventListener('DOMContentLoaded', function() {
+                    var slider = document.getElementById('textSizeSlider');
+                    var sizeDisplay = document.getElementById('currentTextSize');
+                    
+                    // Function to update text size
+                    function updateTextSize(size) {
+                        // Update the display
+                        sizeDisplay.textContent = size + 'px';
+                        
+                        // Make sure network is defined
+                        if (typeof network === 'undefined') {
+                            console.warn('Network variable not found. Text size control may not work properly.');
+                            return;
+                        }
+                        
+                        // Update node font size
+                        var nodeOptions = {
+                            font: {
+                                size: size
+                            }
+                        };
+                        network.setOptions({ nodes: nodeOptions });
+                        
+                        // Update edge font size
+                        var edgeOptions = {
+                            font: {
+                                size: size
+                            }
+                        };
+                        network.setOptions({ edges: edgeOptions });
+                    }
+                    
+                    // Add event listener for slider changes
+                    slider.addEventListener('input', function() {
+                        updateTextSize(parseInt(this.value));
+                    });
+                    
+                    // Initialize with default value
+                    updateTextSize(parseInt(slider.value));
+                });
+            </script>
         </div>
         """
         
@@ -566,7 +620,7 @@ class GraphVisualizer:
                 },
                 "edges": {
                     "font": {
-                        "size": 12,
+                        "size": 14,
                         "align": "middle"
                     },
                     "color": {
