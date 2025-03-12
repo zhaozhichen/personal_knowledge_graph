@@ -80,25 +80,27 @@ class InputProcessor:
         # Process file input
         if files:
             file_paths = [files] if isinstance(files, str) else files
-            for file_path in file_paths:
+            logger.info(f"Processing {len(file_paths)} file(s)")
+            for i, file_path in enumerate(file_paths):
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         file_content = f.read()
                     all_texts.append(file_content)
                     sources.append(f"File: {file_path}")
-                    logger.info(f"Processed file: {file_path} ({len(file_content)} characters)")
+                    logger.info(f"Processed file {i+1}/{len(file_paths)}: {file_path} ({len(file_content)} characters)")
                 except Exception as e:
                     logger.error(f"Error reading file {file_path}: {str(e)}")
         
         # Process URL input
         if urls:
             url_list = [urls] if isinstance(urls, str) else urls
-            for url in url_list:
+            logger.info(f"Processing {len(url_list)} URL(s)")
+            for i, url in enumerate(url_list):
                 url_content = scrape_url(url)
                 if not url_content.startswith("Error"):
                     all_texts.append(url_content)
                     sources.append(f"URL: {url}")
-                    logger.info(f"Processed URL: {url} ({len(url_content)} characters)")
+                    logger.info(f"Processed URL {i+1}/{len(url_list)}: {url} ({len(url_content)} characters)")
                 else:
                     logger.error(f"Error processing URL {url}: {url_content}")
         
@@ -200,6 +202,10 @@ class InputProcessor:
         if not file_paths:
             logger.error(f"No text or markdown files found in directory: {directory_path}")
             return {"success": False, "error": f"No text or markdown files found in directory: {directory_path}"}
+        
+        logger.info(f"Found {len(file_paths)} text/markdown files in directory: {directory_path}")
+        for i, path in enumerate(file_paths):
+            logger.info(f"  {i+1}. {path}")
         
         # Process the files
         return self.process_input(files=[str(path) for path in file_paths]) 

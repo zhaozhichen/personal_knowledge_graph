@@ -9,6 +9,7 @@ import logging
 import os
 import sys
 import glob
+import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Union
 
@@ -195,6 +196,37 @@ def deduplicate_relations(relations: List[Dict[str, Any]]) -> List[Dict[str, Any
     
     return list(unique_relations.values())
 
+def detect_historical_content(text: str) -> bool:
+    """
+    Detect if the text is about historical events.
+    
+    Args:
+        text (str): Text to analyze
+        
+    Returns:
+        bool: True if the text is about historical events, False otherwise
+    """
+    historical_keywords = [
+        "World War", "WWII", "World War 2", "World War II",
+        "Nazi Germany", "Adolf Hitler", "Winston Churchill",
+        "Franklin D. Roosevelt", "Joseph Stalin", "Axis Powers", 
+        "Allied Powers", "Pearl Harbor", "D-Day", "Holocaust",
+        "Normandy", "Hiroshima", "Nagasaki", "atomic bomb",
+        "Stalingrad", "Operation Barbarossa", "Blitzkrieg",
+        "Cold War", "Soviet Union", "Iron Curtain", "Berlin Wall",
+        "Great Depression", "American Revolution", "Civil War",
+        "French Revolution", "Industrial Revolution", "Ancient Rome",
+        "Medieval", "Renaissance", "Enlightenment", "Ottoman Empire",
+        "Byzantine Empire", "Mongol Empire", "British Empire",
+        "colonization", "imperialism", "monarchy", "dynasty"
+    ]
+    
+    # Count the number of historical keywords in the text
+    keyword_count = sum(1 for keyword in historical_keywords if keyword.lower() in text.lower())
+    
+    # If more than 3 keywords are found, consider it historical content
+    return keyword_count >= 3
+
 def process_with_entity_extractor(text: str, 
                                  llm_model: str = "gpt-4o", 
                                  verbose: bool = False,
@@ -218,10 +250,20 @@ def process_with_entity_extractor(text: str,
         logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations using MockEntityExtractor")
     else:
         try:
-            logger.info(f"Attempting to extract entities and relations using LLMEntityExtractor")
+            logger.info(f"Attempting to extract entities and relations using LLMEntityExtractor with model {llm_model}")
             # Use the process_text method which handles both entity and relation extraction
             entity_extractor = LLMEntityExtractor(model=llm_model)
             entities, relations = entity_extractor.process_text(text)
+            
+            # Check if extraction was successful
+            if not entities and not relations:
+                logger.warning("LLMEntityExtractor returned empty results, trying with a different model")
+                # Try with a different model
+                fallback_model = "claude-3-5-sonnet-20241022" if llm_model != "claude-3-5-sonnet-20241022" else "gpt-4o"
+                logger.info(f"Trying with fallback model: {fallback_model}")
+                entity_extractor = LLMEntityExtractor(model=fallback_model)
+                entities, relations = entity_extractor.process_text(text)
+            
             logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations")
             
         except Exception as e:
@@ -229,8 +271,8 @@ def process_with_entity_extractor(text: str,
             logger.error(f"Error type: {type(e).__name__}")
             import traceback
             logger.error(f"Traceback: {traceback.format_exc()}")
-            logger.warning(f"Falling back to MockEntityExtractor.")
             
+            logger.warning(f"Falling back to MockEntityExtractor.")
             # Fall back to MockEntityExtractor
             mock_extractor = MockEntityExtractor()
             entities, relations = mock_extractor.process_text(text)
@@ -285,8 +327,22 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
         chunk_overlap=chunk_overlap
     )
     
+    # Log input information
+    if files:
+        if isinstance(files, list):
+            logger.info(f"Processing {len(files)} files: {', '.join(files)}")
+        else:
+            logger.info(f"Processing file: {files}")
+    
+    if urls:
+        if isinstance(urls, list):
+            logger.info(f"Processing {len(urls)} URLs: {', '.join(urls)}")
+        else:
+            logger.info(f"Processing URL: {urls}")
+    
     # Process input directory if specified
     if input_dir:
+        logger.info(f"Processing all files in directory: {input_dir}")
         result = processor.process_directory(input_dir)
     else:
         # Process other input sources
@@ -295,6 +351,11 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
     if not result["success"]:
         logger.error(f"Error processing input: {result.get('error', 'Unknown error')}")
         return False
+    
+    # Check if the content is about historical events
+    is_historical = detect_historical_content(result["merged_text"])
+    if is_historical:
+        logger.info("Detected historical content, using specialized historical prompts")
     
     # Initialize the visualizer
     visualizer = GraphVisualizer()
@@ -308,7 +369,12 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
         logger.info(f"Processing chunk {i+1}/{len(result['chunks'])} ({len(chunk)} characters)")
         
         # Extract entities and relations
-        entities, relations = process_with_entity_extractor(chunk, llm_model, verbose, use_mock)
+        entities, relations = process_with_entity_extractor(
+            chunk, 
+            llm_model, 
+            verbose, 
+            use_mock
+        )
         
         # Add to the combined lists
         all_entities.extend(entities)
@@ -319,6 +385,18 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
     unique_relations = deduplicate_relations(all_relations)
     
     logger.info(f"After deduplication: {len(unique_entities)} entities and {len(unique_relations)} relations")
+    
+    # Save the extracted data to a JSON file
+    json_output_path = output_path.replace('.html', '.json')
+    try:
+        with open(json_output_path, 'w') as f:
+            json.dump({
+                "entities": unique_entities,
+                "relations": unique_relations
+            }, f, indent=2)
+        logger.info(f"Graph data saved to {json_output_path}")
+    except Exception as e:
+        logger.error(f"Error saving graph data to JSON: {str(e)}")
     
     # Create visualization
     success = visualizer.create_visualization_from_data(
@@ -343,8 +421,8 @@ def main():
     
     parser = argparse.ArgumentParser(description="Graph Database Application")
     parser.add_argument("--text", help="Text to process")
-    parser.add_argument("--file", help="File to process")
-    parser.add_argument("--url", action="append", help="URL to process (can be specified multiple times)")
+    parser.add_argument("--file", action="append", help="File to process (can be specified multiple times, e.g., --file file1.txt --file file2.txt)")
+    parser.add_argument("--url", action="append", help="URL to process (can be specified multiple times, e.g., --url url1 --url url2)")
     parser.add_argument("--input-dir", help="Directory containing files to process")
     parser.add_argument("--output", default="graph.html", help="Output file path")
     parser.add_argument("--db-uri", default="bolt://localhost:7687", help="Neo4j URI")
@@ -368,6 +446,13 @@ def main():
     
     if not args.text and not args.file and not args.url and not args.input_dir:
         parser.print_help()
+        print("\nExamples:")
+        print("  Process a single file:")
+        print("    python -m src.graph_db.app --file input/example.txt --output graph.html --visualization-only")
+        print("\n  Process multiple files:")
+        print("    python -m src.graph_db.app --file input/file1.txt --file input/file2.txt --output graph.html --visualization-only")
+        print("\n  Process all files in a directory:")
+        print("    python -m src.graph_db.app --input-dir input --output graph.html --visualization-only")
         return False
     
     # Process all input sources using the new unified function
