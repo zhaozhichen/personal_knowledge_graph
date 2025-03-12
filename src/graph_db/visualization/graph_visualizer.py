@@ -481,6 +481,32 @@ class GraphVisualizer:
             
             var tooltip = document.getElementById('custom-tooltip');
             
+            // Function to disable default tooltips
+            function disableDefaultTooltips() {
+                // Remove title attributes from all nodes and edges to prevent default browser tooltips
+                if (network && network.body) {
+                    // For nodes
+                    Object.values(network.body.nodes).forEach(function(node) {
+                        if (node.element) {
+                            node.element.removeAttribute('title');
+                        }
+                    });
+                    
+                    // For edges
+                    Object.values(network.body.edges).forEach(function(edge) {
+                        if (edge.element) {
+                            edge.element.removeAttribute('title');
+                        }
+                    });
+                }
+            }
+            
+            // Call once on load
+            disableDefaultTooltips();
+            
+            // Make the function available globally
+            window.disableDefaultTooltips = disableDefaultTooltips;
+            
             // Function to show tooltip
             function showTooltip(text, x, y) {
                 // Only show tooltip if tooltips are enabled
@@ -533,6 +559,23 @@ class GraphVisualizer:
             network.on('zoom', function() {
                 hideTooltip();
             });
+            
+            // Check for tooltip toggle and initialize its state
+            var tooltipToggle = document.getElementById('tooltipToggle');
+            if (tooltipToggle) {
+                // Set initial state based on the checkbox
+                window.tooltipsEnabled = tooltipToggle.checked;
+                
+                // Add event listener to update tooltipsEnabled when toggle changes
+                tooltipToggle.addEventListener('change', function() {
+                    window.tooltipsEnabled = this.checked;
+                    
+                    // Hide tooltip if it's currently visible and tooltips are disabled
+                    if (!window.tooltipsEnabled) {
+                        hideTooltip();
+                    }
+                });
+            }
         });
         </script>
         """
