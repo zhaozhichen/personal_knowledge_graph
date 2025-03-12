@@ -161,16 +161,12 @@ class GraphVisualizer:
                     "keyboard": true,
                     "tooltipDelay": 200,
                     "hideEdgesOnDrag": false,
-                    "multiselect": false
+                    "multiselect": false,
+                    "hoverConnectedEdges": true
                 },
-                "tooltip": {
-                    "delay": 200,
-                    "fontColor": "black",
-                    "fontSize": 14,
-                    "fontFace": "verdana",
-                    "color": {
-                        "border": "#666",
-                        "background": "#fff"
+                "physics": {
+                    "stabilization": {
+                        "iterations": 1000
                     }
                 }
             }
@@ -307,6 +303,14 @@ class GraphVisualizer:
                                     hover: enabled
                                 }
                             });
+                            
+                            // Hide any visible tooltip when disabled
+                            if (!enabled) {
+                                var customTooltip = document.getElementById('custom-tooltip');
+                                if (customTooltip) {
+                                    customTooltip.style.display = 'none';
+                                }
+                            }
                         }
                     }
                     
@@ -463,6 +467,39 @@ class GraphVisualizer:
             
             var tooltip = document.getElementById('custom-tooltip');
             
+            // Disable default tooltips by removing title attributes
+            function disableDefaultTooltips() {
+                // For nodes
+                var nodeIds = network.body.data.nodes.getIds();
+                nodeIds.forEach(function(nodeId) {
+                    var nodeElement = network.body.nodes[nodeId].element;
+                    if (nodeElement) {
+                        nodeElement.removeAttribute('title');
+                    }
+                });
+                
+                // For edges
+                var edgeIds = network.body.data.edges.getIds();
+                edgeIds.forEach(function(edgeId) {
+                    var edgeElement = network.body.edges[edgeId].element;
+                    if (edgeElement) {
+                        edgeElement.removeAttribute('title');
+                    }
+                });
+                
+                // Also remove titles from DOM elements
+                var canvasElements = document.querySelectorAll('canvas');
+                canvasElements.forEach(function(canvas) {
+                    canvas.removeAttribute('title');
+                });
+            }
+            
+            // Call once at initialization
+            disableDefaultTooltips();
+            
+            // Also call when network is redrawn
+            network.on("afterDrawing", disableDefaultTooltips);
+            
             // Function to show tooltip
             function showTooltip(html, x, y) {
                 // Only show tooltip if tooltips are enabled
@@ -512,10 +549,6 @@ class GraphVisualizer:
                 }
             });
             
-            network.on('blurNode', function() {
-                hideTooltip();
-            });
-            
             network.on('hoverEdge', function(params) {
                 var edgeId = params.edge;
                 var edge = network.body.data.edges.get(edgeId);
@@ -544,6 +577,10 @@ class GraphVisualizer:
                     tooltipContent += '</div>';
                     showTooltip(tooltipContent, params.pointer.DOM.x, params.pointer.DOM.y);
                 }
+            });
+            
+            network.on('blurNode', function() {
+                hideTooltip();
             });
             
             network.on('blurEdge', function() {
