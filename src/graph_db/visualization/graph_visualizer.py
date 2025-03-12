@@ -103,7 +103,8 @@ class GraphVisualizer:
                     relation["to_name"],
                     title=title,
                     label=relation["relation"],
-                    arrows="to"
+                    arrows="to",
+                    color="#000000"  # Set edge color to black
                 )
                 
             # Create a pyvis network from the networkx graph
@@ -143,6 +144,10 @@ class GraphVisualizer:
                         "face": "Tahoma"
                     },
                     "width": 2,
+                    "color": {
+                        "color": "#000000",
+                        "inherit": false
+                    },
                     "smooth": {
                         "type": "continuous",
                         "forceDirection": "none"
@@ -541,7 +546,8 @@ class GraphVisualizer:
                     to_id, 
                     label=relation["relation"],
                     title=title,
-                    properties=properties
+                    properties=properties,
+                    color="#000000"  # Set edge color to black
                 )
             
             # Create a pyvis network
@@ -564,7 +570,8 @@ class GraphVisualizer:
                         "align": "middle"
                     },
                     "color": {
-                        "inherit": true
+                        "color": "#000000",
+                        "inherit": false
                     },
                     "smooth": {
                         "type": "continuous",
