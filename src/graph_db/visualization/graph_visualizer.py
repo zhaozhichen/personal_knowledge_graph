@@ -133,7 +133,7 @@ class GraphVisualizer:
             var options = {
                 "nodes": {
                     "font": {
-                        "size": 14,
+                        "size": 32,
                         "face": "Tahoma",
                         "color": "inherit"
                     },
@@ -143,7 +143,7 @@ class GraphVisualizer:
                 },
                 "edges": {
                     "font": {
-                        "size": 14,
+                        "size": 32,
                         "face": "Tahoma"
                     },
                     "width": 2,
@@ -231,11 +231,11 @@ class GraphVisualizer:
                 <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
                 <div style="display: flex; align-items: center; margin-top: 5px;">
                     <span style="margin-right: 5px; font-size: 12px;">A</span>
-                    <input type="range" id="textSizeSlider" min="8" max="64" value="14" style="flex-grow: 1;">
+                    <input type="range" id="textSizeSlider" min="8" max="64" value="32" style="flex-grow: 1;">
                     <span style="margin-left: 5px; font-size: 18px;">A</span>
                 </div>
                 <div style="text-align: center; margin-top: 5px;">
-                    <span id="currentTextSize">14px</span>
+                    <span id="currentTextSize">32px</span>
                 </div>
             </div>
             <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
@@ -527,6 +527,11 @@ class GraphVisualizer:
             
             // Add event listeners to the network
             network.on('hoverNode', function(params) {
+                // Only proceed if tooltips are enabled
+                if (!window.tooltipsEnabled) {
+                    return;
+                }
+                
                 var nodeId = params.node;
                 var node = network.body.nodes[nodeId];
                 if (node && node.options && node.options.title) {
@@ -535,6 +540,11 @@ class GraphVisualizer:
             });
             
             network.on('hoverEdge', function(params) {
+                // Only proceed if tooltips are enabled
+                if (!window.tooltipsEnabled) {
+                    return;
+                }
+                
                 var edgeId = params.edge;
                 var edge = network.body.edges[edgeId];
                 if (edge && edge.options && edge.options.title) {
@@ -686,14 +696,14 @@ class GraphVisualizer:
                     "shape": "dot",
                     "size": 25,
                     "font": {
-                        "size": 14,
+                        "size": 32,
                         "face": "Tahoma",
                         "color": "inherit"
                     }
                 },
                 "edges": {
                     "font": {
-                        "size": 14,
+                        "size": 32,
                         "align": "middle"
                     },
                     "color": {
