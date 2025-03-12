@@ -85,7 +85,8 @@ class GraphVisualizer:
                     entity["name"],
                     label=entity["name"],
                     title=title,
-                    color=color
+                    color=color,
+                    font={'color': color}  # Set font color to match node color
                 )
                 
             # Add edges (relations)
@@ -132,7 +133,8 @@ class GraphVisualizer:
                 "nodes": {
                     "font": {
                         "size": 14,
-                        "face": "Tahoma"
+                        "face": "Tahoma",
+                        "color": "inherit"
                     },
                     "borderWidth": 2,
                     "borderWidthSelected": 4,
@@ -268,7 +270,8 @@ class GraphVisualizer:
                         // Update node font size
                         var nodeOptions = {
                             font: {
-                                size: size
+                                size: size,
+                                color: 'inherit'
                             }
                         };
                         network.setOptions({ nodes: nodeOptions });
@@ -630,6 +633,7 @@ class GraphVisualizer:
                     label=entity["name"], 
                     title=title,
                     color=color,  # Explicitly set color instead of group
+                    font={'color': color},  # Set font color to match node color
                     properties=properties
                 )
             
@@ -666,7 +670,8 @@ class GraphVisualizer:
                     "size": 25,
                     "font": {
                         "size": 14,
-                        "face": "Tahoma"
+                        "face": "Tahoma",
+                        "color": "inherit"
                     }
                 },
                 "edges": {
