@@ -230,14 +230,16 @@ class GraphVisualizer:
         if not raw_text:
             return ""
             
-        # Initially hide the text and show a button to display it
+        # Create a fixed position button that's always visible
         raw_text_html = f"""
-        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px;">
+        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+            <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+        </div>
+        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                 <h3 style="margin: 0;">Source Text</h3>
-                <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 5px 10px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px;">Show Text</button>
             </div>
-            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px; display: none;">
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px;">
                 <p style="white-space: pre-wrap;">{html.escape(raw_text)}</p>
             </div>
         </div>
@@ -263,13 +265,13 @@ class GraphVisualizer:
             }});
             
             function toggleSourceText() {{
-                var container = document.getElementById('sourceTextContainer');
+                var textSection = document.getElementById('textSection');
                 var btn = document.getElementById('toggleTextBtn');
                 var networkContainer = document.getElementById('mynetwork');
                 
-                if (container.style.display === 'none') {{
+                if (textSection.style.display === 'none') {{
                     // Show text
-                    container.style.display = 'block';
+                    textSection.style.display = 'block';
                     btn.innerText = 'Hide Text';
                     btn.style.backgroundColor = '#f44336'; // Red color for hide button
                     
@@ -277,7 +279,7 @@ class GraphVisualizer:
                     networkContainer.style.height = '750px';
                 }} else {{
                     // Hide text
-                    container.style.display = 'none';
+                    textSection.style.display = 'none';
                     btn.innerText = 'Show Text';
                     btn.style.backgroundColor = '#4CAF50'; // Green color for show button
                     
@@ -296,11 +298,11 @@ class GraphVisualizer:
             
             // Add window resize event listener to adjust the graph size when window is resized
             window.addEventListener('resize', function() {{
-                var container = document.getElementById('sourceTextContainer');
+                var textSection = document.getElementById('textSection');
                 var networkContainer = document.getElementById('mynetwork');
                 
                 // Only adjust if text is hidden
-                if (container.style.display === 'none') {{
+                if (textSection.style.display === 'none') {{
                     var windowHeight = window.innerHeight;
                     var networkTop = networkContainer.getBoundingClientRect().top;
                     var newHeight = windowHeight - networkTop - 20; // 20px padding
