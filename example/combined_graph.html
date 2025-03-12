@@ -1,0 +1,392 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"group": "PERSON", "id": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "Isaac Newton", "properties": {"birth_year": "1642", "death_year": "1727"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eIsaac Newton (PERSON)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 birth_year: 1642\u003cbr\u003e\u2022 death_year: 1727\u003cbr\u003e"}, {"group": "LOCATION", "id": "4d60ce29-9856-40a7-a559-7d0110224cd3", "label": "Woolsthorpe", "properties": {"country": "England"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eWoolsthorpe (LOCATION)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 country: England\u003cbr\u003e"}, {"group": "ORGANIZATION", "id": "2c9e59a0-d081-4687-a2d3-573335bd7c54", "label": "Trinity College, Cambridge", "properties": {"founded": "1546"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eTrinity College, Cambridge (ORGANIZATION)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 founded: 1546\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "ac0d79d8-0201-4c76-927d-7f37f93eec06", "label": "Calculus", "properties": {"field": "Mathematics"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eCalculus (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 field: Mathematics\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "f035829f-5265-4608-aea1-01fec025d74a", "label": "Principia Mathematica", "properties": {"field": "Physics", "published": "1687"}, "shape": "dot", "size": 10, "title": "\u003cb\u003ePrincipia Mathematica (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 published: 1687\u003cbr\u003e\u2022 field: Physics\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "b2ebf274-6c6b-4d58-b386-1c45c0de83b1", "label": "Three Laws of Motion", "properties": {"field": "Physics"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eThree Laws of Motion (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 field: Physics\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "87eb6b76-7493-40be-8021-54deeb42a3cd", "label": "Law of Universal Gravitation", "properties": {"field": "Physics"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eLaw of Universal Gravitation (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 field: Physics\u003cbr\u003e"}, {"group": "PRODUCT", "id": "e97cdf84-da49-459a-b3f5-5244afc2a430", "label": "Reflecting Telescope", "properties": {"invented": "1668"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eReflecting Telescope (PRODUCT)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 invented: 1668\u003cbr\u003e"}, {"group": "PRODUCT", "id": "28a6c706-b94e-4417-a66f-b17a465f66e8", "label": "Prism", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003ePrism (PRODUCT)\u003c/b\u003e"}, {"group": "ORGANIZATION", "id": "b183cb36-5503-4d81-89c9-bbccf1d19619", "label": "Royal Mint", "properties": {"country": "England"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eRoyal Mint (ORGANIZATION)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 country: England\u003cbr\u003e"}, {"group": "ORGANIZATION", "id": "f4bc175e-8e2f-47ab-8eaa-0fc76f8cf305", "label": "Royal Society", "properties": {"founded": "1660"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eRoyal Society (ORGANIZATION)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 founded: 1660\u003cbr\u003e"}, {"group": "PERSON", "id": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "Ren\u00e9 Descartes", "properties": {"birth_year": "1596", "death_year": "1650"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eRen\u00e9 Descartes (PERSON)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 birth_year: 1596\u003cbr\u003e\u2022 death_year: 1650\u003cbr\u003e"}, {"group": "FIELD", "id": "7062d86f-d5bc-4d91-93fc-b2c828b088ea", "label": "Mathematics", "properties": {"description": "The study of numbers, quantities, and shapes"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eMathematics (FIELD)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 description: The study of numbers, quantities, and shapes\u003cbr\u003e"}, {"group": "FIELD", "id": "cbde46f8-5cf0-4bf0-8c00-d376adc272ac", "label": "Physics", "properties": {"description": "The study of matter, energy, and their interactions"}, "shape": "dot", "size": 10, "title": "\u003cb\u003ePhysics (FIELD)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 description: The study of matter, energy, and their interactions\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "ec2afad7-05b5-4b0e-bd1a-2613d14fdd43", "label": "Analytical Geometry", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eAnalytical Geometry (WORK_OF_ART)\u003c/b\u003e"}, {"group": "PERSON", "id": "a99fde4f-e70a-4f80-937b-fd9ae47a571e", "label": "Gottfried Wilhelm Leibniz", "properties": {"birth_year": "1646", "death_year": "1716"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eGottfried Wilhelm Leibniz (PERSON)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 birth_year: 1646\u003cbr\u003e\u2022 death_year: 1716\u003cbr\u003e"}, {"group": "PERSON", "id": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "Albert Einstein", "properties": {"birth_year": "1879", "death_year": "1955"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eAlbert Einstein (PERSON)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 birth_year: 1879\u003cbr\u003e\u2022 death_year: 1955\u003cbr\u003e"}, {"group": "PERSON", "id": "e2cbc664-e046-4ff8-9830-9d78303e8c59", "label": "Queen Anne", "properties": {"reign": "1702-1714"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eQueen Anne (PERSON)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 reign: 1702-1714\u003cbr\u003e"}, {"group": "LOCATION", "id": "8b7798ca-899e-4dae-983c-9384320ad6e9", "label": "Ulm", "properties": {"country": "Germany"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eUlm (LOCATION)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 country: Germany\u003cbr\u003e"}, {"group": "ORGANIZATION", "id": "b0a9d8c3-9c72-4b06-b05f-837112cae6bf", "label": "Swiss Federal Polytechnic School", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eSwiss Federal Polytechnic School (ORGANIZATION)\u003c/b\u003e"}, {"group": "WORK_OF_ART", "id": "83a53b8a-ce32-496d-b00d-5e63fe0ffc51", "label": "Theory of Special Relativity", "properties": {"year": "1905"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eTheory of Special Relativity (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1905\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "d060b6e5-c2a6-4f7a-9796-322e61e9820a", "label": "General Theory of Relativity", "properties": {"year": "1915"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eGeneral Theory of Relativity (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1915\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "86d4d2e8-e19a-445a-81eb-f603c281ca9e", "label": "Photoelectric Effect", "properties": {"year": "1905"}, "shape": "dot", "size": 10, "title": "\u003cb\u003ePhotoelectric Effect (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1905\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "1a9d843d-a57a-460a-be65-fcbf8eb8762a", "label": "Brownian Motion", "properties": {"year": "1905"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eBrownian Motion (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1905\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "7c88064a-1c04-4409-95ea-6e55c68b19f6", "label": "Mass-Energy Equivalence", "properties": {"equation": "E=mc\u00b2"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eMass-Energy Equivalence (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 equation: E=mc\u00b2\u003cbr\u003e"}, {"group": "EVENT", "id": "844c943b-5be5-4707-885b-1b420e18977a", "label": "1921 Nobel Prize in Physics", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003e1921 Nobel Prize in Physics (EVENT)\u003c/b\u003e"}, {"group": "PERSON", "id": "7a772c60-83f1-4775-9fcb-cab4405bfaa7", "label": "Mileva Mari\u0107", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eMileva Mari\u0107 (PERSON)\u003c/b\u003e"}, {"group": "PERSON", "id": "977ff564-4b61-42ad-b2bc-8bd4e4913566", "label": "Elsa L\u00f6wenthal", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eElsa L\u00f6wenthal (PERSON)\u003c/b\u003e"}, {"group": "LOCATION", "id": "ea8711ca-0389-420f-9449-544c6761cf81", "label": "Germany", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eGermany (LOCATION)\u003c/b\u003e"}, {"group": "LOCATION", "id": "195ea71a-434e-4f34-a7e9-e3c7aec899ae", "label": "United States", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eUnited States (LOCATION)\u003c/b\u003e"}, {"group": "ORGANIZATION", "id": "ae2ef14f-72e8-4b1a-be51-e9d67fa65fb2", "label": "Institute for Advanced Study in Princeton", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eInstitute for Advanced Study in Princeton (ORGANIZATION)\u003c/b\u003e"}, {"group": "WORK_OF_ART", "id": "4bd1ca83-0543-4ff1-91e8-975f16ec344f", "label": "Cartesian Dualism", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eCartesian Dualism (WORK_OF_ART)\u003c/b\u003e"}, {"group": "PERSON", "id": "74525a00-01f3-4695-85d3-8786f132e368", "label": "Adolf Hitler", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eAdolf Hitler (PERSON)\u003c/b\u003e"}, {"group": "LOCATION", "id": "1552a924-6412-4bc1-b851-d0c79d53dcda", "label": "La Haye en Touraine", "properties": {"country": "France"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eLa Haye en Touraine (LOCATION)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 country: France\u003cbr\u003e"}, {"group": "ORGANIZATION", "id": "fdcafb26-4fe6-46fb-ba77-53a3078d1044", "label": "Jesuit College of La Fl\u00e8che", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eJesuit College of La Fl\u00e8che (ORGANIZATION)\u003c/b\u003e"}, {"group": "ORGANIZATION", "id": "16783728-8a8a-48a9-b5e0-f386c4cdfb64", "label": "University of Poitiers", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eUniversity of Poitiers (ORGANIZATION)\u003c/b\u003e"}, {"group": "LOCATION", "id": "4544217b-f61a-4e2b-afd3-0b435bcc0cfb", "label": "Netherlands", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eNetherlands (LOCATION)\u003c/b\u003e"}, {"group": "WORK_OF_ART", "id": "7a432fd0-75f4-4eb4-8fcd-93a91bd56ce4", "label": "Cogito, ergo sum", "properties": {"translation": "I think, therefore I am"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eCogito, ergo sum (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 translation: I think, therefore I am\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "3c0bfabf-40b9-42ad-877e-c855dc3ed6d2", "label": "Discourse on the Method", "properties": {"year": "1637"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eDiscourse on the Method (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1637\u003cbr\u003e"}, {"group": "WORK_OF_ART", "id": "f227adf3-c807-46e4-9df0-0b797a6aa4ed", "label": "Meditations on First Philosophy", "properties": {"year": "1641"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eMeditations on First Philosophy (WORK_OF_ART)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1641\u003cbr\u003e"}, {"group": "LOCATION", "id": "18639e81-fb59-4e0e-8949-d99e2b17d711", "label": "Sweden", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eSweden (LOCATION)\u003c/b\u003e"}, {"group": "LOCATION", "id": "fbfb2f24-f34c-4d68-bb7e-46580320a1bf", "label": "France", "properties": {}, "shape": "dot", "size": 10, "title": "\u003cb\u003eFrance (LOCATION)\u003c/b\u003e"}, {"group": "PERSON", "id": "0e640707-a022-45fa-9510-e6db91d1b834", "label": "Queen Christina", "properties": {"country": "Sweden"}, "shape": "dot", "size": 10, "title": "\u003cb\u003eQueen Christina (PERSON)\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 country: Sweden\u003cbr\u003e"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "BORN IN", "properties": {"year": "1642"}, "title": "\u003cb\u003eBORN IN\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1642\u003cbr\u003e", "to": "4d60ce29-9856-40a7-a559-7d0110224cd3", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "STUDIED AT", "properties": {"year": "1661"}, "title": "\u003cb\u003eSTUDIED AT\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1661\u003cbr\u003e", "to": "2c9e59a0-d081-4687-a2d3-573335bd7c54", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "DEVELOPED", "properties": {"year": "1665-1666"}, "title": "\u003cb\u003eDEVELOPED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1665-1666\u003cbr\u003e", "to": "ac0d79d8-0201-4c76-927d-7f37f93eec06", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "WROTE", "properties": {"year": "1687"}, "title": "\u003cb\u003eWROTE\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1687\u003cbr\u003e", "to": "f035829f-5265-4608-aea1-01fec025d74a", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "FORMULATED", "properties": {}, "title": "\u003cb\u003eFORMULATED\u003c/b\u003e", "to": "b2ebf274-6c6b-4d58-b386-1c45c0de83b1", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "DISCOVERED", "properties": {}, "title": "\u003cb\u003eDISCOVERED\u003c/b\u003e", "to": "87eb6b76-7493-40be-8021-54deeb42a3cd", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "INVENTED", "properties": {"year": "1668"}, "title": "\u003cb\u003eINVENTED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1668\u003cbr\u003e", "to": "e97cdf84-da49-459a-b3f5-5244afc2a430", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "EXPERIMENTED WITH", "properties": {"discovery": "Light Spectrum"}, "title": "\u003cb\u003eEXPERIMENTED WITH\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 discovery: Light Spectrum\u003cbr\u003e", "to": "28a6c706-b94e-4417-a66f-b17a465f66e8", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "SERVED AS MASTER OF", "properties": {"period": "1699-1727"}, "title": "\u003cb\u003eSERVED AS MASTER OF\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 period: 1699-1727\u003cbr\u003e", "to": "b183cb36-5503-4d81-89c9-bbccf1d19619", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "BECAME PRESIDENT OF", "properties": {"year": "1703"}, "title": "\u003cb\u003eBECAME PRESIDENT OF\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1703\u003cbr\u003e", "to": "f4bc175e-8e2f-47ab-8eaa-0fc76f8cf305", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "INFLUENCED BY", "properties": {"area": "Mathematics and Philosophy", "significance": "Moderate"}, "title": "\u003cb\u003eINFLUENCED BY\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 area: Mathematics and Philosophy\u003cbr\u003e\u2022 significance: Moderate\u003cbr\u003e", "to": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "\u003cb\u003eCONTRIBUTED TO\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 significance: Major\u003cbr\u003e", "to": "7062d86f-d5bc-4d91-93fc-b2c828b088ea", "width": 1}, {"arrows": "to", "from": "4dff24e1-4652-431b-80a7-9a43efa399d8", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "\u003cb\u003eCONTRIBUTED TO\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 significance: Major\u003cbr\u003e", "to": "cbde46f8-5cf0-4bf0-8c00-d376adc272ac", "width": 1}, {"arrows": "to", "from": "ac0d79d8-0201-4c76-927d-7f37f93eec06", "label": "BUILT UPON", "properties": {"note": "Calculus extended concepts from analytical geometry"}, "title": "\u003cb\u003eBUILT UPON\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 note: Calculus extended concepts from analytical geometry\u003cbr\u003e", "to": "ec2afad7-05b5-4b0e-bd1a-2613d14fdd43", "width": 1}, {"arrows": "to", "from": "a99fde4f-e70a-4f80-937b-fd9ae47a571e", "label": "DEVELOPED", "properties": {"year": "1675-1676"}, "title": "\u003cb\u003eDEVELOPED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1675-1676\u003cbr\u003e", "to": "ac0d79d8-0201-4c76-927d-7f37f93eec06", "width": 1}, {"arrows": "to", "from": "f4bc175e-8e2f-47ab-8eaa-0fc76f8cf305", "label": "FOUNDED AFTER DEATH OF", "properties": {"note": "Royal Society founded in 1660, Descartes died in 1650", "years_after": "10"}, "title": "\u003cb\u003eFOUNDED AFTER DEATH OF\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 years_after: 10\u003cbr\u003e\u2022 note: Royal Society founded in 1660, Descartes died in 1650\u003cbr\u003e", "to": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "width": 1}, {"arrows": "to", "from": "f4bc175e-8e2f-47ab-8eaa-0fc76f8cf305", "label": "ELECTED AS FOREIGN MEMBER", "properties": {"note": "Same year as Nobel Prize", "year": "1921"}, "title": "\u003cb\u003eELECTED AS FOREIGN MEMBER\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1921\u003cbr\u003e\u2022 note: Same year as Nobel Prize\u003cbr\u003e", "to": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "width": 1}, {"arrows": "to", "from": "e2cbc664-e046-4ff8-9830-9d78303e8c59", "label": "KNIGHTED", "properties": {"year": "1705"}, "title": "\u003cb\u003eKNIGHTED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1705\u003cbr\u003e", "to": "4dff24e1-4652-431b-80a7-9a43efa399d8", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "BORN IN", "properties": {"year": "1879"}, "title": "\u003cb\u003eBORN IN\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1879\u003cbr\u003e", "to": "8b7798ca-899e-4dae-983c-9384320ad6e9", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "STUDIED AT", "properties": {}, "title": "\u003cb\u003eSTUDIED AT\u003c/b\u003e", "to": "b0a9d8c3-9c72-4b06-b05f-837112cae6bf", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "INTRODUCED", "properties": {"year": "1905"}, "title": "\u003cb\u003eINTRODUCED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1905\u003cbr\u003e", "to": "83a53b8a-ce32-496d-b00d-5e63fe0ffc51", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "DEVELOPED", "properties": {"year": "1915"}, "title": "\u003cb\u003eDEVELOPED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1915\u003cbr\u003e", "to": "d060b6e5-c2a6-4f7a-9796-322e61e9820a", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "EXPLAINED", "properties": {"year": "1905"}, "title": "\u003cb\u003eEXPLAINED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1905\u003cbr\u003e", "to": "86d4d2e8-e19a-445a-81eb-f603c281ca9e", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "EXPLAINED", "properties": {"year": "1905"}, "title": "\u003cb\u003eEXPLAINED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1905\u003cbr\u003e", "to": "1a9d843d-a57a-460a-be65-fcbf8eb8762a", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "FORMULATED", "properties": {"year": "1905"}, "title": "\u003cb\u003eFORMULATED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1905\u003cbr\u003e", "to": "7c88064a-1c04-4409-95ea-6e55c68b19f6", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "EARNED", "properties": {"year": "1921"}, "title": "\u003cb\u003eEARNED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1921\u003cbr\u003e", "to": "844c943b-5be5-4707-885b-1b420e18977a", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "MARRIED", "properties": {"period": "1903-1919"}, "title": "\u003cb\u003eMARRIED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 period: 1903-1919\u003cbr\u003e", "to": "7a772c60-83f1-4775-9fcb-cab4405bfaa7", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "MARRIED", "properties": {"period": "1919-1936"}, "title": "\u003cb\u003eMARRIED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 period: 1919-1936\u003cbr\u003e", "to": "977ff564-4b61-42ad-b2bc-8bd4e4913566", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "FLED", "properties": {"year": "1933"}, "title": "\u003cb\u003eFLED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1933\u003cbr\u003e", "to": "ea8711ca-0389-420f-9449-544c6761cf81", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "BECAME CITIZEN OF", "properties": {"year": "1940"}, "title": "\u003cb\u003eBECAME CITIZEN OF\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1940\u003cbr\u003e", "to": "195ea71a-434e-4f34-a7e9-e3c7aec899ae", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "BECAME PROFESSOR AT", "properties": {"year": "1933"}, "title": "\u003cb\u003eBECAME PROFESSOR AT\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1933\u003cbr\u003e", "to": "ae2ef14f-72e8-4b1a-be51-e9d67fa65fb2", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "INFLUENCED BY", "properties": {"area": "Physics", "significance": "High"}, "title": "\u003cb\u003eINFLUENCED BY\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 area: Physics\u003cbr\u003e\u2022 significance: High\u003cbr\u003e", "to": "4dff24e1-4652-431b-80a7-9a43efa399d8", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "REFERENCED", "properties": {"area": "Philosophy of Science", "significance": "Low"}, "title": "\u003cb\u003eREFERENCED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 area: Philosophy of Science\u003cbr\u003e\u2022 significance: Low\u003cbr\u003e", "to": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "CHALLENGED", "properties": {"note": "Einstein\u0027s work on relativity questioned absolute space and time"}, "title": "\u003cb\u003eCHALLENGED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 note: Einstein\u0027s work on relativity questioned absolute space and time\u003cbr\u003e", "to": "4bd1ca83-0543-4ff1-91e8-975f16ec344f", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "\u003cb\u003eCONTRIBUTED TO\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 significance: Major\u003cbr\u003e", "to": "7062d86f-d5bc-4d91-93fc-b2c828b088ea", "width": 1}, {"arrows": "to", "from": "56511236-aaad-46b1-acdd-86c9ecb1b55d", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "\u003cb\u003eCONTRIBUTED TO\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 significance: Major\u003cbr\u003e", "to": "cbde46f8-5cf0-4bf0-8c00-d376adc272ac", "width": 1}, {"arrows": "to", "from": "8b7798ca-899e-4dae-983c-9384320ad6e9", "label": "LOCATED IN", "properties": {}, "title": "\u003cb\u003eLOCATED IN\u003c/b\u003e", "to": "ea8711ca-0389-420f-9449-544c6761cf81", "width": 1}, {"arrows": "to", "from": "d060b6e5-c2a6-4f7a-9796-322e61e9820a", "label": "EXTENDED", "properties": {"note": "Einstein\u0027s theory provided a more complete description of gravity", "year": "1915"}, "title": "\u003cb\u003eEXTENDED\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1915\u003cbr\u003e\u2022 note: Einstein\u0027s theory provided a more complete description of gravity\u003cbr\u003e", "to": "87eb6b76-7493-40be-8021-54deeb42a3cd", "width": 1}, {"arrows": "to", "from": "74525a00-01f3-4695-85d3-8786f132e368", "label": "ROSE TO POWER IN", "properties": {"year": "1933"}, "title": "\u003cb\u003eROSE TO POWER IN\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1933\u003cbr\u003e", "to": "ea8711ca-0389-420f-9449-544c6761cf81", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "BORN IN", "properties": {"year": "1596"}, "title": "\u003cb\u003eBORN IN\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1596\u003cbr\u003e", "to": "1552a924-6412-4bc1-b851-d0c79d53dcda", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "EDUCATED AT", "properties": {"period": "1607-1614"}, "title": "\u003cb\u003eEDUCATED AT\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 period: 1607-1614\u003cbr\u003e", "to": "fdcafb26-4fe6-46fb-ba77-53a3078d1044", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "GRADUATED FROM", "properties": {"degree": "Law", "year": "1616"}, "title": "\u003cb\u003eGRADUATED FROM\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1616\u003cbr\u003e\u2022 degree: Law\u003cbr\u003e", "to": "16783728-8a8a-48a9-b5e0-f386c4cdfb64", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "LIVED IN", "properties": {"period": "1628-1649"}, "title": "\u003cb\u003eLIVED IN\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 period: 1628-1649\u003cbr\u003e", "to": "4544217b-f61a-4e2b-afd3-0b435bcc0cfb", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "FORMULATED", "properties": {}, "title": "\u003cb\u003eFORMULATED\u003c/b\u003e", "to": "7a432fd0-75f4-4eb4-8fcd-93a91bd56ce4", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "WROTE", "properties": {"year": "1637"}, "title": "\u003cb\u003eWROTE\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1637\u003cbr\u003e", "to": "3c0bfabf-40b9-42ad-877e-c855dc3ed6d2", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "WROTE", "properties": {"year": "1641"}, "title": "\u003cb\u003eWROTE\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1641\u003cbr\u003e", "to": "f227adf3-c807-46e4-9df0-0b797a6aa4ed", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "DEVELOPED", "properties": {}, "title": "\u003cb\u003eDEVELOPED\u003c/b\u003e", "to": "4bd1ca83-0543-4ff1-91e8-975f16ec344f", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "INVENTED", "properties": {}, "title": "\u003cb\u003eINVENTED\u003c/b\u003e", "to": "ec2afad7-05b5-4b0e-bd1a-2613d14fdd43", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "DIED IN", "properties": {"cause": "Pneumonia", "year": "1650"}, "title": "\u003cb\u003eDIED IN\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1650\u003cbr\u003e\u2022 cause: Pneumonia\u003cbr\u003e", "to": "18639e81-fb59-4e0e-8949-d99e2b17d711", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "\u003cb\u003eCONTRIBUTED TO\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 significance: Major\u003cbr\u003e", "to": "7062d86f-d5bc-4d91-93fc-b2c828b088ea", "width": 1}, {"arrows": "to", "from": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "label": "CONTRIBUTED TO", "properties": {"significance": "Moderate"}, "title": "\u003cb\u003eCONTRIBUTED TO\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 significance: Moderate\u003cbr\u003e", "to": "cbde46f8-5cf0-4bf0-8c00-d376adc272ac", "width": 1}, {"arrows": "to", "from": "1552a924-6412-4bc1-b851-d0c79d53dcda", "label": "LOCATED IN", "properties": {}, "title": "\u003cb\u003eLOCATED IN\u003c/b\u003e", "to": "fbfb2f24-f34c-4d68-bb7e-46580320a1bf", "width": 1}, {"arrows": "to", "from": "0e640707-a022-45fa-9510-e6db91d1b834", "label": "INVITED TO COURT", "properties": {"year": "1649"}, "title": "\u003cb\u003eINVITED TO COURT\u003c/b\u003e\u003cbr\u003e\u003cbr\u003e\u003cb\u003eProperties:\u003c/b\u003e\u003cbr\u003e\u2022 year: 1649\u003cbr\u003e", "to": "ce2b2ca1-f3d8-440b-9beb-9da100515139", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"shape": "dot", "size": 25, "font": {"size": 14, "face": "Tahoma"}}, "edges": {"font": {"size": 12, "align": "middle"}, "color": {"inherit": true}, "smooth": {"type": "continuous", "forceDirection": "none"}}, "physics": {"barnesHut": {"gravitationalConstant": -80000, "springLength": 250, "springConstant": 0.001}, "minVelocity": 0.75}, "interaction": {"hover": true, "tooltipDelay": 200, "hideEdgesOnDrag": false, "multiselect": false}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+        <div style="position: absolute; top: 10px; right: 10px; background-color: white; 
+                    border: 1px solid #ccc; padding: 10px; border-radius: 5px; max-width: 250px;">
+            <h3 style="margin-top: 0; text-align: center;">Entity Types</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th style="text-align: left; padding: 5px;">Type</th>
+                    <th style="text-align: left; padding: 5px;">Color</th>
+                </tr>
+        
+                <tr>
+                    <td style="padding: 5px;">EVENT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FFD700; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">FIELD</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #AAAAAA; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">LOCATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33FF57; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">ORGANIZATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33A8FF; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PERSON</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FF5733; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PRODUCT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #00CED1; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">WORK_OF_ART</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FF8C00; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+            </table>
+        </div>
+        
+        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+            <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+        </div>
+        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0;">Source Text</h3>
+            </div>
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px;">
+                <p style="white-space: pre-wrap;"># Source: Text input 1
+
+Newton, Einstein, and Descartes were influential scientists.
+
+</p>
+            </div>
+        </div>
+        
+        <script>
+            // Make sure this script runs after the network is initialized
+            document.addEventListener('DOMContentLoaded', function() {
+                // Ensure network variable is accessible
+                if (typeof network === 'undefined') {
+                    console.warn('Network variable not found. Some features may not work properly.');
+                }
+                
+                // Initially maximize the network container height since text is hidden
+                var networkContainer = document.getElementById('mynetwork');
+                var windowHeight = window.innerHeight;
+                var networkTop = networkContainer.getBoundingClientRect().top;
+                var newHeight = windowHeight - networkTop - 20; // 20px padding
+                networkContainer.style.height = newHeight + 'px';
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            });
+            
+            function toggleSourceText() {
+                var textSection = document.getElementById('textSection');
+                var btn = document.getElementById('toggleTextBtn');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                if (textSection.style.display === 'none') {
+                    // Show text
+                    textSection.style.display = 'block';
+                    btn.innerText = 'Hide Text';
+                    btn.style.backgroundColor = '#f44336'; // Red color for hide button
+                    
+                    // Restore original network container height
+                    networkContainer.style.height = '750px';
+                } else {
+                    // Hide text
+                    textSection.style.display = 'none';
+                    btn.innerText = 'Show Text';
+                    btn.style.backgroundColor = '#4CAF50'; // Green color for show button
+                    
+                    // Maximize network container height
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                }
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            }
+            
+            // Add window resize event listener to adjust the graph size when window is resized
+            window.addEventListener('resize', function() {
+                var textSection = document.getElementById('textSection');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                // Only adjust if text is hidden
+                if (textSection.style.display === 'none') {
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                    
+                    // Redraw the network to fit the new container size
+                    if (typeof network !== 'undefined') {
+                        network.fit();
+                    }
+                }
+            });
+        </script>
+        <style>
+        .custom-tooltip {
+            position: absolute;
+            display: none;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+        </style>
+        <div id="custom-tooltip" class="custom-tooltip"></div>
+        <script>
+        // Add the tooltip functionality after the page has fully loaded
+        window.addEventListener('load', function() {
+            // Make sure the network variable exists
+            if (typeof network === 'undefined') {
+                console.warn('Network variable not found');
+                return;
+            }
+            
+            var tooltip = document.getElementById('custom-tooltip');
+            
+            // Function to show tooltip
+            function showTooltip(html, x, y) {
+                tooltip.innerHTML = html;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (x + 10) + 'px';
+                tooltip.style.top = (y + 10) + 'px';
+            }
+            
+            // Function to hide tooltip
+            function hideTooltip() {
+                tooltip.style.display = 'none';
+            }
+            
+            // Add event listeners to the network
+            network.on('hoverNode', function(params) {
+                var nodeId = params.node;
+                var node = network.body.data.nodes.get(nodeId);
+                if (node && node.title) {
+                    // Create a div to parse the HTML and extract text
+                    var div = document.createElement('div');
+                    div.innerHTML = node.title;
+                    
+                    // Format the tooltip content properly
+                    var entityName = div.querySelector('b').textContent;
+                    var tooltipContent = '<div><strong>' + entityName + '</strong>';
+                    
+                    // Check if there are properties
+                    if (div.innerHTML.includes('Properties:')) {
+                        tooltipContent += '<br><br><strong>Properties:</strong><ul>';
+                        var propertyItems = div.innerHTML.split('•').slice(1);
+                        propertyItems.forEach(function(item) {
+                            if (item.trim()) {
+                                var propText = item.split('<br>')[0].trim();
+                                tooltipContent += '<li>' + propText + '</li>';
+                            }
+                        });
+                        tooltipContent += '</ul>';
+                    }
+                    
+                    tooltipContent += '</div>';
+                    showTooltip(tooltipContent, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('blurNode', function() {
+                hideTooltip();
+            });
+            
+            network.on('hoverEdge', function(params) {
+                var edgeId = params.edge;
+                var edge = network.body.data.edges.get(edgeId);
+                if (edge && edge.title) {
+                    // Create a div to parse the HTML and extract text
+                    var div = document.createElement('div');
+                    div.innerHTML = edge.title;
+                    
+                    // Format the tooltip content properly
+                    var relationName = div.querySelector('b').textContent;
+                    var tooltipContent = '<div><strong>' + relationName + '</strong>';
+                    
+                    // Check if there are properties
+                    if (div.innerHTML.includes('Properties:')) {
+                        tooltipContent += '<br><br><strong>Properties:</strong><ul>';
+                        var propertyItems = div.innerHTML.split('•').slice(1);
+                        propertyItems.forEach(function(item) {
+                            if (item.trim()) {
+                                var propText = item.split('<br>')[0].trim();
+                                tooltipContent += '<li>' + propText + '</li>';
+                            }
+                        });
+                        tooltipContent += '</ul>';
+                    }
+                    
+                    tooltipContent += '</div>';
+                    showTooltip(tooltipContent, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('blurEdge', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during drag operations
+            network.on('dragStart', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during zoom operations
+            network.on('zoom', function() {
+                hideTooltip();
+            });
+        });
+        </script>
+        </body>
+</html>

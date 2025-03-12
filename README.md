@@ -10,6 +10,15 @@ A tool for automatically extracting entities and relationships from text to buil
 - Visualize the graph in interactive HTML format
 - Export graph data to JSON
 
+## Examples
+
+Check out these examples to see the tool in action:
+
+- [Example Graph Visualization](example/combined_graph.html) - An interactive visualization showing connections between Newton, Einstein, and Descartes
+- [Example Graph Data (JSON)](example/combined_graph.json) - The raw graph data in JSON format
+
+These examples demonstrate how the system extracts entities and relationships from text about famous scientists and creates connections between their subgraphs.
+
 ## Installation
 
 ### Prerequisites
@@ -65,6 +74,14 @@ Add the `--visualization-only` flag to skip Neo4j database operations:
 
 ```bash
 python -m src.graph_db.app --text "Your text here" --visualization-only --output graph.html
+```
+
+### Mock Mode (For UI Debugging)
+
+Use the `--use-mock` flag to generate mock data for UI debugging without making LLM API calls:
+
+```bash
+python -m src.graph_db.app --text "Newton, Einstein, and Descartes" --use-mock --visualization-only --output graph.html
 ```
 
 ## Architecture
