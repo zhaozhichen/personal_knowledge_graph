@@ -158,8 +158,7 @@ class GraphVisualizer:
                 },
                 "interaction": {
                     "hover": {
-                        "enabled": true,
-                        "title": false
+                        "enabled": true
                     },
                     "navigationButtons": true,
                     "keyboard": true,
@@ -238,23 +237,11 @@ class GraphVisualizer:
                     <span id="currentTextSize">32px</span>
                 </div>
             </div>
-            <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
-                <h4 style="margin-top: 0; text-align: center;">Display Options</h4>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 10px;">
-                    <span>Show Tooltips:</span>
-                    <label class="switch" style="position: relative; display: inline-block; width: 40px; height: 20px;">
-                        <input type="checkbox" id="tooltipToggle" checked style="opacity: 0; width: 0; height: 0;">
-                        <span style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;"></span>
-                        <span style="position: absolute; cursor: pointer; top: 2px; left: 2px; height: 16px; width: 16px; background-color: white; transition: .4s; border-radius: 50%;"></span>
-                    </label>
-                </div>
-            </div>
             <script>
                 // Add event listener to the slider
                 document.addEventListener('DOMContentLoaded', function() {
                     var slider = document.getElementById('textSizeSlider');
                     var sizeDisplay = document.getElementById('currentTextSize');
-                    var tooltipToggle = document.getElementById('tooltipToggle');
                     
                     // Function to update text size
                     function updateTextSize(size) {
@@ -285,65 +272,16 @@ class GraphVisualizer:
                         network.setOptions({ edges: edgeOptions });
                     }
                     
-                    // Function to toggle tooltips
-                    function toggleTooltips(enabled) {
-                        // Debug logging
-                        console.log("toggleTooltips called with enabled:", enabled);
-                        
-                        // Update the toggle switch appearance
-                        var toggleSwitch = tooltipToggle.nextElementSibling.nextElementSibling;
-                        if (enabled) {
-                            toggleSwitch.style.transform = 'translateX(20px)';
-                            tooltipToggle.nextElementSibling.style.backgroundColor = '#4CAF50';
-                        } else {
-                            toggleSwitch.style.transform = 'translateX(0)';
-                            tooltipToggle.nextElementSibling.style.backgroundColor = '#ccc';
-                        }
-                        
-                        // Set global variable to control tooltip display
-                        window.tooltipsEnabled = enabled;
-                        console.log("Set window.tooltipsEnabled to:", window.tooltipsEnabled);
-                        
-                        // Update network interaction options
-                        if (typeof network !== 'undefined') {
-                            // Completely disable hover events when tooltips are disabled
-                            network.setOptions({
-                                interaction: {
-                                    hover: {
-                                        enabled: enabled
-                                    }
-                                }
-                            });
-                            
-                            // Hide any visible tooltip when disabled
-                            if (!enabled) {
-                                var customTooltip = document.getElementById('custom-tooltip');
-                                if (customTooltip) {
-                                    customTooltip.style.display = 'none';
-                                }
-                            }
-                            
-                            // Re-apply the title attribute removal
-                            if (typeof disableDefaultTooltips === 'function') {
-                                disableDefaultTooltips();
-                            }
-                        }
-                    }
-                    
                     // Add event listener for slider changes
                     slider.addEventListener('input', function() {
                         updateTextSize(parseInt(this.value));
                     });
                     
-                    // Add event listener for tooltip toggle
-                    tooltipToggle.addEventListener('change', function() {
-                        console.log("Tooltip toggle changed, checked:", this.checked);
-                        toggleTooltips(this.checked);
-                    });
-                    
                     // Initialize with default values
                     updateTextSize(parseInt(slider.value));
-                    toggleTooltips(tooltipToggle.checked);
+                    
+                    // Set global variable to always enable tooltips
+                    window.tooltipsEnabled = true;
                 });
             </script>
         </div>
@@ -473,7 +411,7 @@ class GraphVisualizer:
         </style>
         <div id="custom-tooltip" class="custom-tooltip"></div>
         <script>
-        // Initialize global variable for tooltip control
+        // Initialize global variable for tooltip control - always enabled
         window.tooltipsEnabled = true;
         
         // Add the tooltip functionality after the page has fully loaded
@@ -509,23 +447,12 @@ class GraphVisualizer:
             // Call once on load
             disableDefaultTooltips();
             
-            // Make the function available globally
-            window.disableDefaultTooltips = disableDefaultTooltips;
-            
             // Function to show tooltip
             function showTooltip(text, x, y) {
-                // Only show tooltip if tooltips are enabled
-                console.log("showTooltip called, window.tooltipsEnabled:", window.tooltipsEnabled);
-                if (!window.tooltipsEnabled) {
-                    console.log("Tooltips disabled, not showing tooltip");
-                    return;
-                }
-                
                 tooltip.textContent = text;
                 tooltip.style.display = 'block';
                 tooltip.style.left = (x + 10) + 'px';
                 tooltip.style.top = (y + 10) + 'px';
-                console.log("Tooltip displayed");
             }
             
             // Function to hide tooltip
@@ -535,13 +462,6 @@ class GraphVisualizer:
             
             // Add event listeners to the network
             network.on('hoverNode', function(params) {
-                // Only proceed if tooltips are enabled
-                console.log("hoverNode event, window.tooltipsEnabled:", window.tooltipsEnabled);
-                if (!window.tooltipsEnabled) {
-                    console.log("Tooltips disabled, ignoring hoverNode event");
-                    return;
-                }
-                
                 var nodeId = params.node;
                 var node = network.body.nodes[nodeId];
                 if (node && node.options && node.options.title) {
@@ -550,13 +470,6 @@ class GraphVisualizer:
             });
             
             network.on('hoverEdge', function(params) {
-                // Only proceed if tooltips are enabled
-                console.log("hoverEdge event, window.tooltipsEnabled:", window.tooltipsEnabled);
-                if (!window.tooltipsEnabled) {
-                    console.log("Tooltips disabled, ignoring hoverEdge event");
-                    return;
-                }
-                
                 var edgeId = params.edge;
                 var edge = network.body.edges[edgeId];
                 if (edge && edge.options && edge.options.title) {
@@ -582,28 +495,14 @@ class GraphVisualizer:
                 hideTooltip();
             });
             
-            // Check for tooltip toggle and initialize its state
-            var tooltipToggle = document.getElementById('tooltipToggle');
-            if (tooltipToggle) {
-                console.log("Found tooltipToggle element, initial checked state:", tooltipToggle.checked);
-                
-                // Set initial state based on the checkbox
-                window.tooltipsEnabled = tooltipToggle.checked;
-                console.log("Initialized window.tooltipsEnabled to:", window.tooltipsEnabled);
-                
-                // Apply initial state to network
-                if (typeof network !== 'undefined') {
-                    network.setOptions({
-                        interaction: {
-                            hover: {
-                                enabled: window.tooltipsEnabled
-                            }
-                        }
-                    });
+            // Ensure hover is enabled for tooltips
+            network.setOptions({
+                interaction: {
+                    hover: {
+                        enabled: true
+                    }
                 }
-            } else {
-                console.warn("Could not find tooltipToggle element");
-            }
+            });
         });
         </script>
         """
@@ -743,8 +642,7 @@ class GraphVisualizer:
                 },
                 "interaction": {
                     "hover": {
-                        "enabled": true,
-                        "title": false
+                        "enabled": true
                     },
                     "navigationButtons": true,
                     "keyboard": true,
