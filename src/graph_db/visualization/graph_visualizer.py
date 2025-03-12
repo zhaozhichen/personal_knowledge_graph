@@ -287,6 +287,9 @@ class GraphVisualizer:
                     
                     // Function to toggle tooltips
                     function toggleTooltips(enabled) {
+                        // Debug logging
+                        console.log("toggleTooltips called with enabled:", enabled);
+                        
                         // Update the toggle switch appearance
                         var toggleSwitch = tooltipToggle.nextElementSibling.nextElementSibling;
                         if (enabled) {
@@ -299,6 +302,7 @@ class GraphVisualizer:
                         
                         // Set global variable to control tooltip display
                         window.tooltipsEnabled = enabled;
+                        console.log("Set window.tooltipsEnabled to:", window.tooltipsEnabled);
                         
                         // Update network interaction options
                         if (typeof network !== 'undefined') {
@@ -333,6 +337,7 @@ class GraphVisualizer:
                     
                     // Add event listener for tooltip toggle
                     tooltipToggle.addEventListener('change', function() {
+                        console.log("Tooltip toggle changed, checked:", this.checked);
                         toggleTooltips(this.checked);
                     });
                     
@@ -510,7 +515,9 @@ class GraphVisualizer:
             // Function to show tooltip
             function showTooltip(text, x, y) {
                 // Only show tooltip if tooltips are enabled
+                console.log("showTooltip called, window.tooltipsEnabled:", window.tooltipsEnabled);
                 if (!window.tooltipsEnabled) {
+                    console.log("Tooltips disabled, not showing tooltip");
                     return;
                 }
                 
@@ -518,6 +525,7 @@ class GraphVisualizer:
                 tooltip.style.display = 'block';
                 tooltip.style.left = (x + 10) + 'px';
                 tooltip.style.top = (y + 10) + 'px';
+                console.log("Tooltip displayed");
             }
             
             // Function to hide tooltip
@@ -528,7 +536,9 @@ class GraphVisualizer:
             // Add event listeners to the network
             network.on('hoverNode', function(params) {
                 // Only proceed if tooltips are enabled
+                console.log("hoverNode event, window.tooltipsEnabled:", window.tooltipsEnabled);
                 if (!window.tooltipsEnabled) {
+                    console.log("Tooltips disabled, ignoring hoverNode event");
                     return;
                 }
                 
@@ -541,7 +551,9 @@ class GraphVisualizer:
             
             network.on('hoverEdge', function(params) {
                 // Only proceed if tooltips are enabled
+                console.log("hoverEdge event, window.tooltipsEnabled:", window.tooltipsEnabled);
                 if (!window.tooltipsEnabled) {
+                    console.log("Tooltips disabled, ignoring hoverEdge event");
                     return;
                 }
                 
@@ -573,18 +585,25 @@ class GraphVisualizer:
             // Check for tooltip toggle and initialize its state
             var tooltipToggle = document.getElementById('tooltipToggle');
             if (tooltipToggle) {
+                console.log("Found tooltipToggle element, initial checked state:", tooltipToggle.checked);
+                
                 // Set initial state based on the checkbox
                 window.tooltipsEnabled = tooltipToggle.checked;
+                console.log("Initialized window.tooltipsEnabled to:", window.tooltipsEnabled);
                 
                 // Add event listener to update tooltipsEnabled when toggle changes
                 tooltipToggle.addEventListener('change', function() {
+                    console.log("Tooltip toggle changed in tooltip.js, new checked state:", this.checked);
                     window.tooltipsEnabled = this.checked;
+                    console.log("Updated window.tooltipsEnabled to:", window.tooltipsEnabled);
                     
                     // Hide tooltip if it's currently visible and tooltips are disabled
                     if (!window.tooltipsEnabled) {
                         hideTooltip();
                     }
                 });
+            } else {
+                console.warn("Could not find tooltipToggle element");
             }
         });
         </script>
