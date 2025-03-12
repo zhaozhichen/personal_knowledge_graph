@@ -74,33 +74,36 @@ class GraphVisualizer:
                 used_entity_types.add(entity_type)
                 color = self.entity_colors.get(entity_type, self.default_color)
                 
-                # Store the raw data for tooltips without HTML formatting
-                tooltip_data = {
-                    "name": entity['name'],
-                    "type": entity_type,
-                    "properties": entity.get("properties", {})
-                }
+                # Create a formatted title with all properties
+                properties = entity.get("properties", {})
+                title_text = f"{entity['name']} ({entity_type})"
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
                 
                 G.add_node(
                     entity["name"],
                     label=entity["name"],
-                    tooltip_data=tooltip_data,  # Store raw data for tooltips
+                    title=title_text,  # Use plain text title
                     color=color,
                     font={'color': color}  # Set font color to match node color
                 )
                 
             # Add edges (relations)
             for relation in graph_data["relations"]:
-                # Store the raw data for tooltips without HTML formatting
-                tooltip_data = {
-                    "relation": relation['relation'],
-                    "properties": relation.get("properties", {})
-                }
+                # Create a formatted title with all properties
+                properties = relation.get("properties", {})
+                title_text = relation['relation']
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
                 
                 G.add_edge(
                     relation["from_name"],
                     relation["to_name"],
-                    tooltip_data=tooltip_data,  # Store raw data for tooltips
+                    title=title_text,  # Use plain text title
                     label=relation["relation"],
                     arrows="to",
                     color="#000000"  # Set edge color to black
@@ -442,9 +445,6 @@ class GraphVisualizer:
         with open(html_file, 'r', encoding='utf-8') as f:
             content = f.read()
             
-        # Remove all title attributes from the HTML content
-        content = re.sub(r'title="[^"]*"', '', content)
-            
         # Add custom tooltip CSS and JavaScript
         tooltip_js = """
         <style>
@@ -465,31 +465,11 @@ class GraphVisualizer:
             white-space: pre-wrap;
             line-height: 1.5;
         }
-        
-        /* Hide default browser tooltips */
-        #mynetwork [title] {
-            position: relative;
-        }
-        #mynetwork [title]:hover::after {
-            content: none !important;
-        }
-        
-        /* Additional CSS to prevent tooltips */
-        [title] {
-            position: relative;
-        }
-        [title]:hover::after {
-            content: none !important;
-        }
         </style>
         <div id="custom-tooltip" class="custom-tooltip"></div>
         <script>
         // Initialize global variable for tooltip control
         window.tooltipsEnabled = true;
-        
-        // Store node and edge data for custom tooltips
-        window.nodeTooltips = {};
-        window.edgeTooltips = {};
         
         // Add the tooltip functionality after the page has fully loaded
         window.addEventListener('load', function() {
@@ -500,172 +480,6 @@ class GraphVisualizer:
             }
             
             var tooltip = document.getElementById('custom-tooltip');
-            
-            // Store tooltip data from nodes and edges
-            function storeTooltipData() {
-                // For nodes
-                var nodeIds = network.body.data.nodes.getIds();
-                nodeIds.forEach(function(nodeId) {
-                    var node = network.body.data.nodes.get(nodeId);
-                    if (node) {
-                        if (node.tooltip_data) {
-                            // Use the raw tooltip data
-                            window.nodeTooltips[nodeId] = node.tooltip_data;
-                        } else if (node.title) {
-                            // For backward compatibility
-                            window.nodeTooltips[nodeId] = node.title;
-                        }
-                        // Remove the title attribute
-                        delete node.title;
-                    }
-                });
-                
-                // For edges
-                var edgeIds = network.body.data.edges.getIds();
-                edgeIds.forEach(function(edgeId) {
-                    var edge = network.body.data.edges.get(edgeId);
-                    if (edge) {
-                        if (edge.tooltip_data) {
-                            // Use the raw tooltip data
-                            window.edgeTooltips[edgeId] = edge.tooltip_data;
-                        } else if (edge.title) {
-                            // For backward compatibility
-                            window.edgeTooltips[edgeId] = edge.title;
-                        }
-                        // Remove the title attribute
-                        delete edge.title;
-                    }
-                });
-                
-                // Update the network with the modified data
-                network.setData({
-                    nodes: network.body.data.nodes,
-                    edges: network.body.data.edges
-                });
-            }
-            
-            // Completely disable default tooltips by removing title attributes and preventing default behavior
-            function disableDefaultTooltips() {
-                // Remove all title attributes from the DOM
-                document.querySelectorAll('[title]').forEach(function(element) {
-                    element.removeAttribute('title');
-                });
-                
-                // For nodes
-                var nodeIds = network.body.data.nodes.getIds();
-                nodeIds.forEach(function(nodeId) {
-                    var nodeElement = network.body.nodes[nodeId].element;
-                    if (nodeElement) {
-                        nodeElement.removeAttribute('title');
-                    }
-                });
-                
-                // For edges
-                var edgeIds = network.body.data.edges.getIds();
-                edgeIds.forEach(function(edgeId) {
-                    var edgeElement = network.body.edges[edgeId].element;
-                    if (edgeElement) {
-                        edgeElement.removeAttribute('title');
-                    }
-                });
-                
-                // Also remove titles from DOM elements
-                var canvasElements = document.querySelectorAll('canvas');
-                canvasElements.forEach(function(canvas) {
-                    canvas.removeAttribute('title');
-                });
-                
-                // Remove titles from all elements in the network container
-                var networkContainer = document.getElementById('mynetwork');
-                if (networkContainer) {
-                    var allElements = networkContainer.querySelectorAll('*');
-                    allElements.forEach(function(element) {
-                        element.removeAttribute('title');
-                    });
-                }
-            }
-            
-            // Store tooltip data
-            storeTooltipData();
-            
-            // Call once at initialization
-            disableDefaultTooltips();
-            
-            // Also call when network is redrawn
-            network.on("afterDrawing", disableDefaultTooltips);
-            
-            // Prevent default title behavior for the entire network container
-            var networkContainer = document.getElementById('mynetwork');
-            if (networkContainer) {
-                // Prevent default title behavior
-                networkContainer.addEventListener('mouseover', function(event) {
-                    if (event.target.hasAttribute('title')) {
-                        event.target.dataset.originalTitle = event.target.getAttribute('title');
-                        event.target.removeAttribute('title');
-                    }
-                }, true);
-            }
-            
-            // Function to format tooltip text from raw data
-            function formatTooltipText(data) {
-                if (!data) return '';
-                
-                var result = '';
-                
-                // Handle both raw data and HTML string (for backward compatibility)
-                if (typeof data === 'object') {
-                    // For nodes
-                    if (data.name && data.type) {
-                        result = data.name + ' (' + data.type + ')';
-                    } 
-                    // For edges
-                    else if (data.relation) {
-                        result = data.relation;
-                    }
-                    
-                    // Add properties if they exist
-                    if (data.properties && Object.keys(data.properties).length > 0) {
-                        result += '\n\nProperties:';
-                        for (var key in data.properties) {
-                            result += '\n• ' + key + ': ' + data.properties[key];
-                        }
-                    }
-                } 
-                // For backward compatibility with HTML strings
-                else if (typeof data === 'string') {
-                    // First, completely strip all HTML tags
-                    var strippedText = data.replace(/<[^>]*>/g, '');
-                    
-                    // Replace HTML entities
-                    strippedText = strippedText.replace(/&lt;/g, '<')
-                                              .replace(/&gt;/g, '>')
-                                              .replace(/&amp;/g, '&')
-                                              .replace(/&quot;/g, '"')
-                                              .replace(/&apos;/g, "'")
-                                              .replace(/&nbsp;/g, ' ');
-                    
-                    // Now extract meaningful parts
-                    var lines = strippedText.split('\n').map(line => line.trim()).filter(line => line);
-                    
-                    // The first line should be the entity/relation name and type
-                    result = lines[0];
-                    
-                    // Look for properties
-                    var propertiesIndex = lines.findIndex(line => line.includes('Properties:'));
-                    if (propertiesIndex !== -1) {
-                        result += '\n\nProperties:';
-                        
-                        // Add all properties (lines that start with •)
-                        for (var i = propertiesIndex + 1; i < lines.length; i++) {
-                            if (lines[i].trim().startsWith('•')) {
-                                result += '\n' + lines[i].trim();
-                            }
-                        }
-                    }
-                }
-                
-                return result;
-            }
             
             // Function to show tooltip
             function showTooltip(text, x, y) {
@@ -688,21 +502,17 @@ class GraphVisualizer:
             // Add event listeners to the network
             network.on('hoverNode', function(params) {
                 var nodeId = params.node;
-                var tooltipData = window.nodeTooltips[nodeId];
-                
-                if (tooltipData) {
-                    var formattedText = formatTooltipText(tooltipData);
-                    showTooltip(formattedText, params.pointer.DOM.x, params.pointer.DOM.y);
+                var node = network.body.nodes[nodeId];
+                if (node && node.options && node.options.title) {
+                    showTooltip(node.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
                 }
             });
             
             network.on('hoverEdge', function(params) {
                 var edgeId = params.edge;
-                var tooltipData = window.edgeTooltips[edgeId];
-                
-                if (tooltipData) {
-                    var formattedText = formatTooltipText(tooltipData);
-                    showTooltip(formattedText, params.pointer.DOM.x, params.pointer.DOM.y);
+                var edge = network.body.edges[edgeId];
+                if (edge && edge.options && edge.options.title) {
+                    showTooltip(edge.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
                 }
             });
             
@@ -784,17 +594,18 @@ class GraphVisualizer:
                 entity_type = entity["type"].upper()  # Ensure uppercase for color matching
                 color = self.entity_colors.get(entity_type, self.default_color)
                 
-                # Store the raw data for tooltips without HTML formatting
-                tooltip_data = {
-                    "name": entity['name'],
-                    "type": entity['type'],
-                    "properties": entity.get("properties", {})
-                }
+                # Create a formatted title with all properties
+                properties = entity.get("properties", {})
+                title_text = f"{entity['name']} ({entity['type']})"
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
                 
                 G.add_node(
                     node_id, 
                     label=entity["name"], 
-                    tooltip_data=tooltip_data,  # Store raw data for tooltips
+                    title=title_text,  # Use plain text title
                     color=color,  # Explicitly set color instead of group
                     font={'color': color},  # Set font color to match node color
                     properties=entity.get("properties", {})
@@ -805,17 +616,19 @@ class GraphVisualizer:
                 from_id = relation["from_entity"].get("id", hash(relation["from_entity"]["name"]))
                 to_id = relation["to_entity"].get("id", hash(relation["to_entity"]["name"]))
                 
-                # Store the raw data for tooltips without HTML formatting
-                tooltip_data = {
-                    "relation": relation['relation'],
-                    "properties": relation.get("properties", {})
-                }
+                # Create a formatted title with all properties
+                properties = relation.get("properties", {})
+                title_text = relation['relation']
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
                 
                 G.add_edge(
                     from_id, 
                     to_id, 
                     label=relation["relation"],
-                    tooltip_data=tooltip_data,  # Store raw data for tooltips
+                    title=title_text,  # Use plain text title
                     properties=relation.get("properties", {}),
                     color="#000000"  # Set edge color to black
                 )
