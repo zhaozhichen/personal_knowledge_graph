@@ -1,0 +1,2126 @@
+{
+  "schema": {
+    "entity_types": [
+      "FACILITY",
+      "PERSON",
+      "PRODUCT",
+      "EVENT",
+      "ORGANIZATION",
+      "LOCATION"
+    ],
+    "relation_types": [
+      "INFORMS",
+      "CHOOSES COMPANIONS FOR",
+      "BELIEVES DEAD",
+      "GUIDES",
+      "WOUNDS",
+      "KNOWS OF (A SECRET PASS)",
+      "PROTECTS",
+      "USES",
+      "HOLDS UP",
+      "SENDS ARMY AGAINST",
+      "GOES TO AID OF",
+      "CHOOSES TO GO ALONE WITH",
+      "STEWARD OF",
+      "CUTS THROUGH",
+      "COUNSELS",
+      "ARRIVES AT",
+      "LEADS",
+      "LEAVES",
+      "REFUSES",
+      "POISONS",
+      "RESCUES",
+      "PROVES",
+      "LEADS (HOBBITS) TO",
+      "REPLACES",
+      "SAILS FROM",
+      "TAKES TASK TO DESTROY THE ONE RING IN",
+      "LIVES IN",
+      "RELEASES",
+      "WARNS",
+      "LOCATED IN",
+      "DECIDES",
+      "FREES",
+      "WEDS",
+      "CROWNED KING OF",
+      "CONVINCES",
+      "TAKES OVER",
+      "JOINS",
+      "PRINCE OF",
+      "MEETS",
+      "MAKES SWEAR TO SERVE",
+      "RECOVERS UNDER CARE OF",
+      "PICKS UP",
+      "MARRIES",
+      "ENGAGED TO",
+      "SETS OUT WITH",
+      "TAKE",
+      "DRIVES BACK",
+      "OFFERS",
+      "CAPTURES"
+    ]
+  },
+  "data": {
+    "entities": [
+      {
+        "name": "Gandalf",
+        "type": "PERSON",
+        "properties": {
+          "role": "wizard",
+          "actions": [
+            "proves the Ring's identity",
+            "counsels Frodo",
+            "confronts the Balrog",
+            "becomes Gandalf the White"
+          ]
+        },
+        "source": "llm",
+        "id": "-527447314621580385"
+      },
+      {
+        "name": "Frodo",
+        "type": "PERSON",
+        "properties": {
+          "role": "Ringbearer",
+          "actions": [
+            "takes the Ring to Mordor",
+            "recovers in Rivendell",
+            "offers the Ring to Galadriel",
+            "captures Gollum"
+          ]
+        },
+        "source": "llm",
+        "id": "1577087164089344930"
+      },
+      {
+        "name": "Bilbo Baggins",
+        "type": "PERSON",
+        "properties": {
+          "role": "previous Ringbearer",
+          "actions": [
+            "leaves the Ring to Frodo"
+          ]
+        },
+        "source": "llm",
+        "id": "4442729296908160104"
+      },
+      {
+        "name": "Sam Gamgee",
+        "type": "PERSON",
+        "properties": {
+          "role": "Frodo's gardener",
+          "actions": [
+            "joins Frodo's journey",
+            "wounds Shelob",
+            "takes the Ring after Frodo's apparent death"
+          ]
+        },
+        "source": "llm",
+        "id": "8908687451403208564"
+      },
+      {
+        "name": "Pippin Took",
+        "type": "PERSON",
+        "properties": {
+          "role": "Frodo's cousin",
+          "actions": [
+            "joins Frodo's journey",
+            "captured by Orcs",
+            "steals the palantír"
+          ]
+        },
+        "source": "llm",
+        "id": "1802791408147339038"
+      },
+      {
+        "name": "Merry Brandybuck",
+        "type": "PERSON",
+        "properties": {
+          "role": "Frodo's friend",
+          "actions": [
+            "joins Frodo's journey",
+            "captured by Orcs"
+          ]
+        },
+        "source": "llm",
+        "id": "3616806516497482922"
+      },
+      {
+        "name": "Strider",
+        "type": "PERSON",
+        "properties": {
+          "role": "Ranger",
+          "real_name": "Aragorn",
+          "actions": [
+            "guides the group to Rivendell",
+            "fights off Black Riders",
+            "treats Frodo with athelas"
+          ]
+        },
+        "source": "llm",
+        "id": "-926130774340173704"
+      },
+      {
+        "name": "Elrond",
+        "type": "PERSON",
+        "properties": {
+          "role": "Elf lord",
+          "actions": [
+            "cares for Frodo",
+            "hosts the Council of Elrond",
+            "summons flood waters at the Ford of Bruinen"
+          ]
+        },
+        "source": "llm",
+        "id": "8146058189369621911"
+      },
+      {
+        "name": "Saruman",
+        "type": "PERSON",
+        "properties": {
+          "role": "chief wizard",
+          "actions": [
+            "betrays the Council",
+            "ensnared by Sauron",
+            "stripped of powers by Gandalf"
+          ]
+        },
+        "source": "llm",
+        "id": "5562868770883654389"
+      },
+      {
+        "name": "Galadriel",
+        "type": "PERSON",
+        "properties": {
+          "role": "Lady of Lothlórien",
+          "actions": [
+            "tests the Fellowship's loyalty",
+            "gives magical gifts",
+            "refuses the Ring"
+          ]
+        },
+        "source": "llm",
+        "id": "1547392391249103087"
+      },
+      {
+        "name": "Gollum",
+        "type": "PERSON",
+        "properties": {
+          "role": "previous Ringbearer",
+          "actions": [
+            "guides Frodo and Sam",
+            "debates with Sméagol",
+            "leads them into Shelob's lair"
+          ]
+        },
+        "source": "llm",
+        "id": "-373612883448161743"
+      },
+      {
+        "name": "Shelob",
+        "type": "PERSON",
+        "properties": {
+          "role": "great spider",
+          "actions": [
+            "attacks Frodo and Sam",
+            "wounded by Sam"
+          ],
+          "description": "great spider"
+        },
+        "source": "llm",
+        "id": "-5548001971564192185"
+      },
+      {
+        "name": "Council of Elrond",
+        "type": "EVENT",
+        "properties": {
+          "role": "meeting to decide the Ring's fate",
+          "actions": [
+            "decides to destroy the Ring",
+            "reveals Aragorn's identity"
+          ]
+        },
+        "source": "llm",
+        "id": "-7882374959864511337"
+      },
+      {
+        "name": "Mount Doom",
+        "type": "LOCATION",
+        "properties": {
+          "role": "volcano in Mordor",
+          "actions": [
+            "destination for the Ring's destruction"
+          ]
+        },
+        "source": "llm",
+        "id": "462319507222878138"
+      },
+      {
+        "name": "Treebeard",
+        "type": "PERSON",
+        "properties": {
+          "role": "Ent",
+          "actions": [
+            "befriends Merry and Pippin",
+            "destroys Isengard"
+          ]
+        },
+        "source": "llm",
+        "id": "3482714603617624533"
+      },
+      {
+        "name": "Boromir",
+        "type": "PERSON",
+        "properties": {
+          "role": "son of the Steward of Gondor",
+          "actions": [
+            "tries to take the Ring",
+            "killed by Orcs"
+          ]
+        },
+        "source": "llm",
+        "id": "-2920287868492191536"
+      },
+      {
+        "name": "Théoden",
+        "type": "PERSON",
+        "properties": {
+          "role": "King of Rohan",
+          "actions": [
+            "freed from Saruman's influence",
+            "leads army to Helm's Deep"
+          ]
+        },
+        "source": "llm",
+        "id": "4453002303469455939"
+      },
+      {
+        "name": "Ithilien",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm",
+        "id": "-138449134611939874"
+      },
+      {
+        "name": "Faramir",
+        "type": "PERSON",
+        "properties": {
+          "relation": "Boromir's brother",
+          "role": "ranger leader"
+        },
+        "source": "llm",
+        "id": "-3856527014728986785"
+      },
+      {
+        "name": "Cirith Ungol",
+        "type": "LOCATION",
+        "properties": {
+          "description": "tunnels"
+        },
+        "source": "llm",
+        "id": "5857169602351560035"
+      },
+      {
+        "name": "Phial of Galadriel",
+        "type": "PRODUCT",
+        "properties": {
+          "description": "holds the light of Eärendil's star"
+        },
+        "source": "llm",
+        "id": "6560108643290394169"
+      },
+      {
+        "name": "Sting",
+        "type": "PRODUCT",
+        "properties": {
+          "description": "Frodo's sword"
+        },
+        "source": "llm",
+        "id": "2527327909752275598"
+      },
+      {
+        "name": "Sam",
+        "type": "PERSON",
+        "properties": {
+          "role": "companion to Frodo"
+        },
+        "source": "llm",
+        "id": "-192857965362449311"
+      },
+      {
+        "name": "Orcs",
+        "type": "ORGANIZATION",
+        "properties": {
+          "description": "captured Frodo"
+        },
+        "source": "llm",
+        "id": "6029593391915222286"
+      },
+      {
+        "name": "Sauron",
+        "type": "PERSON",
+        "properties": {
+          "role": "antagonist"
+        },
+        "source": "llm",
+        "id": "-8908974631898245863"
+      },
+      {
+        "name": "Gondor",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm",
+        "id": "1748433185024675862"
+      },
+      {
+        "name": "Minas Tirith",
+        "type": "LOCATION",
+        "properties": {
+          "description": "city"
+        },
+        "source": "llm",
+        "id": "-4024116596008436272"
+      },
+      {
+        "name": "Denethor",
+        "type": "PERSON",
+        "properties": {
+          "role": "Steward of Gondor"
+        },
+        "source": "llm",
+        "id": "5761410684072748084"
+      },
+      {
+        "name": "Rohan",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm",
+        "id": "8978966344066151244"
+      },
+      {
+        "name": "Aragorn",
+        "type": "PERSON",
+        "properties": {
+          "role": "leader"
+        },
+        "source": "llm",
+        "id": "4594354385695338916"
+      },
+      {
+        "name": "Éowyn",
+        "type": "PERSON",
+        "properties": {
+          "relation": "Théoden's niece",
+          "role": "warrior"
+        },
+        "source": "llm",
+        "id": "6352305091713906222"
+      },
+      {
+        "name": "Arwen",
+        "type": "PERSON",
+        "properties": {
+          "relation": "Elrond's daughter"
+        },
+        "source": "llm",
+        "id": "7886331652543578714"
+      },
+      {
+        "name": "Éomer",
+        "type": "PERSON",
+        "properties": {
+          "role": "King of Rohan"
+        },
+        "source": "llm",
+        "id": "7242597356734218071"
+      },
+      {
+        "name": "Bag End",
+        "type": "FACILITY",
+        "properties": {
+          "description": "Frodo's home"
+        },
+        "source": "llm",
+        "id": "5757599945933621164"
+      },
+      {
+        "name": "Rosie Cotton",
+        "type": "PERSON",
+        "properties": {
+          "relation": "Sam's wife"
+        },
+        "source": "llm",
+        "id": "1606885684991462471"
+      },
+      {
+        "name": "Grey Havens",
+        "type": "LOCATION",
+        "properties": {
+          "description": "departure point"
+        },
+        "source": "llm",
+        "id": "1890149074579492896"
+      }
+    ],
+    "relations": [
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard",
+            "actions": [
+              "proves the Ring's identity",
+              "counsels Frodo",
+              "confronts the Balrog",
+              "becomes Gandalf the White"
+            ]
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "PROVES",
+        "confidence": 1.0,
+        "properties": {
+          "action": "throws the One Ring into Frodo's fireplace"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Bilbo Baggins",
+          "type": "PERSON",
+          "properties": {
+            "role": "previous Ringbearer",
+            "actions": [
+              "leaves the Ring to Frodo"
+            ]
+          },
+          "source": "llm",
+          "id": "4442729296908160104"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "LEAVES",
+        "confidence": 1.0,
+        "properties": {
+          "item": "the One Ring",
+          "occasion": "birthday"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard",
+            "actions": [
+              "proves the Ring's identity",
+              "counsels Frodo",
+              "confronts the Balrog",
+              "becomes Gandalf the White"
+            ]
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "COUNSELS",
+        "confidence": 1.0,
+        "properties": {
+          "advice": "take the One Ring away from the Shire"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Pippin Took",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's cousin",
+            "actions": [
+              "joins Frodo's journey",
+              "captured by Orcs",
+              "steals the palantír"
+            ]
+          },
+          "source": "llm",
+          "id": "1802791408147339038"
+        },
+        "relation": "SETS OUT WITH",
+        "confidence": 1.0,
+        "properties": {
+          "companion": "Sam Gamgee"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Sam Gamgee",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's gardener",
+            "actions": [
+              "joins Frodo's journey",
+              "wounds Shelob",
+              "takes the Ring after Frodo's apparent death"
+            ]
+          },
+          "source": "llm",
+          "id": "8908687451403208564"
+        },
+        "relation": "SETS OUT WITH",
+        "confidence": 1.0,
+        "properties": {
+          "companion": "Pippin Took"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Merry Brandybuck",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's friend",
+            "actions": [
+              "joins Frodo's journey",
+              "captured by Orcs"
+            ]
+          },
+          "source": "llm",
+          "id": "3616806516497482922"
+        },
+        "relation": "MEETS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Bucklebury Ferry"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Merry Brandybuck",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's friend",
+            "actions": [
+              "joins Frodo's journey",
+              "captured by Orcs"
+            ]
+          },
+          "source": "llm",
+          "id": "3616806516497482922"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "JOINS",
+        "confidence": 1.0,
+        "properties": {
+          "purpose": "journey to destroy the One Ring"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Pippin Took",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's cousin",
+            "actions": [
+              "joins Frodo's journey",
+              "captured by Orcs",
+              "steals the palantír"
+            ]
+          },
+          "source": "llm",
+          "id": "1802791408147339038"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "JOINS",
+        "confidence": 1.0,
+        "properties": {
+          "purpose": "journey to destroy the One Ring"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Strider",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ranger",
+            "real_name": "Aragorn",
+            "actions": [
+              "guides the group to Rivendell",
+              "fights off Black Riders",
+              "treats Frodo with athelas"
+            ]
+          },
+          "source": "llm",
+          "id": "-926130774340173704"
+        },
+        "relation": "MEETS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Bree"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Strider",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ranger",
+            "real_name": "Aragorn",
+            "actions": [
+              "guides the group to Rivendell",
+              "fights off Black Riders",
+              "treats Frodo with athelas"
+            ]
+          },
+          "source": "llm",
+          "id": "-926130774340173704"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "GUIDES",
+        "confidence": 1.0,
+        "properties": {
+          "destination": "Rivendell"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Elrond",
+          "type": "PERSON",
+          "properties": {
+            "role": "Elf lord",
+            "actions": [
+              "cares for Frodo",
+              "hosts the Council of Elrond",
+              "summons flood waters at the Ford of Bruinen"
+            ]
+          },
+          "source": "llm",
+          "id": "8146058189369621911"
+        },
+        "relation": "RECOVERS UNDER CARE OF",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Rivendell"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard",
+            "actions": [
+              "proves the Ring's identity",
+              "counsels Frodo",
+              "confronts the Balrog",
+              "becomes Gandalf the White"
+            ]
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "INFORMS",
+        "confidence": 1.0,
+        "properties": {
+          "information": "Black Riders are the Nazgûl"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Council of Elrond",
+          "type": "EVENT",
+          "properties": {
+            "role": "meeting to decide the Ring's fate",
+            "actions": [
+              "decides to destroy the Ring",
+              "reveals Aragorn's identity"
+            ]
+          },
+          "source": "llm",
+          "id": "-7882374959864511337"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "DECIDES",
+        "confidence": 1.0,
+        "properties": {
+          "decision": "destroy the One Ring in Mount Doom"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Mount Doom",
+          "type": "LOCATION",
+          "properties": {
+            "role": "volcano in Mordor",
+            "actions": [
+              "destination for the Ring's destruction"
+            ]
+          },
+          "source": "llm",
+          "id": "462319507222878138"
+        },
+        "relation": "TAKES TASK TO DESTROY THE ONE RING IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Elrond",
+          "type": "PERSON",
+          "properties": {
+            "role": "Elf lord",
+            "actions": [
+              "cares for Frodo",
+              "hosts the Council of Elrond",
+              "summons flood waters at the Ford of Bruinen"
+            ]
+          },
+          "source": "llm",
+          "id": "8146058189369621911"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "CHOOSES COMPANIONS FOR",
+        "confidence": 1.0,
+        "properties": {
+          "companions": "Sam, Merry, Pippin, Gandalf, Aragorn, Boromir, Legolas, Gimli"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Galadriel",
+          "type": "PERSON",
+          "properties": {
+            "role": "Lady of Lothlórien",
+            "actions": [
+              "tests the Fellowship's loyalty",
+              "gives magical gifts",
+              "refuses the Ring"
+            ]
+          },
+          "source": "llm",
+          "id": "1547392391249103087"
+        },
+        "relation": "OFFERS",
+        "confidence": 1.0,
+        "properties": {
+          "item": "the One Ring"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Galadriel",
+          "type": "PERSON",
+          "properties": {
+            "role": "Lady of Lothlórien",
+            "actions": [
+              "tests the Fellowship's loyalty",
+              "gives magical gifts",
+              "refuses the Ring"
+            ]
+          },
+          "source": "llm",
+          "id": "1547392391249103087"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "REFUSES",
+        "confidence": 1.0,
+        "properties": {
+          "item": "the One Ring"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Sam Gamgee",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's gardener",
+            "actions": [
+              "joins Frodo's journey",
+              "wounds Shelob",
+              "takes the Ring after Frodo's apparent death"
+            ]
+          },
+          "source": "llm",
+          "id": "8908687451403208564"
+        },
+        "relation": "CHOOSES TO GO ALONE WITH",
+        "confidence": 1.0,
+        "properties": {
+          "destination": "Mordor"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Boromir",
+          "type": "PERSON",
+          "properties": {
+            "role": "son of the Steward of Gondor",
+            "actions": [
+              "tries to take the Ring",
+              "killed by Orcs"
+            ]
+          },
+          "source": "llm",
+          "id": "-2920287868492191536"
+        },
+        "to_entity": {
+          "name": "Pippin Took",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's cousin",
+            "actions": [
+              "joins Frodo's journey",
+              "captured by Orcs",
+              "steals the palantír"
+            ]
+          },
+          "source": "llm",
+          "id": "1802791408147339038"
+        },
+        "relation": "PROTECTS",
+        "confidence": 1.0,
+        "properties": {
+          "from": "Orcs"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard",
+            "actions": [
+              "proves the Ring's identity",
+              "counsels Frodo",
+              "confronts the Balrog",
+              "becomes Gandalf the White"
+            ]
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Saruman",
+          "type": "PERSON",
+          "properties": {
+            "role": "chief wizard",
+            "actions": [
+              "betrays the Council",
+              "ensnared by Sauron",
+              "stripped of powers by Gandalf"
+            ]
+          },
+          "source": "llm",
+          "id": "5562868770883654389"
+        },
+        "relation": "REPLACES",
+        "confidence": 1.0,
+        "properties": {
+          "role": "chief of the wizards"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard",
+            "actions": [
+              "proves the Ring's identity",
+              "counsels Frodo",
+              "confronts the Balrog",
+              "becomes Gandalf the White"
+            ]
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Théoden",
+          "type": "PERSON",
+          "properties": {
+            "role": "King of Rohan",
+            "actions": [
+              "freed from Saruman's influence",
+              "leads army to Helm's Deep"
+            ]
+          },
+          "source": "llm",
+          "id": "4453002303469455939"
+        },
+        "relation": "FREES",
+        "confidence": 1.0,
+        "properties": {
+          "from": "influence of Gríma Wormtongue"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard",
+            "actions": [
+              "proves the Ring's identity",
+              "counsels Frodo",
+              "confronts the Balrog",
+              "becomes Gandalf the White"
+            ]
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Treebeard",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ent",
+            "actions": [
+              "befriends Merry and Pippin",
+              "destroys Isengard"
+            ]
+          },
+          "source": "llm",
+          "id": "3482714603617624533"
+        },
+        "relation": "CONVINCES",
+        "confidence": 1.0,
+        "properties": {
+          "action": "send an army of Huorns to aid Théoden"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Gollum",
+          "type": "PERSON",
+          "properties": {
+            "role": "previous Ringbearer",
+            "actions": [
+              "guides Frodo and Sam",
+              "debates with Sméagol",
+              "leads them into Shelob's lair"
+            ]
+          },
+          "source": "llm",
+          "id": "-373612883448161743"
+        },
+        "relation": "CAPTURES",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Emyn Muil"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Gollum",
+          "type": "PERSON",
+          "properties": {
+            "role": "previous Ringbearer",
+            "actions": [
+              "guides Frodo and Sam",
+              "debates with Sméagol",
+              "leads them into Shelob's lair"
+            ]
+          },
+          "source": "llm",
+          "id": "-373612883448161743"
+        },
+        "relation": "MAKES SWEAR TO SERVE",
+        "confidence": 1.0,
+        "properties": {
+          "role": "Ringbearer"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "role": "great spider",
+            "actions": [
+              "attacks Frodo and Sam",
+              "wounded by Sam"
+            ]
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "relation": "HOLDS UP",
+        "confidence": 1.0,
+        "properties": {
+          "item": "Phial of Galadriel"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "role": "great spider",
+            "actions": [
+              "attacks Frodo and Sam",
+              "wounded by Sam"
+            ]
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "relation": "CUTS THROUGH",
+        "confidence": 1.0,
+        "properties": {
+          "item": "giant web",
+          "tool": "Sting"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Sam Gamgee",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's gardener",
+            "actions": [
+              "joins Frodo's journey",
+              "wounds Shelob",
+              "takes the Ring after Frodo's apparent death"
+            ]
+          },
+          "source": "llm",
+          "id": "8908687451403208564"
+        },
+        "to_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "role": "great spider",
+            "actions": [
+              "attacks Frodo and Sam",
+              "wounded by Sam"
+            ]
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "relation": "WOUNDS",
+        "confidence": 1.0,
+        "properties": {
+          "tool": "Sting"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Sam Gamgee",
+          "type": "PERSON",
+          "properties": {
+            "role": "Frodo's gardener",
+            "actions": [
+              "joins Frodo's journey",
+              "wounds Shelob",
+              "takes the Ring after Frodo's apparent death"
+            ]
+          },
+          "source": "llm",
+          "id": "8908687451403208564"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ringbearer",
+            "actions": [
+              "takes the Ring to Mordor",
+              "recovers in Rivendell",
+              "offers the Ring to Galadriel",
+              "captures Gollum"
+            ]
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "BELIEVES DEAD",
+        "confidence": 1.0,
+        "properties": {
+          "action": "takes the Ring to continue the quest"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Gollum",
+          "type": "PERSON",
+          "properties": {
+            "role": "guide"
+          },
+          "source": "llm",
+          "id": "-373612883448161743"
+        },
+        "to_entity": {
+          "name": "Ithilien",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-138449134611939874"
+        },
+        "relation": "KNOWS OF (A SECRET PASS)",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Faramir",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Boromir's brother",
+            "role": "ranger leader"
+          },
+          "source": "llm",
+          "id": "-3856527014728986785"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "RELEASES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Faramir",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Boromir's brother",
+            "role": "ranger leader"
+          },
+          "source": "llm",
+          "id": "-3856527014728986785"
+        },
+        "to_entity": {
+          "name": "Sam",
+          "type": "PERSON",
+          "properties": {
+            "role": "companion to Frodo"
+          },
+          "source": "llm",
+          "id": "-192857965362449311"
+        },
+        "relation": "RELEASES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Faramir",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Boromir's brother",
+            "role": "ranger leader"
+          },
+          "source": "llm",
+          "id": "-3856527014728986785"
+        },
+        "to_entity": {
+          "name": "Gollum",
+          "type": "PERSON",
+          "properties": {
+            "role": "guide"
+          },
+          "source": "llm",
+          "id": "-373612883448161743"
+        },
+        "relation": "RELEASES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Gollum",
+          "type": "PERSON",
+          "properties": {
+            "role": "guide"
+          },
+          "source": "llm",
+          "id": "-373612883448161743"
+        },
+        "to_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "description": "great spider"
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "relation": "LEADS (HOBBITS) TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "description": "great spider"
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "to_entity": {
+          "name": "Cirith Ungol",
+          "type": "LOCATION",
+          "properties": {
+            "description": "tunnels"
+          },
+          "source": "llm",
+          "id": "5857169602351560035"
+        },
+        "relation": "LOCATED IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Phial of Galadriel",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "holds the light of Eärendil's star"
+          },
+          "source": "llm",
+          "id": "6560108643290394169"
+        },
+        "relation": "HOLDS UP",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Phial of Galadriel",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "holds the light of Eärendil's star"
+          },
+          "source": "llm",
+          "id": "6560108643290394169"
+        },
+        "to_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "description": "great spider"
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "relation": "DRIVES BACK",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Sting",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Frodo's sword"
+          },
+          "source": "llm",
+          "id": "2527327909752275598"
+        },
+        "relation": "USES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "description": "great spider"
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "POISONS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sam",
+          "type": "PERSON",
+          "properties": {
+            "role": "companion to Frodo"
+          },
+          "source": "llm",
+          "id": "-192857965362449311"
+        },
+        "to_entity": {
+          "name": "Sting",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "Frodo's sword"
+          },
+          "source": "llm",
+          "id": "2527327909752275598"
+        },
+        "relation": "PICKS UP",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sam",
+          "type": "PERSON",
+          "properties": {
+            "role": "companion to Frodo"
+          },
+          "source": "llm",
+          "id": "-192857965362449311"
+        },
+        "to_entity": {
+          "name": "Phial of Galadriel",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "holds the light of Eärendil's star"
+          },
+          "source": "llm",
+          "id": "6560108643290394169"
+        },
+        "relation": "PICKS UP",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sam",
+          "type": "PERSON",
+          "properties": {
+            "role": "companion to Frodo"
+          },
+          "source": "llm",
+          "id": "-192857965362449311"
+        },
+        "to_entity": {
+          "name": "Shelob",
+          "type": "PERSON",
+          "properties": {
+            "description": "great spider"
+          },
+          "source": "llm",
+          "id": "-5548001971564192185"
+        },
+        "relation": "WOUNDS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Orcs",
+          "type": "ORGANIZATION",
+          "properties": {
+            "description": "captured Frodo"
+          },
+          "source": "llm",
+          "id": "6029593391915222286"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "TAKE",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sauron",
+          "type": "PERSON",
+          "properties": {
+            "role": "antagonist"
+          },
+          "source": "llm",
+          "id": "-8908974631898245863"
+        },
+        "to_entity": {
+          "name": "Gondor",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "1748433185024675862"
+        },
+        "relation": "SENDS ARMY AGAINST",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard"
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Minas Tirith",
+          "type": "LOCATION",
+          "properties": {
+            "description": "city"
+          },
+          "source": "llm",
+          "id": "-4024116596008436272"
+        },
+        "relation": "ARRIVES AT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Gandalf",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard"
+          },
+          "source": "llm",
+          "id": "-527447314621580385"
+        },
+        "to_entity": {
+          "name": "Denethor",
+          "type": "PERSON",
+          "properties": {
+            "role": "Steward of Gondor"
+          },
+          "source": "llm",
+          "id": "5761410684072748084"
+        },
+        "relation": "WARNS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Théoden",
+          "type": "PERSON",
+          "properties": {
+            "role": "King of Rohan"
+          },
+          "source": "llm",
+          "id": "4453002303469455939"
+        },
+        "to_entity": {
+          "name": "Rohan",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "8978966344066151244"
+        },
+        "relation": "LEADS",
+        "confidence": 1,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Rohan",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "8978966344066151244"
+        },
+        "to_entity": {
+          "name": "Gondor",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "1748433185024675862"
+        },
+        "relation": "GOES TO AID OF",
+        "confidence": 1,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sam",
+          "type": "PERSON",
+          "properties": {
+            "role": "companion to Frodo"
+          },
+          "source": "llm",
+          "id": "-192857965362449311"
+        },
+        "to_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "relation": "RESCUES",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Cirith Ungol"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Aragorn",
+          "type": "PERSON",
+          "properties": {
+            "role": "leader"
+          },
+          "source": "llm",
+          "id": "4594354385695338916"
+        },
+        "to_entity": {
+          "name": "Arwen",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Elrond's daughter"
+          },
+          "source": "llm",
+          "id": "7886331652543578714"
+        },
+        "relation": "WEDS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Éomer",
+          "type": "PERSON",
+          "properties": {
+            "role": "King of Rohan"
+          },
+          "source": "llm",
+          "id": "7242597356734218071"
+        },
+        "to_entity": {
+          "name": "Rohan",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "8978966344066151244"
+        },
+        "relation": "CROWNED KING OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Éowyn",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Théoden's niece",
+            "role": "warrior"
+          },
+          "source": "llm",
+          "id": "6352305091713906222"
+        },
+        "to_entity": {
+          "name": "Faramir",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Boromir's brother",
+            "role": "ranger leader"
+          },
+          "source": "llm",
+          "id": "-3856527014728986785"
+        },
+        "relation": "ENGAGED TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Faramir",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Boromir's brother",
+            "role": "ranger leader"
+          },
+          "source": "llm",
+          "id": "-3856527014728986785"
+        },
+        "to_entity": {
+          "name": "Gondor",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "1748433185024675862"
+        },
+        "relation": "STEWARD OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Faramir",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Boromir's brother",
+            "role": "ranger leader"
+          },
+          "source": "llm",
+          "id": "-3856527014728986785"
+        },
+        "to_entity": {
+          "name": "Ithilien",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-138449134611939874"
+        },
+        "relation": "PRINCE OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Saruman",
+          "type": "PERSON",
+          "properties": {
+            "role": "wizard"
+          },
+          "source": "llm",
+          "id": "5562868770883654389"
+        },
+        "to_entity": {
+          "name": "Bag End",
+          "type": "FACILITY",
+          "properties": {
+            "description": "Frodo's home"
+          },
+          "source": "llm",
+          "id": "5757599945933621164"
+        },
+        "relation": "TAKES OVER",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Bag End",
+          "type": "FACILITY",
+          "properties": {
+            "description": "Frodo's home"
+          },
+          "source": "llm",
+          "id": "5757599945933621164"
+        },
+        "relation": "LIVES IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sam",
+          "type": "PERSON",
+          "properties": {
+            "role": "companion to Frodo"
+          },
+          "source": "llm",
+          "id": "-192857965362449311"
+        },
+        "to_entity": {
+          "name": "Rosie Cotton",
+          "type": "PERSON",
+          "properties": {
+            "relation": "Sam's wife"
+          },
+          "source": "llm",
+          "id": "1606885684991462471"
+        },
+        "relation": "MARRIES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Frodo",
+          "type": "PERSON",
+          "properties": {
+            "role": "Ring-bearer"
+          },
+          "source": "llm",
+          "id": "1577087164089344930"
+        },
+        "to_entity": {
+          "name": "Grey Havens",
+          "type": "LOCATION",
+          "properties": {
+            "description": "departure point"
+          },
+          "source": "llm",
+          "id": "1890149074579492896"
+        },
+        "relation": "SAILS FROM",
+        "confidence": 1.0,
+        "properties": {}
+      }
+    ]
+  }
+}

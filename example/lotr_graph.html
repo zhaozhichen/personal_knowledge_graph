@@ -1,0 +1,463 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-527447314621580385", "label": "Gandalf", "properties": {"actions": ["proves the Ring\u0027s identity", "counsels Frodo", "confronts the Balrog", "becomes Gandalf the White"], "role": "wizard"}, "shape": "dot", "size": 10, "title": "Gandalf (PERSON)\n\nProperties:\n\u2022 role: wizard\n\u2022 actions: [\"proves the Ring\u0027s identity\", \u0027counsels Frodo\u0027, \u0027confronts the Balrog\u0027, \u0027becomes Gandalf the White\u0027]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "1577087164089344930", "label": "Frodo", "properties": {"actions": ["takes the Ring to Mordor", "recovers in Rivendell", "offers the Ring to Galadriel", "captures Gollum"], "role": "Ringbearer"}, "shape": "dot", "size": 10, "title": "Frodo (PERSON)\n\nProperties:\n\u2022 role: Ringbearer\n\u2022 actions: [\u0027takes the Ring to Mordor\u0027, \u0027recovers in Rivendell\u0027, \u0027offers the Ring to Galadriel\u0027, \u0027captures Gollum\u0027]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "5562868770883654389", "label": "Saruman", "properties": {"actions": ["betrays the Council", "ensnared by Sauron", "stripped of powers by Gandalf"], "role": "chief wizard"}, "shape": "dot", "size": 10, "title": "Saruman (PERSON)\n\nProperties:\n\u2022 role: chief wizard\n\u2022 actions: [\u0027betrays the Council\u0027, \u0027ensnared by Sauron\u0027, \u0027stripped of powers by Gandalf\u0027]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "4453002303469455939", "label": "Th\u00e9oden", "properties": {"actions": ["freed from Saruman\u0027s influence", "leads army to Helm\u0027s Deep"], "role": "King of Rohan"}, "shape": "dot", "size": 10, "title": "Th\u00e9oden (PERSON)\n\nProperties:\n\u2022 role: King of Rohan\n\u2022 actions: [\"freed from Saruman\u0027s influence\", \"leads army to Helm\u0027s Deep\"]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "3482714603617624533", "label": "Treebeard", "properties": {"actions": ["befriends Merry and Pippin", "destroys Isengard"], "role": "Ent"}, "shape": "dot", "size": 10, "title": "Treebeard (PERSON)\n\nProperties:\n\u2022 role: Ent\n\u2022 actions: [\u0027befriends Merry and Pippin\u0027, \u0027destroys Isengard\u0027]"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "-4024116596008436272", "label": "Minas Tirith", "properties": {"description": "city"}, "shape": "dot", "size": 10, "title": "Minas Tirith (LOCATION)\n\nProperties:\n\u2022 description: city"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "5761410684072748084", "label": "Denethor", "properties": {"role": "Steward of Gondor"}, "shape": "dot", "size": 10, "title": "Denethor (PERSON)\n\nProperties:\n\u2022 role: Steward of Gondor"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "1802791408147339038", "label": "Pippin Took", "properties": {"actions": ["joins Frodo\u0027s journey", "captured by Orcs", "steals the palant\u00edr"], "role": "Frodo\u0027s cousin"}, "shape": "dot", "size": 10, "title": "Pippin Took (PERSON)\n\nProperties:\n\u2022 role: Frodo\u0027s cousin\n\u2022 actions: [\"joins Frodo\u0027s journey\", \u0027captured by Orcs\u0027, \u0027steals the palant\u00edr\u0027]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "8908687451403208564", "label": "Sam Gamgee", "properties": {"actions": ["joins Frodo\u0027s journey", "wounds Shelob", "takes the Ring after Frodo\u0027s apparent death"], "role": "Frodo\u0027s gardener"}, "shape": "dot", "size": 10, "title": "Sam Gamgee (PERSON)\n\nProperties:\n\u2022 role: Frodo\u0027s gardener\n\u2022 actions: [\"joins Frodo\u0027s journey\", \u0027wounds Shelob\u0027, \"takes the Ring after Frodo\u0027s apparent death\"]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "3616806516497482922", "label": "Merry Brandybuck", "properties": {"actions": ["joins Frodo\u0027s journey", "captured by Orcs"], "role": "Frodo\u0027s friend"}, "shape": "dot", "size": 10, "title": "Merry Brandybuck (PERSON)\n\nProperties:\n\u2022 role: Frodo\u0027s friend\n\u2022 actions: [\"joins Frodo\u0027s journey\", \u0027captured by Orcs\u0027]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-926130774340173704", "label": "Strider", "properties": {"actions": ["guides the group to Rivendell", "fights off Black Riders", "treats Frodo with athelas"], "real_name": "Aragorn", "role": "Ranger"}, "shape": "dot", "size": 10, "title": "Strider (PERSON)\n\nProperties:\n\u2022 role: Ranger\n\u2022 real_name: Aragorn\n\u2022 actions: [\u0027guides the group to Rivendell\u0027, \u0027fights off Black Riders\u0027, \u0027treats Frodo with athelas\u0027]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "8146058189369621911", "label": "Elrond", "properties": {"actions": ["cares for Frodo", "hosts the Council of Elrond", "summons flood waters at the Ford of Bruinen"], "role": "Elf lord"}, "shape": "dot", "size": 10, "title": "Elrond (PERSON)\n\nProperties:\n\u2022 role: Elf lord\n\u2022 actions: [\u0027cares for Frodo\u0027, \u0027hosts the Council of Elrond\u0027, \u0027summons flood waters at the Ford of Bruinen\u0027]"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "462319507222878138", "label": "Mount Doom", "properties": {"actions": ["destination for the Ring\u0027s destruction"], "role": "volcano in Mordor"}, "shape": "dot", "size": 10, "title": "Mount Doom (LOCATION)\n\nProperties:\n\u2022 role: volcano in Mordor\n\u2022 actions: [\"destination for the Ring\u0027s destruction\"]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "1547392391249103087", "label": "Galadriel", "properties": {"actions": ["tests the Fellowship\u0027s loyalty", "gives magical gifts", "refuses the Ring"], "role": "Lady of Lothl\u00f3rien"}, "shape": "dot", "size": 10, "title": "Galadriel (PERSON)\n\nProperties:\n\u2022 role: Lady of Lothl\u00f3rien\n\u2022 actions: [\"tests the Fellowship\u0027s loyalty\", \u0027gives magical gifts\u0027, \u0027refuses the Ring\u0027]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-373612883448161743", "label": "Gollum", "properties": {"actions": ["guides Frodo and Sam", "debates with Sm\u00e9agol", "leads them into Shelob\u0027s lair"], "role": "previous Ringbearer"}, "shape": "dot", "size": 10, "title": "Gollum (PERSON)\n\nProperties:\n\u2022 role: previous Ringbearer\n\u2022 actions: [\u0027guides Frodo and Sam\u0027, \u0027debates with Sm\u00e9agol\u0027, \"leads them into Shelob\u0027s lair\"]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-5548001971564192185", "label": "Shelob", "properties": {"actions": ["attacks Frodo and Sam", "wounded by Sam"], "description": "great spider", "role": "great spider"}, "shape": "dot", "size": 10, "title": "Shelob (PERSON)\n\nProperties:\n\u2022 role: great spider\n\u2022 actions: [\u0027attacks Frodo and Sam\u0027, \u0027wounded by Sam\u0027]\n\u2022 description: great spider"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "6560108643290394169", "label": "Phial of Galadriel", "properties": {"description": "holds the light of E\u00e4rendil\u0027s star"}, "shape": "dot", "size": 10, "title": "Phial of Galadriel (PRODUCT)\n\nProperties:\n\u2022 description: holds the light of E\u00e4rendil\u0027s star"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "2527327909752275598", "label": "Sting", "properties": {"description": "Frodo\u0027s sword"}, "shape": "dot", "size": 10, "title": "Sting (PRODUCT)\n\nProperties:\n\u2022 description: Frodo\u0027s sword"}, {"color": "#6A5ACD", "font": {"color": "#6A5ACD"}, "id": "5757599945933621164", "label": "Bag End", "properties": {"description": "Frodo\u0027s home"}, "shape": "dot", "size": 10, "title": "Bag End (FACILITY)\n\nProperties:\n\u2022 description: Frodo\u0027s home"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "1890149074579492896", "label": "Grey Havens", "properties": {"description": "departure point"}, "shape": "dot", "size": 10, "title": "Grey Havens (LOCATION)\n\nProperties:\n\u2022 description: departure point"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "4442729296908160104", "label": "Bilbo Baggins", "properties": {"actions": ["leaves the Ring to Frodo"], "role": "previous Ringbearer"}, "shape": "dot", "size": 10, "title": "Bilbo Baggins (PERSON)\n\nProperties:\n\u2022 role: previous Ringbearer\n\u2022 actions: [\u0027leaves the Ring to Frodo\u0027]"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "-138449134611939874", "label": "Ithilien", "properties": {}, "shape": "dot", "size": 10, "title": "Ithilien (LOCATION)"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "5857169602351560035", "label": "Cirith Ungol", "properties": {"description": "tunnels"}, "shape": "dot", "size": 10, "title": "Cirith Ungol (LOCATION)\n\nProperties:\n\u2022 description: tunnels"}, {"color": "#FFD700", "font": {"color": "#FFD700"}, "id": "-7882374959864511337", "label": "Council of Elrond", "properties": {"actions": ["decides to destroy the Ring", "reveals Aragorn\u0027s identity"], "role": "meeting to decide the Ring\u0027s fate"}, "shape": "dot", "size": 10, "title": "Council of Elrond (EVENT)\n\nProperties:\n\u2022 role: meeting to decide the Ring\u0027s fate\n\u2022 actions: [\u0027decides to destroy the Ring\u0027, \"reveals Aragorn\u0027s identity\"]"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-2920287868492191536", "label": "Boromir", "properties": {"actions": ["tries to take the Ring", "killed by Orcs"], "role": "son of the Steward of Gondor"}, "shape": "dot", "size": 10, "title": "Boromir (PERSON)\n\nProperties:\n\u2022 role: son of the Steward of Gondor\n\u2022 actions: [\u0027tries to take the Ring\u0027, \u0027killed by Orcs\u0027]"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "8978966344066151244", "label": "Rohan", "properties": {}, "shape": "dot", "size": 10, "title": "Rohan (LOCATION)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-3856527014728986785", "label": "Faramir", "properties": {"relation": "Boromir\u0027s brother", "role": "ranger leader"}, "shape": "dot", "size": 10, "title": "Faramir (PERSON)\n\nProperties:\n\u2022 relation: Boromir\u0027s brother\n\u2022 role: ranger leader"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-192857965362449311", "label": "Sam", "properties": {"role": "companion to Frodo"}, "shape": "dot", "size": 10, "title": "Sam (PERSON)\n\nProperties:\n\u2022 role: companion to Frodo"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "1748433185024675862", "label": "Gondor", "properties": {}, "shape": "dot", "size": 10, "title": "Gondor (LOCATION)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "1606885684991462471", "label": "Rosie Cotton", "properties": {"relation": "Sam\u0027s wife"}, "shape": "dot", "size": 10, "title": "Rosie Cotton (PERSON)\n\nProperties:\n\u2022 relation: Sam\u0027s wife"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "6029593391915222286", "label": "Orcs", "properties": {"description": "captured Frodo"}, "shape": "dot", "size": 10, "title": "Orcs (ORGANIZATION)\n\nProperties:\n\u2022 description: captured Frodo"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-8908974631898245863", "label": "Sauron", "properties": {"role": "antagonist"}, "shape": "dot", "size": 10, "title": "Sauron (PERSON)\n\nProperties:\n\u2022 role: antagonist"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "4594354385695338916", "label": "Aragorn", "properties": {"role": "leader"}, "shape": "dot", "size": 10, "title": "Aragorn (PERSON)\n\nProperties:\n\u2022 role: leader"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "7886331652543578714", "label": "Arwen", "properties": {"relation": "Elrond\u0027s daughter"}, "shape": "dot", "size": 10, "title": "Arwen (PERSON)\n\nProperties:\n\u2022 relation: Elrond\u0027s daughter"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "6352305091713906222", "label": "\u00c9owyn", "properties": {"relation": "Th\u00e9oden\u0027s niece", "role": "warrior"}, "shape": "dot", "size": 10, "title": "\u00c9owyn (PERSON)\n\nProperties:\n\u2022 relation: Th\u00e9oden\u0027s niece\n\u2022 role: warrior"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "7242597356734218071", "label": "\u00c9omer", "properties": {"role": "King of Rohan"}, "shape": "dot", "size": 10, "title": "\u00c9omer (PERSON)\n\nProperties:\n\u2022 role: King of Rohan"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#000000", "from": "-527447314621580385", "label": "INFORMS", "properties": {"information": "Black Riders are the Nazg\u00fbl"}, "title": "INFORMS\n\nProperties:\n\u2022 information: Black Riders are the Nazg\u00fbl", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-527447314621580385", "label": "REPLACES", "properties": {"role": "chief of the wizards"}, "title": "REPLACES\n\nProperties:\n\u2022 role: chief of the wizards", "to": "5562868770883654389", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-527447314621580385", "label": "FREES", "properties": {"from": "influence of Gr\u00edma Wormtongue"}, "title": "FREES\n\nProperties:\n\u2022 from: influence of Gr\u00edma Wormtongue", "to": "4453002303469455939", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-527447314621580385", "label": "CONVINCES", "properties": {"action": "send an army of Huorns to aid Th\u00e9oden"}, "title": "CONVINCES\n\nProperties:\n\u2022 action: send an army of Huorns to aid Th\u00e9oden", "to": "3482714603617624533", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-527447314621580385", "label": "ARRIVES AT", "properties": {}, "title": "ARRIVES AT", "to": "-4024116596008436272", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-527447314621580385", "label": "WARNS", "properties": {}, "title": "WARNS", "to": "5761410684072748084", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "SETS OUT WITH", "properties": {"companion": "Sam Gamgee"}, "title": "SETS OUT WITH\n\nProperties:\n\u2022 companion: Sam Gamgee", "to": "1802791408147339038", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "CHOOSES TO GO ALONE WITH", "properties": {"destination": "Mordor"}, "title": "CHOOSES TO GO ALONE WITH\n\nProperties:\n\u2022 destination: Mordor", "to": "8908687451403208564", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "MEETS", "properties": {"location": "Bucklebury Ferry"}, "title": "MEETS\n\nProperties:\n\u2022 location: Bucklebury Ferry", "to": "3616806516497482922", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "MEETS", "properties": {"location": "Bree"}, "title": "MEETS\n\nProperties:\n\u2022 location: Bree", "to": "-926130774340173704", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "RECOVERS UNDER CARE OF", "properties": {"location": "Rivendell"}, "title": "RECOVERS UNDER CARE OF\n\nProperties:\n\u2022 location: Rivendell", "to": "8146058189369621911", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "TAKES TASK TO DESTROY THE ONE RING IN", "properties": {}, "title": "TAKES TASK TO DESTROY THE ONE RING IN", "to": "462319507222878138", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "OFFERS", "properties": {"item": "the One Ring"}, "title": "OFFERS\n\nProperties:\n\u2022 item: the One Ring", "to": "1547392391249103087", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "MAKES SWEAR TO SERVE", "properties": {"role": "Ringbearer"}, "title": "MAKES SWEAR TO SERVE\n\nProperties:\n\u2022 role: Ringbearer", "to": "-373612883448161743", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "CUTS THROUGH", "properties": {"item": "giant web", "tool": "Sting"}, "title": "CUTS THROUGH\n\nProperties:\n\u2022 item: giant web\n\u2022 tool: Sting", "to": "-5548001971564192185", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "HOLDS UP", "properties": {}, "title": "HOLDS UP", "to": "6560108643290394169", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "USES", "properties": {}, "title": "USES", "to": "2527327909752275598", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "LIVES IN", "properties": {}, "title": "LIVES IN", "to": "5757599945933621164", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1577087164089344930", "label": "SAILS FROM", "properties": {}, "title": "SAILS FROM", "to": "1890149074579492896", "width": 1}, {"arrows": "to", "color": "#000000", "from": "4442729296908160104", "label": "LEAVES", "properties": {"item": "the One Ring", "occasion": "birthday"}, "title": "LEAVES\n\nProperties:\n\u2022 item: the One Ring\n\u2022 occasion: birthday", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8908687451403208564", "label": "WOUNDS", "properties": {"tool": "Sting"}, "title": "WOUNDS\n\nProperties:\n\u2022 tool: Sting", "to": "-5548001971564192185", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8908687451403208564", "label": "BELIEVES DEAD", "properties": {"action": "takes the Ring to continue the quest"}, "title": "BELIEVES DEAD\n\nProperties:\n\u2022 action: takes the Ring to continue the quest", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1802791408147339038", "label": "JOINS", "properties": {"purpose": "journey to destroy the One Ring"}, "title": "JOINS\n\nProperties:\n\u2022 purpose: journey to destroy the One Ring", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "3616806516497482922", "label": "JOINS", "properties": {"purpose": "journey to destroy the One Ring"}, "title": "JOINS\n\nProperties:\n\u2022 purpose: journey to destroy the One Ring", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-926130774340173704", "label": "GUIDES", "properties": {"destination": "Rivendell"}, "title": "GUIDES\n\nProperties:\n\u2022 destination: Rivendell", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8146058189369621911", "label": "CHOOSES COMPANIONS FOR", "properties": {"companions": "Sam, Merry, Pippin, Gandalf, Aragorn, Boromir, Legolas, Gimli"}, "title": "CHOOSES COMPANIONS FOR\n\nProperties:\n\u2022 companions: Sam, Merry, Pippin, Gandalf, Aragorn, Boromir, Legolas, Gimli", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "5562868770883654389", "label": "TAKES OVER", "properties": {}, "title": "TAKES OVER", "to": "5757599945933621164", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1547392391249103087", "label": "REFUSES", "properties": {"item": "the One Ring"}, "title": "REFUSES\n\nProperties:\n\u2022 item: the One Ring", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-373612883448161743", "label": "KNOWS OF (A SECRET PASS)", "properties": {}, "title": "KNOWS OF (A SECRET PASS)", "to": "-138449134611939874", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-373612883448161743", "label": "LEADS (HOBBITS) TO", "properties": {}, "title": "LEADS (HOBBITS) TO", "to": "-5548001971564192185", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5548001971564192185", "label": "LOCATED IN", "properties": {}, "title": "LOCATED IN", "to": "5857169602351560035", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5548001971564192185", "label": "POISONS", "properties": {}, "title": "POISONS", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-7882374959864511337", "label": "DECIDES", "properties": {"decision": "destroy the One Ring in Mount Doom"}, "title": "DECIDES\n\nProperties:\n\u2022 decision: destroy the One Ring in Mount Doom", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2920287868492191536", "label": "PROTECTS", "properties": {"from": "Orcs"}, "title": "PROTECTS\n\nProperties:\n\u2022 from: Orcs", "to": "1802791408147339038", "width": 1}, {"arrows": "to", "color": "#000000", "from": "4453002303469455939", "label": "LEADS", "properties": {}, "title": "LEADS", "to": "8978966344066151244", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3856527014728986785", "label": "RELEASES", "properties": {}, "title": "RELEASES", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3856527014728986785", "label": "RELEASES", "properties": {}, "title": "RELEASES", "to": "-192857965362449311", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3856527014728986785", "label": "RELEASES", "properties": {}, "title": "RELEASES", "to": "-373612883448161743", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3856527014728986785", "label": "STEWARD OF", "properties": {}, "title": "STEWARD OF", "to": "1748433185024675862", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3856527014728986785", "label": "PRINCE OF", "properties": {}, "title": "PRINCE OF", "to": "-138449134611939874", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6560108643290394169", "label": "DRIVES BACK", "properties": {}, "title": "DRIVES BACK", "to": "-5548001971564192185", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-192857965362449311", "label": "PICKS UP", "properties": {}, "title": "PICKS UP", "to": "2527327909752275598", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-192857965362449311", "label": "PICKS UP", "properties": {}, "title": "PICKS UP", "to": "6560108643290394169", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-192857965362449311", "label": "WOUNDS", "properties": {}, "title": "WOUNDS", "to": "-5548001971564192185", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-192857965362449311", "label": "RESCUES", "properties": {"location": "Cirith Ungol"}, "title": "RESCUES\n\nProperties:\n\u2022 location: Cirith Ungol", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-192857965362449311", "label": "MARRIES", "properties": {}, "title": "MARRIES", "to": "1606885684991462471", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6029593391915222286", "label": "TAKE", "properties": {}, "title": "TAKE", "to": "1577087164089344930", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-8908974631898245863", "label": "SENDS ARMY AGAINST", "properties": {}, "title": "SENDS ARMY AGAINST", "to": "1748433185024675862", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8978966344066151244", "label": "GOES TO AID OF", "properties": {}, "title": "GOES TO AID OF", "to": "1748433185024675862", "width": 1}, {"arrows": "to", "color": "#000000", "from": "4594354385695338916", "label": "WEDS", "properties": {}, "title": "WEDS", "to": "7886331652543578714", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6352305091713906222", "label": "ENGAGED TO", "properties": {}, "title": "ENGAGED TO", "to": "-3856527014728986785", "width": 1}, {"arrows": "to", "color": "#000000", "from": "7242597356734218071", "label": "CROWNED KING OF", "properties": {}, "title": "CROWNED KING OF", "to": "8978966344066151244", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"shape": "dot", "size": 25, "font": {"size": 32, "face": "Tahoma", "color": "inherit"}}, "edges": {"font": {"size": 32, "align": "middle"}, "color": {"color": "#000000", "inherit": false}, "smooth": {"type": "continuous", "forceDirection": "none"}}, "physics": {"barnesHut": {"gravitationalConstant": -80000, "springLength": 250, "springConstant": 0.001}, "minVelocity": 0.75}, "interaction": {"hover": {"enabled": true}, "navigationButtons": true, "keyboard": true, "tooltipDelay": 200, "hideEdgesOnDrag": false, "multiselect": false, "hoverConnectedEdges": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+        <div style="position: absolute; top: 10px; right: 10px; background-color: white; 
+                    border: 1px solid #ccc; padding: 10px; border-radius: 5px; max-width: 250px;">
+            <h3 style="margin-top: 0; text-align: center;">Entity Types</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th style="text-align: left; padding: 5px;">Type</th>
+                    <th style="text-align: left; padding: 5px;">Color</th>
+                </tr>
+        
+                <tr>
+                    <td style="padding: 5px;">EVENT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FFD700; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">FACILITY</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #6A5ACD; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">LOCATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33FF57; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">ORGANIZATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33A8FF; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PERSON</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FF5733; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PRODUCT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #00CED1; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+            </table>
+            <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
+                <div style="display: flex; align-items: center; margin-top: 5px;">
+                    <span style="margin-right: 5px; font-size: 12px;">A</span>
+                    <input type="range" id="textSizeSlider" min="8" max="64" value="32" style="flex-grow: 1;">
+                    <span style="margin-left: 5px; font-size: 18px;">A</span>
+                </div>
+                <div style="text-align: center; margin-top: 5px;">
+                    <span id="currentTextSize">32px</span>
+                </div>
+            </div>
+            <script>
+                // Add event listener to the slider
+                document.addEventListener('DOMContentLoaded', function() {
+                    var slider = document.getElementById('textSizeSlider');
+                    var sizeDisplay = document.getElementById('currentTextSize');
+                    
+                    // Function to update text size
+                    function updateTextSize(size) {
+                        // Update the display
+                        sizeDisplay.textContent = size + 'px';
+                        
+                        // Make sure network is defined
+                        if (typeof network === 'undefined') {
+                            console.warn('Network variable not found. Text size control may not work properly.');
+                            return;
+                        }
+                        
+                        // Update node font size
+                        var nodeOptions = {
+                            font: {
+                                size: size,
+                                color: 'inherit'
+                            }
+                        };
+                        network.setOptions({ nodes: nodeOptions });
+                        
+                        // Update edge font size
+                        var edgeOptions = {
+                            font: {
+                                size: size
+                            }
+                        };
+                        network.setOptions({ edges: edgeOptions });
+                    }
+                    
+                    // Add event listener for slider changes
+                    slider.addEventListener('input', function() {
+                        updateTextSize(parseInt(this.value));
+                    });
+                    
+                    // Initialize with default values
+                    updateTextSize(parseInt(slider.value));
+                    
+                    // Set global variable to always enable tooltips
+                    window.tooltipsEnabled = true;
+                });
+            </script>
+        </div>
+        
+        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+            <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+        </div>
+        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0;">Source Text</h3>
+            </div>
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px;">
+                <p style="white-space: pre-wrap;"># Source: File: input/lotr.md
+
+# The Lord of the Rings
+
+## Plot
+
+### The Fellowship of the Ring
+Further information: The Fellowship of the Ring § Contents
+
+Gandalf proves that Frodo&#x27;s Ring is the One Ring by throwing it into Frodo&#x27;s fireplace, revealing the hidden text of the Rhyme of the Rings.
+Bilbo Baggins celebrates his birthday and leaves the Ring to Frodo, his heir. Gandalf (a wizard) suspects it is a Ring of Power; seventeen years later, he confirms it was lost by the Dark Lord Sauron and counsels Frodo to take it away from the Shire. Gandalf leaves, promising to return, but fails to do so. Frodo sets out on foot with his cousin Pippin Took and gardener Sam Gamgee. They are pursued by Black Riders, but meet some Elves, whose singing to Elbereth wards off the Riders. The Hobbits take an evasive shortcut to Bucklebury Ferry, where they meet their friend Merry Brandybuck. Merry and Pippin reveal they know about the Ring and insist on joining Frodo on his journey. They try to shake off the Black Riders by cutting through the Old Forest. Merry and Pippin are trapped by the malign Old Man Willow, but are rescued by Tom Bombadil. Leaving Tom&#x27;s house, they are caught by a barrow-wight. Frodo, awakening from the barrow-wight&#x27;s spell, calls Tom Bombadil, who frees them and gives them ancient swords from the wight&#x27;s hoard. The Hobbits reach the village of Bree, where they meet Strider, a Ranger. The innkeeper gives Frodo an old letter from Gandalf, which identifies Strider as a friend. Knowing the Black Riders will attempt to seize the Ring, Strider guides the group toward the Elvish sanctuary of Rivendell. At Weathertop, they are attacked by five Black Riders. Their leader wounds Frodo with a cursed blade. Strider fights them off and treats Frodo with the herb athelas. They are joined by the Elf Glorfindel, who rides with Frodo, now deathly ill, towards Rivendell. The Black Riders pursue Frodo into the Ford of Bruinen, where they are swept away by flood waters summoned by Elrond.
+
+Frodo recovers in Rivendell under Elrond&#x27;s care. Gandalf informs Frodo that the Black Riders are the Nazgûl, Men enslaved by Rings of Power to serve Sauron. The Council of Elrond discusses what to do with the Ring. Strider is revealed to be Aragorn, the heir of Isildur who had cut the Ring from Sauron&#x27;s hand in the Second Age, but claimed it for himself. The Ring was lost when Isildur was killed; it passed to Gollum and then to Bilbo. Gandalf reports that the chief wizard, Saruman, is a traitor. The Council decides that the Ring must be destroyed in the fire of Mount Doom in Mordor, where it was forged. Frodo takes this task upon himself. Elrond chooses companions for him: Sam, Merry, and Pippin; Gandalf; the Men Aragorn and Boromir, son of the Steward of Gondor; the Elf Legolas; and the Dwarf Gimli, representing the Free Peoples of the West. After a failed attempt to cross the Misty Mountains, the Fellowship risk the path through the Mines of Moria. They learn that Balin and his Dwarves, who had attempted to regain possession of Moria, were killed by Orcs. They are attacked by Orcs and a Balrog, a fire demon. Gandalf confronts the Balrog: both fall into an abyss. The others escape to the Elvish forest of Lothlórien, where the Lady Galadriel tests their loyalty, and gives them magical gifts. She allows Frodo and Sam to look into her vision-giving fountain, the Mirror of Galadriel. Frodo offers her the Ring: she refuses, knowing that it would master her. Galadriel&#x27;s husband Celeborn gives the Fellowship boats, cloaks, and waybread. They travel down the River Anduin. At Amon Hen, Boromir tries to take the Ring, but Frodo puts on the Ring and disappears. Frodo chooses to cross the river and go alone to Mordor, but Sam, guessing what he intends, intercepts him.
+
+### The Two Towers
+Further information: The Two Towers § Contents
+
+A party of Orcs sent by Saruman and Sauron attack the Fellowship. Boromir tries to protect Merry and Pippin from the Orcs, but they kill him and capture the two Hobbits. Aragorn, Gimli and Legolas decide to pursue the Orcs. The Orcs are killed by Riders of Rohan, led by Éomer. The Hobbits escape into Fangorn Forest, where they are befriended by the Ent Treebeard. Aragorn, Gimli and Legolas track the hobbits to Fangorn, where they meet Gandalf: he explains that he killed the Balrog; he too was killed in the fight, but was sent back to Middle-earth. He is now Gandalf the White, replacing Saruman as chief of the wizards. They ride to Edoras, capital of Rohan. Gandalf frees King Théoden from the influence of Saruman&#x27;s spy Gríma Wormtongue. Théoden musters his army and rides to the fortress of Helm&#x27;s Deep; Gandalf departs to seek help from Treebeard. The Ents destroy Isengard, Saruman&#x27;s stronghold, and flood it, trapping the wizard in the tower of Orthanc. Gandalf convinces Treebeard to send an army of Huorns to Théoden&#x27;s aid. He brings an army of Riders of Rohan to Helm&#x27;s Deep. They defeat the Orcs, who flee into the forest of Huorns and are destroyed. Gandalf, Théoden, Aragorn, Legolas, and Gimli ride to Isengard, where they find Merry and Pippin relaxing amidst the ruins. Gandalf offers Saruman a chance to turn away from evil. When Saruman refuses, Gandalf strips him of his rank and most of his powers. Wormtongue throws down a hard round object to try to kill Gandalf. Pippin picks it up; Gandalf swiftly takes it, but Pippin steals it in the night. It is a palantír, a seeing-stone that Saruman used to speak with Sauron, becoming ensnared. Sauron sees Pippin, but misunderstands the circumstances. Gandalf rides for Minas Tirith, chief city of Gondor, taking Pippin with him.
+
+Frodo and Sam struggle through the barren hills of the Emyn Muil. They realize they are being tracked; on a moonlit night they capture Gollum, who has followed them from Moria. Frodo makes Gollum swear to serve him, as Ringbearer, and asks him to guide them to Mordor. Gollum leads them across the Dead Marshes. Sam overhears Gollum debating with his alter ego, Sméagol, whether to steal the Ring. The Black Gate of Mordor is too well guarded, so they travel south through Ithilien to a secret pass that Gollum knows. They are captured by rangers led by Faramir, Boromir&#x27;s brother, and brought to the secret fastness of Henneth Annûn. Faramir resists the temptation to seize the Ring and, disobeying orders to arrest strangers, releases them. Gollum guides the hobbits to the pass, but leads them into the lair of the great spider Shelob in the tunnels of Cirith Ungol. Frodo holds up his gift, the Phial of Galadriel, which holds the light of Eärendil&#x27;s star: it drives Shelob back. Frodo cuts through a giant web using his sword Sting. Shelob attacks again, and Frodo falls to her venom. Sam picks up Sting and the Phial. He wounds the monster. Believing Frodo to be dead, Sam takes the Ring to continue the quest alone. Orcs take Frodo; Sam overhears them saying that Frodo is still alive.
+
+### The Return of the King
+Further information: The Return of the King § Contents
+
+Sauron sends a great army against Gondor. Gandalf arrives at Minas Tirith to warn Denethor of the attack, while Théoden musters the Riders of Rohan to go to Gondor&#x27;s aid. Minas Tirith is besieged; the Lord of the Nazgûl uses a spell-wound battering ram to destroy the city&#x27;s gates. Denethor, deceived by Sauron, falls into despair. He burns himself alive on a pyre; Pippin and Gandalf rescue his son Faramir from the same fate. Aragorn, accompanied by Legolas, Gimli, and the Rangers of the North, takes the Paths of the Dead to recruit the Dead Men of Dunharrow, oathbreakers who will have no rest until they fight for the King of Gondor. Aragorn unleashes the Army of the Dead on the Corsairs of Umbar invading southern Gondor. He and men of southern Gondor sail in the Corsairs&#x27; ships up the Anduin, reaching Minas Tirith just in time to turn the tide of battle. Théoden&#x27;s niece Éowyn, who joined the army in disguise, kills the Lord of the Nazgûl with help from Merry; both are wounded. Gondor and Rohan defeat Sauron&#x27;s army in the Battle of the Pelennor Fields, but Théoden is killed. Aragorn enters Minas Tirith and heals the sick. He leads an army through Ithilien to the Black Gate to distract Sauron from his true danger. At the Battle of the Morannon, his army is vastly outnumbered.
+
+Sam rescues Frodo from the tower of Cirith Ungol. They set out across Mordor. When they reach the edge of the Cracks of Doom, Frodo cannot resist the Ring any longer: he claims it for himself and puts it on. Gollum reappears. He bites off Frodo&#x27;s Ring finger. Celebrating wildly, Gollum loses his footing and falls into the Fire, taking the Ring with him. When the Ring is destroyed, Sauron loses his power. All he created collapses, the Nazgûl perish, and Aragorn wins the battle of the Morannon. Aragorn is crowned King, and weds Arwen, Elrond&#x27;s daughter. Théoden is buried; Éomer is crowned King of Rohan. His sister Éowyn is engaged to Faramir, now Steward of Gondor and Prince of Ithilien. Galadriel, Celeborn, and Gandalf say farewell to Treebeard, and to Aragorn. The four hobbits travel home, only to find it has been taken over by Saruman&#x27;s men. Merry raises a rebellion and scours the Shire. Saruman reveals crimes that Wormtongue has done, causing Wormtongue to turn on Saruman and kill him in front of Bag End, Frodo&#x27;s home. Wormtongue then is killed by hobbit archers. Merry and Pippin are celebrated as heroes. Sam marries Rosie Cotton and uses his gifts to heal the Shire. Frodo, broken by the quest, leaves a few years later, sailing from the Grey Havens over the Sea to find peace.
+
+Extensive appendices outline more details of the history, cultures, genealogies, and languages that Tolkien imagined for the peoples of Middle-earth. In antiquarian style, they provide background details for the narrative, with much detail for Tolkien fans who want to know more about the stories. 
+
+</p>
+            </div>
+        </div>
+        
+        <script>
+            // Make sure this script runs after the network is initialized
+            document.addEventListener('DOMContentLoaded', function() {
+                // Ensure network variable is accessible
+                if (typeof network === 'undefined') {
+                    console.warn('Network variable not found. Some features may not work properly.');
+                }
+                
+                // Initially maximize the network container height since text is hidden
+                var networkContainer = document.getElementById('mynetwork');
+                var windowHeight = window.innerHeight;
+                var networkTop = networkContainer.getBoundingClientRect().top;
+                var newHeight = windowHeight - networkTop - 20; // 20px padding
+                networkContainer.style.height = newHeight + 'px';
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            });
+            
+            function toggleSourceText() {
+                var textSection = document.getElementById('textSection');
+                var btn = document.getElementById('toggleTextBtn');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                if (textSection.style.display === 'none') {
+                    // Show text
+                    textSection.style.display = 'block';
+                    btn.innerText = 'Hide Text';
+                    btn.style.backgroundColor = '#f44336'; // Red color for hide button
+                    
+                    // Restore original network container height
+                    networkContainer.style.height = '750px';
+                } else {
+                    // Hide text
+                    textSection.style.display = 'none';
+                    btn.innerText = 'Show Text';
+                    btn.style.backgroundColor = '#4CAF50'; // Green color for show button
+                    
+                    // Maximize network container height
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                }
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            }
+            
+            // Add window resize event listener to adjust the graph size when window is resized
+            window.addEventListener('resize', function() {
+                var textSection = document.getElementById('textSection');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                // Only adjust if text is hidden
+                if (textSection.style.display === 'none') {
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                    
+                    // Redraw the network to fit the new container size
+                    if (typeof network !== 'undefined') {
+                        network.fit();
+                    }
+                }
+            });
+        </script>
+        <style>
+        .custom-tooltip {
+            position: absolute;
+            display: none;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 300px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        </style>
+        <div id="custom-tooltip" class="custom-tooltip"></div>
+        <script>
+        // Initialize global variable for tooltip control - always enabled
+        window.tooltipsEnabled = true;
+        
+        // Add the tooltip functionality after the page has fully loaded
+        window.addEventListener('load', function() {
+            // Make sure the network variable exists
+            if (typeof network === 'undefined') {
+                console.warn('Network variable not found');
+                return;
+            }
+            
+            var tooltip = document.getElementById('custom-tooltip');
+            
+            // Function to disable default tooltips
+            function disableDefaultTooltips() {
+                // Remove title attributes from all nodes and edges to prevent default browser tooltips
+                if (network && network.body) {
+                    // For nodes
+                    Object.values(network.body.nodes).forEach(function(node) {
+                        if (node.element) {
+                            node.element.removeAttribute('title');
+                        }
+                    });
+                    
+                    // For edges
+                    Object.values(network.body.edges).forEach(function(edge) {
+                        if (edge.element) {
+                            edge.element.removeAttribute('title');
+                        }
+                    });
+                }
+            }
+            
+            // Call once on load
+            disableDefaultTooltips();
+            
+            // Function to show tooltip
+            function showTooltip(text, x, y) {
+                tooltip.textContent = text;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (x + 10) + 'px';
+                tooltip.style.top = (y + 10) + 'px';
+            }
+            
+            // Function to hide tooltip
+            function hideTooltip() {
+                tooltip.style.display = 'none';
+            }
+            
+            // Add event listeners to the network
+            network.on('hoverNode', function(params) {
+                var nodeId = params.node;
+                var node = network.body.nodes[nodeId];
+                if (node && node.options && node.options.title) {
+                    showTooltip(node.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('hoverEdge', function(params) {
+                var edgeId = params.edge;
+                var edge = network.body.edges[edgeId];
+                if (edge && edge.options && edge.options.title) {
+                    showTooltip(edge.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('blurNode', function() {
+                hideTooltip();
+            });
+            
+            network.on('blurEdge', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during drag operations
+            network.on('dragStart', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during zoom operations
+            network.on('zoom', function() {
+                hideTooltip();
+            });
+            
+            // Ensure hover is enabled for tooltips
+            network.setOptions({
+                interaction: {
+                    hover: {
+                        enabled: true
+                    }
+                }
+            });
+        });
+        </script>
+        </body>
+</html>
