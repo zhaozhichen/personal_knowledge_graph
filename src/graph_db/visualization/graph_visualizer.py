@@ -12,6 +12,7 @@ from typing import Dict, List, Any, Optional
 import networkx as nx
 from pyvis.network import Network
 import textwrap
+import re
 
 class GraphVisualizer:
     def __init__(self, height: str = "800px", width: str = "100%"):
@@ -444,6 +445,9 @@ class GraphVisualizer:
         with open(html_file, 'r', encoding='utf-8') as f:
             content = f.read()
             
+        # Remove all title attributes from the HTML content
+        content = re.sub(r'title="[^"]*"', '', content)
+            
         # Add custom tooltip CSS and JavaScript
         tooltip_js = """
         <style>
@@ -470,11 +474,23 @@ class GraphVisualizer:
         #mynetwork [title]:hover::after {
             content: none !important;
         }
+        
+        /* Additional CSS to prevent tooltips */
+        [title] {
+            position: relative;
+        }
+        [title]:hover::after {
+            content: none !important;
+        }
         </style>
         <div id="custom-tooltip" class="custom-tooltip"></div>
         <script>
         // Initialize global variable for tooltip control
         window.tooltipsEnabled = true;
+        
+        // Store node and edge data for custom tooltips
+        window.nodeTooltips = {};
+        window.edgeTooltips = {};
         
         // Add the tooltip functionality after the page has fully loaded
         window.addEventListener('load', function() {
@@ -486,8 +502,44 @@ class GraphVisualizer:
             
             var tooltip = document.getElementById('custom-tooltip');
             
+            // Store tooltip data from nodes and edges
+            function storeTooltipData() {
+                // For nodes
+                var nodeIds = network.body.data.nodes.getIds();
+                nodeIds.forEach(function(nodeId) {
+                    var node = network.body.data.nodes.get(nodeId);
+                    if (node && node.title) {
+                        window.nodeTooltips[nodeId] = node.title;
+                        // Remove the title attribute
+                        delete node.title;
+                    }
+                });
+                
+                // For edges
+                var edgeIds = network.body.data.edges.getIds();
+                edgeIds.forEach(function(edgeId) {
+                    var edge = network.body.data.edges.get(edgeId);
+                    if (edge && edge.title) {
+                        window.edgeTooltips[edgeId] = edge.title;
+                        // Remove the title attribute
+                        delete edge.title;
+                    }
+                });
+                
+                // Update the network with the modified data
+                network.setData({
+                    nodes: network.body.data.nodes,
+                    edges: network.body.data.edges
+                });
+            }
+            
             // Completely disable default tooltips by removing title attributes and preventing default behavior
             function disableDefaultTooltips() {
+                // Remove all title attributes from the DOM
+                document.querySelectorAll('[title]').forEach(function(element) {
+                    element.removeAttribute('title');
+                });
+                
                 // For nodes
                 var nodeIds = network.body.data.nodes.getIds();
                 nodeIds.forEach(function(nodeId) {
@@ -521,6 +573,9 @@ class GraphVisualizer:
                     });
                 }
             }
+            
+            // Store tooltip data
+            storeTooltipData();
             
             // Call once at initialization
             disableDefaultTooltips();
@@ -561,11 +616,12 @@ class GraphVisualizer:
             // Add event listeners to the network
             network.on('hoverNode', function(params) {
                 var nodeId = params.node;
-                var node = network.body.data.nodes.get(nodeId);
-                if (node && node.title) {
+                var tooltipHtml = window.nodeTooltips[nodeId];
+                
+                if (tooltipHtml) {
                     // Create a div to parse the HTML and extract text
                     var div = document.createElement('div');
-                    div.innerHTML = node.title;
+                    div.innerHTML = tooltipHtml;
                     
                     // Format the tooltip content properly
                     var entityName = div.querySelector('b').textContent;
@@ -591,11 +647,12 @@ class GraphVisualizer:
             
             network.on('hoverEdge', function(params) {
                 var edgeId = params.edge;
-                var edge = network.body.data.edges.get(edgeId);
-                if (edge && edge.title) {
+                var tooltipHtml = window.edgeTooltips[edgeId];
+                
+                if (tooltipHtml) {
                     // Create a div to parse the HTML and extract text
                     var div = document.createElement('div');
-                    div.innerHTML = edge.title;
+                    div.innerHTML = tooltipHtml;
                     
                     // Format the tooltip content properly
                     var relationName = div.querySelector('b').textContent;
@@ -774,10 +831,16 @@ class GraphVisualizer:
                     "minVelocity": 0.75
                 },
                 "interaction": {
-                    "hover": true,
+                    "hover": {
+                        "enabled": true,
+                        "title": false
+                    },
+                    "navigationButtons": true,
+                    "keyboard": true,
                     "tooltipDelay": 200,
                     "hideEdgesOnDrag": false,
-                    "multiselect": false
+                    "multiselect": false,
+                    "hoverConnectedEdges": true
                 }
             }
             """)
