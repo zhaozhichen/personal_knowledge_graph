@@ -197,7 +197,8 @@ def deduplicate_relations(relations: List[Dict[str, Any]]) -> List[Dict[str, Any
 
 def process_with_entity_extractor(text: str, 
                                  llm_model: str = "gpt-4o", 
-                                 verbose: bool = False) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+                                 verbose: bool = False,
+                                 use_mock: bool = False) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """
     Process text with entity extractor, with fallback to mock extractor if needed.
     
@@ -205,28 +206,35 @@ def process_with_entity_extractor(text: str,
         text (str): Text to process
         llm_model (str): LLM model to use
         verbose (bool): Whether to display detailed information
+        use_mock (bool): Whether to use MockEntityExtractor instead of LLMEntityExtractor
         
     Returns:
         Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]: Tuple of (entities, relations)
     """
-    try:
-        logger.info(f"Attempting to extract entities and relations using LLMEntityExtractor")
-        # Use the process_text method which handles both entity and relation extraction
-        entity_extractor = LLMEntityExtractor(model=llm_model)
-        entities, relations = entity_extractor.process_text(text)
-        logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations")
-        
-    except Exception as e:
-        logger.error(f"LLMEntityExtractor failed with error: {str(e)}")
-        logger.error(f"Error type: {type(e).__name__}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        logger.warning(f"Falling back to MockEntityExtractor.")
-        
-        # Fall back to MockEntityExtractor
+    if use_mock:
+        logger.info(f"Using MockEntityExtractor for UI debugging")
         mock_extractor = MockEntityExtractor()
         entities, relations = mock_extractor.process_text(text)
         logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations using MockEntityExtractor")
+    else:
+        try:
+            logger.info(f"Attempting to extract entities and relations using LLMEntityExtractor")
+            # Use the process_text method which handles both entity and relation extraction
+            entity_extractor = LLMEntityExtractor(model=llm_model)
+            entities, relations = entity_extractor.process_text(text)
+            logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations")
+            
+        except Exception as e:
+            logger.error(f"LLMEntityExtractor failed with error: {str(e)}")
+            logger.error(f"Error type: {type(e).__name__}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            logger.warning(f"Falling back to MockEntityExtractor.")
+            
+            # Fall back to MockEntityExtractor
+            mock_extractor = MockEntityExtractor()
+            entities, relations = mock_extractor.process_text(text)
+            logger.info(f"Successfully extracted {len(entities)} entities and {len(relations)} relations using MockEntityExtractor")
     
     # Log extracted entities and relations
     if verbose:
@@ -249,7 +257,8 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
                          llm_model: str = "gpt-4o",
                          verbose: bool = False,
                          chunk_size: int = MAX_CHUNK_SIZE,
-                         chunk_overlap: int = CHUNK_OVERLAP) -> bool:
+                         chunk_overlap: int = CHUNK_OVERLAP,
+                         use_mock: bool = False) -> bool:
     """
     Process various input sources and generate a graph.
     
@@ -264,6 +273,7 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
         verbose (bool): Whether to display detailed information
         chunk_size (int): Maximum chunk size
         chunk_overlap (int): Overlap between chunks
+        use_mock (bool): Whether to use MockEntityExtractor instead of LLMEntityExtractor
         
     Returns:
         bool: True if processing successful, False otherwise
@@ -298,7 +308,7 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
         logger.info(f"Processing chunk {i+1}/{len(result['chunks'])} ({len(chunk)} characters)")
         
         # Extract entities and relations
-        entities, relations = process_with_entity_extractor(chunk, llm_model, verbose)
+        entities, relations = process_with_entity_extractor(chunk, llm_model, verbose, use_mock)
         
         # Add to the combined lists
         all_entities.extend(entities)
@@ -346,6 +356,7 @@ def main():
     parser.add_argument("--verbose", action="store_true", help="Display detailed information about extracted entities and relations")
     parser.add_argument("--chunk-size", type=int, default=MAX_CHUNK_SIZE, help=f"Maximum chunk size for processing large texts (default: {MAX_CHUNK_SIZE})")
     parser.add_argument("--chunk-overlap", type=int, default=CHUNK_OVERLAP, help=f"Overlap between chunks (default: {CHUNK_OVERLAP})")
+    parser.add_argument("--use-mock", action="store_true", help="Use MockEntityExtractor instead of LLMEntityExtractor")
     
     args = parser.parse_args()
     
@@ -370,7 +381,8 @@ def main():
         llm_model=args.llm_model,
         verbose=args.verbose,
         chunk_size=MAX_CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP
+        chunk_overlap=CHUNK_OVERLAP,
+        use_mock=args.use_mock
     )
 
 if __name__ == "__main__":
