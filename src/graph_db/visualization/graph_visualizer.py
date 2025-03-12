@@ -306,11 +306,11 @@ class GraphVisualizer:
                         
                         // Update network interaction options
                         if (typeof network !== 'undefined') {
+                            // Completely disable hover events when tooltips are disabled
                             network.setOptions({
                                 interaction: {
                                     hover: {
-                                        enabled: enabled,
-                                        title: false
+                                        enabled: enabled
                                     }
                                 }
                             });
@@ -590,6 +590,17 @@ class GraphVisualizer:
                 // Set initial state based on the checkbox
                 window.tooltipsEnabled = tooltipToggle.checked;
                 console.log("Initialized window.tooltipsEnabled to:", window.tooltipsEnabled);
+                
+                // Apply initial state to network
+                if (typeof network !== 'undefined') {
+                    network.setOptions({
+                        interaction: {
+                            hover: {
+                                enabled: window.tooltipsEnabled
+                            }
+                        }
+                    });
+                }
             } else {
                 console.warn("Could not find tooltipToggle element");
             }
