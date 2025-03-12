@@ -590,18 +590,6 @@ class GraphVisualizer:
                 // Set initial state based on the checkbox
                 window.tooltipsEnabled = tooltipToggle.checked;
                 console.log("Initialized window.tooltipsEnabled to:", window.tooltipsEnabled);
-                
-                // Add event listener to update tooltipsEnabled when toggle changes
-                tooltipToggle.addEventListener('change', function() {
-                    console.log("Tooltip toggle changed in tooltip.js, new checked state:", this.checked);
-                    window.tooltipsEnabled = this.checked;
-                    console.log("Updated window.tooltipsEnabled to:", window.tooltipsEnabled);
-                    
-                    // Hide tooltip if it's currently visible and tooltips are disabled
-                    if (!window.tooltipsEnabled) {
-                        hideTooltip();
-                    }
-                });
             } else {
                 console.warn("Could not find tooltipToggle element");
             }
