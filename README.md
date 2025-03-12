@@ -10,20 +10,6 @@ A tool for automatically extracting entities and relationships from text to buil
 - Visualize the graph in interactive HTML format
 - Export graph data to JSON
 
-## Examples
-
-Check out these examples to see the tool in action:
-
-### Scientists Knowledge Graph
-- [Example Graph Visualization](example/combined_graph.html) - An interactive visualization showing connections between Newton, Einstein, and Descartes
-- [Example Graph Data (JSON)](example/combined_graph.json) - The raw graph data in JSON format
-
-### "The Last Question" by Isaac Asimov
-- [LLM-Generated Graph](example/thelastq_graph.html) - Knowledge graph extracted from the full text of the story using LLM
-- [Mock Graph](example/thelastq_mock_graph.html) - A mock graph generated for UI testing purposes
-
-These examples demonstrate how the system extracts entities and relationships from text and creates connections between them.
-
 ## Installation
 
 ### Prerequisites
@@ -52,6 +38,8 @@ These examples demonstrate how the system extracts entities and relationships fr
    export NEO4J_USER="neo4j"
    export NEO4J_PASSWORD="password"
    ```
+
+   Alternatively, create a `.env` file in the project root with these variables.
 
 ## Usage
 
@@ -88,6 +76,32 @@ Use the `--use-mock` flag to generate mock data for UI debugging without making 
 ```bash
 python -m src.graph_db.app --text "Newton, Einstein, and Descartes" --use-mock --visualization-only --output graph.html
 ```
+
+### Verbose Mode
+
+Add the `--verbose` flag to see detailed logging information:
+
+```bash
+python -m src.graph_db.app --file path/to/file.txt --verbose --output graph.html
+```
+
+## Examples
+
+The `/example` directory contains sample graph visualizations:
+
+- `lotr_graph.html` - A graph visualization of entities and relationships from Lord of the Rings, extracted using LLM-based entity extraction
+- `mock_graph.html` - A sample graph visualization using mock data for UI testing
+
+To view these examples, open the HTML files in a web browser.
+
+## Features of the Visualization
+
+- Interactive graph with draggable nodes
+- Color-coded entity types
+- Tooltips showing entity and relationship details
+- Adjustable text size
+- Option to show/hide the source text
+- Zoom and pan controls
 
 ## Architecture
 
