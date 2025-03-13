@@ -327,7 +327,7 @@ class GraphVisualizer:
                         var allNodes = network.body.nodes;
                         var allEdges = network.body.edges;
                         
-                        // Lowlight all nodes and edges
+                        // Save original values and hide labels for all nodes
                         Object.values(allNodes).forEach(function(node) {
                             if (node.options) {
                                 // Save original values if not already saved
@@ -335,18 +335,22 @@ class GraphVisualizer:
                                     node.options._originalColor = node.options.color;
                                     node.options._originalFont = JSON.parse(JSON.stringify(node.options.font));
                                     node.options._originalSize = node.options.size;
+                                    node.options._originalLabel = node.options.label;
                                 }
                                 
-                                // Apply lowlight effect
+                                // Hide label for all nodes initially
+                                node.options.label = undefined;
+                                
+                                // Keep original size but make less visible
                                 node.options.color = {
                                     background: '#f0f0f0',
                                     border: '#e0e0e0'
                                 };
-                                node.options.font.color = '#aaaaaa';
-                                node.options.size = node.options.size * 0.8;
+                                node.options.size = node.options._originalSize;
                             }
                         });
                         
+                        // Hide labels for all edges
                         Object.values(allEdges).forEach(function(edge) {
                             if (edge.options) {
                                 // Save original values if not already saved
@@ -354,42 +358,43 @@ class GraphVisualizer:
                                     edge.options._originalColor = edge.options.color;
                                     edge.options._originalWidth = edge.options.width;
                                     edge.options._originalFont = JSON.parse(JSON.stringify(edge.options.font));
+                                    edge.options._originalLabel = edge.options.label;
                                 }
                                 
-                                // Apply lowlight effect
+                                // Hide label for all edges
+                                edge.options.label = undefined;
+                                
+                                // Make edges less visible
                                 edge.options.color = {
                                     color: '#e0e0e0',
                                     highlight: '#e0e0e0'
                                 };
-                                edge.options.width = edge.options.width * 0.5;
-                                edge.options.font.color = '#aaaaaa';
                             }
                         });
                         
-                        // Highlight nodes of the selected type and their connections
+                        // Highlight nodes of the selected type
                         var highlightedNodeIds = [];
                         Object.values(allNodes).forEach(function(node) {
                             if (node.options && node.options.title && node.options.title.includes('(' + entityType + ')')) {
-                                // Restore original values for this node
-                                if (node.options._originalColor) {
-                                    node.options.color = node.options._originalColor;
-                                    node.options.font = JSON.parse(JSON.stringify(node.options._originalFont));
-                                    node.options.size = node.options._originalSize * 1.2; // Make slightly larger
+                                // Make node 10X larger and restore label
+                                node.options.size = node.options._originalSize * 10;
+                                node.options.label = node.options._originalLabel;
+                                
+                                // Restore original color
+                                node.options.color = node.options._originalColor;
+                                
+                                // Ensure font color matches node color
+                                if (typeof node.options.color === 'object' && node.options.color.background) {
+                                    node.options.font.color = node.options.color.background;
+                                } else if (typeof node.options.color === 'string') {
+                                    node.options.font.color = node.options.color;
                                 }
+                                
+                                // Make font bold and slightly larger
+                                node.options.font.bold = true;
+                                node.options.font.size = parseInt(node.options.font.size) * 1.2;
+                                
                                 highlightedNodeIds.push(node.id);
-                            }
-                        });
-                        
-                        // Highlight edges connected to highlighted nodes
-                        Object.values(allEdges).forEach(function(edge) {
-                            if (edge.options && 
-                                (highlightedNodeIds.includes(edge.from) || highlightedNodeIds.includes(edge.to))) {
-                                // Restore original values for this edge
-                                if (edge.options._originalColor) {
-                                    edge.options.color = edge.options._originalColor;
-                                    edge.options.width = edge.options._originalWidth;
-                                    edge.options.font = JSON.parse(JSON.stringify(edge.options._originalFont));
-                                }
                             }
                         });
                         
@@ -410,11 +415,13 @@ class GraphVisualizer:
                                 node.options.color = node.options._originalColor;
                                 node.options.font = JSON.parse(JSON.stringify(node.options._originalFont));
                                 node.options.size = node.options._originalSize;
+                                node.options.label = node.options._originalLabel;
                                 
                                 // Clear saved original values
                                 delete node.options._originalColor;
                                 delete node.options._originalFont;
                                 delete node.options._originalSize;
+                                delete node.options._originalLabel;
                             }
                         });
                         
@@ -423,11 +430,13 @@ class GraphVisualizer:
                                 edge.options.color = edge.options._originalColor;
                                 edge.options.width = edge.options._originalWidth;
                                 edge.options.font = JSON.parse(JSON.stringify(edge.options._originalFont));
+                                edge.options.label = edge.options._originalLabel;
                                 
                                 // Clear saved original values
                                 delete edge.options._originalColor;
                                 delete edge.options._originalWidth;
                                 delete edge.options._originalFont;
+                                delete edge.options._originalLabel;
                             }
                         });
                         
