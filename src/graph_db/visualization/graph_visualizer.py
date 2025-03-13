@@ -143,7 +143,7 @@ class GraphVisualizer:
                 },
                 "edges": {
                     "font": {
-                        "size": 32,
+                        "size": 16,
                         "face": "Tahoma"
                     },
                     "width": 2,
@@ -266,10 +266,10 @@ class GraphVisualizer:
                         };
                         network.setOptions({ nodes: nodeOptions });
                         
-                        // Update edge font size
+                        // Update edge font size to half of node size
                         var edgeOptions = {
                             font: {
-                                size: size
+                                size: Math.round(size / 2)
                             }
                         };
                         network.setOptions({ edges: edgeOptions });
@@ -286,22 +286,48 @@ class GraphVisualizer:
                     // Set global variable to always enable tooltips
                     window.tooltipsEnabled = true;
                     
+                    // Track selected entity types
+                    var selectedEntityTypes = [];
+                    
                     // Add event listeners for entity type highlighting
                     var entityTypeRows = document.querySelectorAll('.entity-type-row');
                     entityTypeRows.forEach(function(row) {
-                        row.addEventListener('click', function() {
+                        row.addEventListener('click', function(event) {
                             var entityType = this.getAttribute('data-entity-type');
-                            highlightNodesByType(entityType);
                             
-                            // Update visual feedback in the table
-                            entityTypeRows.forEach(function(r) {
-                                r.style.backgroundColor = '';
-                                r.style.fontWeight = 'normal';
-                            });
-                            this.style.backgroundColor = '#f0f0f0';
-                            this.style.fontWeight = 'bold';
+                            // Always allow multi-select by default
+                            // Toggle selection
+                            var index = selectedEntityTypes.indexOf(entityType);
+                            if (index === -1) {
+                                // Add to selection
+                                selectedEntityTypes.push(entityType);
+                                this.style.backgroundColor = '#e0e0e0';
+                                this.style.fontWeight = 'bold';
+                            } else {
+                                // Remove from selection
+                                selectedEntityTypes.splice(index, 1);
+                                this.style.backgroundColor = '';
+                                this.style.fontWeight = 'normal';
+                            }
+                            
+                            console.log('Selected entity types:', selectedEntityTypes);
+                            
+                            // Apply highlighting based on current selection
+                            if (selectedEntityTypes.length > 0) {
+                                highlightNodesByTypes(selectedEntityTypes);
+                            } else {
+                                resetHighlighting();
+                            }
                         });
                     });
+                    
+                    // Add a message about multi-select
+                    var entityTypeTable = document.getElementById('entityTypeTable');
+                    if (entityTypeTable) {
+                        var helpRow = document.createElement('tr');
+                        helpRow.innerHTML = '<td colspan="2" style="padding: 5px; font-size: 11px; color: #666; text-align: center;">Click to select/unselect multiple types</td>';
+                        entityTypeTable.appendChild(helpRow);
+                    }
                     
                     // Add event listener for reset button
                     var resetBtn = document.getElementById('resetHighlightBtn');
@@ -309,16 +335,17 @@ class GraphVisualizer:
                         resetBtn.addEventListener('click', function() {
                             resetHighlighting();
                             
-                            // Reset visual feedback in the table
+                            // Reset visual feedback in the table and clear selection
                             entityTypeRows.forEach(function(r) {
                                 r.style.backgroundColor = '';
                                 r.style.fontWeight = 'normal';
                             });
+                            selectedEntityTypes = [];
                         });
                     }
                     
-                    // Function to highlight nodes by type
-                    function highlightNodesByType(entityType) {
+                    // Function to highlight nodes by multiple types
+                    function highlightNodesByTypes(entityTypes) {
                         if (typeof network === 'undefined') {
                             console.warn('Network variable not found. Highlighting may not work properly.');
                             return;
@@ -327,17 +354,32 @@ class GraphVisualizer:
                         var allNodes = network.body.nodes;
                         var allEdges = network.body.edges;
                         
-                        // Save original values and hide labels for all nodes
+                        // First pass: save original values if not already saved
                         Object.values(allNodes).forEach(function(node) {
                             if (node.options) {
-                                // Save original values if not already saved
                                 if (!node.options._originalColor) {
                                     node.options._originalColor = node.options.color;
                                     node.options._originalFont = JSON.parse(JSON.stringify(node.options.font));
                                     node.options._originalSize = node.options.size;
                                     node.options._originalLabel = node.options.label;
                                 }
-                                
+                            }
+                        });
+                        
+                        Object.values(allEdges).forEach(function(edge) {
+                            if (edge.options) {
+                                if (!edge.options._originalColor) {
+                                    edge.options._originalColor = edge.options.color;
+                                    edge.options._originalWidth = edge.options.width;
+                                    edge.options._originalFont = JSON.parse(JSON.stringify(edge.options.font));
+                                    edge.options._originalLabel = edge.options.label;
+                                }
+                            }
+                        });
+                        
+                        // Second pass: reset all nodes to lowlighted state
+                        Object.values(allNodes).forEach(function(node) {
+                            if (node.options) {
                                 // Hide label for all nodes initially
                                 node.options.label = undefined;
                                 
@@ -353,14 +395,6 @@ class GraphVisualizer:
                         // Hide labels for all edges
                         Object.values(allEdges).forEach(function(edge) {
                             if (edge.options) {
-                                // Save original values if not already saved
-                                if (!edge.options._originalColor) {
-                                    edge.options._originalColor = edge.options.color;
-                                    edge.options._originalWidth = edge.options.width;
-                                    edge.options._originalFont = JSON.parse(JSON.stringify(edge.options.font));
-                                    edge.options._originalLabel = edge.options.label;
-                                }
-                                
                                 // Hide label for all edges
                                 edge.options.label = undefined;
                                 
@@ -372,29 +406,36 @@ class GraphVisualizer:
                             }
                         });
                         
-                        // Highlight nodes of the selected type
+                        // Third pass: highlight nodes of the selected types
                         var highlightedNodeIds = [];
                         Object.values(allNodes).forEach(function(node) {
-                            if (node.options && node.options.title && node.options.title.includes('(' + entityType + ')')) {
-                                // Make node 10X larger and restore label
-                                node.options.size = node.options._originalSize * 10;
-                                node.options.label = node.options._originalLabel;
+                            if (node.options && node.options.title) {
+                                // Check if node belongs to any of the selected types
+                                var nodeMatches = entityTypes.some(function(entityType) {
+                                    return node.options.title.includes('(' + entityType + ')');
+                                });
                                 
-                                // Restore original color
-                                node.options.color = node.options._originalColor;
-                                
-                                // Ensure font color matches node color
-                                if (typeof node.options.color === 'object' && node.options.color.background) {
-                                    node.options.font.color = node.options.color.background;
-                                } else if (typeof node.options.color === 'string') {
-                                    node.options.font.color = node.options.color;
+                                if (nodeMatches) {
+                                    // Make node 10X larger and restore label
+                                    node.options.size = node.options._originalSize * 5;
+                                    node.options.label = node.options._originalLabel;
+                                    
+                                    // Restore original color
+                                    node.options.color = node.options._originalColor;
+                                    
+                                    // Ensure font color matches node color
+                                    if (typeof node.options.color === 'object' && node.options.color.background) {
+                                        node.options.font.color = node.options.color.background;
+                                    } else if (typeof node.options.color === 'string') {
+                                        node.options.font.color = node.options.color;
+                                    }
+                                    
+                                    // Make font bold and slightly larger
+                                    node.options.font.bold = true;
+                                    node.options.font.size = parseInt(node.options.font.size) * 1.2;
+                                    
+                                    highlightedNodeIds.push(node.id);
                                 }
-                                
-                                // Make font bold and slightly larger
-                                node.options.font.bold = true;
-                                node.options.font.size = parseInt(node.options.font.size) * 1.2;
-                                
-                                highlightedNodeIds.push(node.id);
                             }
                         });
                         
@@ -781,7 +822,7 @@ class GraphVisualizer:
                 },
                 "edges": {
                     "font": {
-                        "size": 32,
+                        "size": 16,
                         "align": "middle"
                     },
                     "color": {
