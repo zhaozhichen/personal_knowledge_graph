@@ -1,0 +1,4922 @@
+{
+  "schema": {
+    "entity_types": [
+      "LANGUAGE",
+      "LOCATION",
+      "PERSON",
+      "EVENT",
+      "SPELL",
+      "OBJECT",
+      "FACILITY",
+      "ORGANIZATION",
+      "CREATURE",
+      "PRODUCT"
+    ],
+    "relation_types": [
+      "BATTLED WITH",
+      "IS TAUGHT BY",
+      "TRAVELS WITH",
+      "AIDED BY",
+      "IS",
+      "WROTE CHAPTERS OF",
+      "STEALS",
+      "RECEIVED ACCEPTANCE LETTER TO",
+      "WAS FRIEND OF",
+      "IS ABDUCTED INTO",
+      "SURROUNDED",
+      "ANNOTATES TEXTBOOK ABOUT",
+      "IS SORTED INTO",
+      "TRAVELS TO",
+      "ENTERED IN",
+      "VISITS",
+      "FOLLOWS",
+      "LEARNS ABOUT",
+      "OPENED",
+      "BECOMES A STUDENT AT",
+      "RACES TO",
+      "LIVES WITH",
+      "ATTACKS",
+      "IS DRAGGED INTO",
+      "FINDS",
+      "IS IN",
+      "PLANTED TRAP IN HEAD OF",
+      "CLAIMS",
+      "WAS BEST FRIEND OF",
+      "IS YOUNGER SELF OF",
+      "CREATED",
+      "HELPED ESCAPE",
+      "SLAYS",
+      "HAS AS PET RAT",
+      "GAINS THE FRIENDSHIP OF",
+      "FORMS",
+      "UNLEASHED",
+      "HIT BY",
+      "TIGHTENS CONTROL OF",
+      "WROTE",
+      "UNCOVERS SECRETS OF AND ENTERS",
+      "DUELS",
+      "COUNTERS",
+      "GAVE LETTER TO",
+      "ESCAPED ON",
+      "USES",
+      "DISPLAYS A DISLIKE FOR",
+      "FOUGHT",
+      "MARRIED TO",
+      "LOYAL TO",
+      "WAS FRAMED BY",
+      "REFUSES TO BELIEVE RETURN OF",
+      "KILLED",
+      "'S SNAKE",
+      "SUPPORTS",
+      "IS ALLIED WITH",
+      "SURRENDERED TO",
+      "DISGUISED AS",
+      "HOSTS",
+      "GAINS CONTROL OF",
+      "DUELS WITH",
+      "FACED",
+      "IS LOCATED IN",
+      "CONVINCES",
+      "TRAVELED BACK IN TIME WITH",
+      "APPOINTED HIGH INQUISITOR OF",
+      "IS CONFRONTED BY",
+      "CREATES",
+      "ENCOUNTERS",
+      "BELONGS TO",
+      "DEVELOPS AN ENMITY WITH",
+      "SURVIVED ATTACK BY",
+      "KILLED BY",
+      "RETURNS TO",
+      "YEARNS TO POSSESS",
+      "LOCATED IN",
+      "KILLS",
+      "HIDES AS PET RAT OF",
+      "DREAMS OF",
+      "INFILTRATES",
+      "WERE MURDERED BY",
+      "TAUGHT",
+      "ATTEMPTED TO KILL",
+      "BECOMES MASTER OF",
+      "SAVED",
+      "PARTICIPANT OF",
+      "IS THE CHILD OF",
+      "TEACHES",
+      "RENAMED FROM",
+      "GIVES LESSONS TO HARRY IN",
+      "RESURRECTS",
+      "DESCRIBES SECOND YEAR OF",
+      "CONVENES",
+      "FEATURES",
+      "TORTURED IN",
+      "USED",
+      "SPEAKS",
+      "LENT",
+      "SEARCH FOR",
+      "ATTACKED",
+      "TELEPORTED",
+      "LED",
+      "DESTROYS",
+      "CONCERNS",
+      "STRUGGLES WITH REACTION TO",
+      "DETAILS",
+      "IS TARGETED BY",
+      "GAVE",
+      "HELPED",
+      "CONTEST BETWEEN",
+      "IS SUBJECT OF PROPHECY IN",
+      "SHOWS MEMORIES ABOUT",
+      "ENGINEERED ENTRY INTO THE TOURNAMENT",
+      "BECOMES FRIENDS WITH",
+      "TELEPORTED TO",
+      "BATTLES"
+    ]
+  },
+  "data": {
+    "entities": [
+      {
+        "name": "The Elephant House",
+        "type": "FACILITY",
+        "properties": {
+          "description": "a small, painted red café"
+        },
+        "source": "llm",
+        "id": "5226731435625450940"
+      },
+      {
+        "name": "Harry Potter and the Philosopher's Stone",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "book",
+          "relation": "written at",
+          "related_to": "The Elephant House",
+          "alternative_name": "Harry Potter and the Sorcerer's Stone",
+          "alternative_name_location": "US"
+        },
+        "source": "llm",
+        "id": "-2103281375149038184"
+      },
+      {
+        "name": "Edinburgh",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm",
+        "id": "1304286346303164782"
+      },
+      {
+        "name": "Harry Potter",
+        "type": "PERSON",
+        "properties": {
+          "description": "a boy",
+          "parents": "Lily and James Potter"
+        },
+        "source": "llm",
+        "id": "-9117073963624949205"
+      },
+      {
+        "name": "Dursleys",
+        "type": "PERSON",
+        "properties": {
+          "relation": "aunt, uncle and cousin of",
+          "related_to": "Harry Potter"
+        },
+        "source": "llm",
+        "id": "-4157420451510316487"
+      },
+      {
+        "name": "Hagrid",
+        "type": "PERSON",
+        "properties": {
+          "description": "a half-giant"
+        },
+        "source": "llm",
+        "id": "2953846222057661961"
+      },
+      {
+        "name": "Hogwarts School of Witchcraft and Wizardry",
+        "type": "ORGANIZATION",
+        "properties": {
+          "type": "school"
+        },
+        "source": "llm",
+        "id": "-8196961144909276733"
+      },
+      {
+        "name": "Lily and James Potter",
+        "type": "PERSON",
+        "properties": {
+          "relation": "parents of",
+          "related_to": "Harry Potter"
+        },
+        "source": "llm",
+        "id": "75384401280796460"
+      },
+      {
+        "name": "Lord Voldemort",
+        "type": "PERSON",
+        "properties": {
+          "description": "dark wizard",
+          "alias": "Voldemort"
+        },
+        "source": "llm",
+        "id": "-2549328065747439979"
+      },
+      {
+        "name": "Harry",
+        "type": "PERSON",
+        "properties": {
+          "description": "survived Voldemort's curse",
+          "scar": "lightning-shaped scar on his forehead",
+          "action": "confrontation with Voldemort",
+          "father": "James Potter",
+          "patronus": "stag",
+          "used": "Time Turner",
+          "participated_in": "Triwizard Tournament",
+          "helped_by": "Barty Crouch, Jr",
+          "targeted_by": "Voldemort",
+          "leads": "Dumbledore's Army",
+          "dreams_about": "Sirius",
+          "attends": "Hogwarts",
+          "relationship": "married to Ginny",
+          "status": "Horcrux",
+          "children": "three"
+        },
+        "source": "llm",
+        "id": "-208416054643548976"
+      },
+      {
+        "name": "Hogwarts",
+        "type": "ORGANIZATION",
+        "properties": {
+          "type": "school",
+          "controlled_by": "Ministry of Magic",
+          "attended_by": "Harry",
+          "high_inquisitor": "Dolores Umbridge",
+          "status": "defended"
+        },
+        "source": "llm",
+        "id": "1094070127406587567"
+      },
+      {
+        "name": "Gryffindor House",
+        "type": "ORGANIZATION",
+        "properties": {
+          "type": "Hogwarts house"
+        },
+        "source": "llm",
+        "id": "4791175013970032872"
+      },
+      {
+        "name": "Ron Weasley",
+        "type": "PERSON",
+        "properties": {
+          "description": "member of a large but poor wizarding family",
+          "friend_of": "Hermione Granger"
+        },
+        "source": "llm",
+        "id": "-6645132028546081288"
+      },
+      {
+        "name": "Hermione Granger",
+        "type": "PERSON",
+        "properties": {
+          "description": "witch of Muggle parentage",
+          "friend_of": "Ron Weasley"
+        },
+        "source": "llm",
+        "id": "2576337919087739195"
+      },
+      {
+        "name": "Draco Malfoy",
+        "type": "PERSON",
+        "properties": {
+          "description": "rich pure-blood student",
+          "enemy_of": "Hermione Granger"
+        },
+        "source": "llm",
+        "id": "1227128133424235559"
+      },
+      {
+        "name": "Albus Dumbledore",
+        "type": "PERSON",
+        "properties": {
+          "role": "headmaster of Hogwarts"
+        },
+        "source": "llm",
+        "id": "-7463793937967088345"
+      },
+      {
+        "name": "Severus Snape",
+        "type": "PERSON",
+        "properties": {
+          "role": "potions professor at Hogwarts",
+          "attitude_towards_harry": "dislike"
+        },
+        "source": "llm",
+        "id": "-3794304612489589967"
+      },
+      {
+        "name": "Quirinus Quirrell",
+        "type": "PERSON",
+        "properties": {
+          "role": "Defence Against the Dark Arts teacher at Hogwarts",
+          "allied_with": "Lord Voldemort"
+        },
+        "source": "llm",
+        "id": "7660832957580537505"
+      },
+      {
+        "name": "Voldemort",
+        "type": "PERSON",
+        "properties": {
+          "status": "alive as a weak spirit",
+          "goal": "regain a body",
+          "desire": "possess the Philosopher's Stone",
+          "duel_with": "Harry",
+          "opposed_by": "Order of the Phoenix",
+          "relationship": "enemy of Harry Potter",
+          "action": "kills Snape",
+          "motivation": "paranoia"
+        },
+        "source": "llm",
+        "id": "-6411189111669645727"
+      },
+      {
+        "name": "Philosopher's Stone",
+        "type": "PRODUCT",
+        "properties": {
+          "effect": "bestows everlasting life"
+        },
+        "source": "llm",
+        "id": "-7587703770689955980"
+      },
+      {
+        "name": "Harry Potter and the Chamber of Secrets",
+        "type": "PRODUCT",
+        "properties": {
+          "description": "describes Harry's second year at Hogwarts"
+        },
+        "source": "llm",
+        "id": "-5929073878392974977"
+      },
+      {
+        "name": "Chamber of Secrets",
+        "type": "FACILITY",
+        "properties": {
+          "description": "mythical chamber",
+          "event": "attacks fifty years earlier"
+        },
+        "source": "llm",
+        "id": "2430779528496416470"
+      },
+      {
+        "name": "Parseltongue",
+        "type": "LANGUAGE",
+        "properties": {
+          "rarity": "rare",
+          "association": "Dark Arts"
+        },
+        "source": "llm",
+        "id": "-1331109423839708703"
+      },
+      {
+        "name": "Ginny Weasley",
+        "type": "PERSON",
+        "properties": {
+          "status": "abducted",
+          "condition": "possessed by an old diary"
+        },
+        "source": "llm",
+        "id": "-3441497996891205026"
+      },
+      {
+        "name": "Ron",
+        "type": "PERSON",
+        "properties": {
+          "action": "uncover the chamber's secrets with Harry",
+          "pet": "Scabbers (Peter Pettigrew)",
+          "friend_of": "Harry",
+          "member_of": "Dumbledore's Army",
+          "attends": "Hogwarts",
+          "relationship": "married to Hermione",
+          "children": "two"
+        },
+        "source": "llm",
+        "id": "-5545163210111174556"
+      },
+      {
+        "name": "Tom Marvolo Riddle",
+        "type": "PERSON",
+        "properties": {
+          "description": "Voldemort's younger self",
+          "location": "memory resides in an old diary"
+        },
+        "source": "llm",
+        "id": "-6731783605998599875"
+      },
+      {
+        "name": "Tom Riddle",
+        "type": "PERSON",
+        "properties": {
+          "alias": "Voldemort's younger self",
+          "relationship": "Voldemort's real name"
+        },
+        "source": "llm",
+        "id": "-8811998185833096375"
+      },
+      {
+        "name": "Ginny",
+        "type": "PERSON",
+        "properties": {
+          "relationship": "married to Harry",
+          "children": "three"
+        },
+        "source": "llm",
+        "id": "2281045269564170832"
+      },
+      {
+        "name": "basilisk",
+        "type": "CREATURE",
+        "properties": {
+          "description": "an ancient monster that kills or petrifies those who make direct or indirect eye contact"
+        },
+        "source": "llm",
+        "id": "-8770944103654805063"
+      },
+      {
+        "name": "Dumbledore",
+        "type": "PERSON",
+        "properties": {
+          "relationship": "object of Snape's loyalty"
+        },
+        "source": "llm",
+        "id": "-2685069431584811169"
+      },
+      {
+        "name": "Fawkes",
+        "type": "CREATURE",
+        "properties": {
+          "type": "phoenix"
+        },
+        "source": "llm",
+        "id": "-7703931921648070585"
+      },
+      {
+        "name": "Sword of Gryffindor",
+        "type": "OBJECT",
+        "properties": {},
+        "source": "llm",
+        "id": "6855303897238733343"
+      },
+      {
+        "name": "diary",
+        "type": "OBJECT",
+        "properties": {
+          "owner": "Tom Riddle"
+        },
+        "source": "llm",
+        "id": "-5760964738856200276"
+      },
+      {
+        "name": "Harry Potter and the Prisoner of Azkaban",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "novel",
+          "number": "third"
+        },
+        "source": "llm",
+        "id": "3150787370812000457"
+      },
+      {
+        "name": "Sirius Black",
+        "type": "PERSON",
+        "properties": {
+          "description": "an escaped convict",
+          "relationship": "James Potter's best friend",
+          "status": "framed"
+        },
+        "source": "llm",
+        "id": "8314927984127880791"
+      },
+      {
+        "name": "Dementors",
+        "type": "CREATURE",
+        "properties": {
+          "description": "creatures that feed on happiness"
+        },
+        "source": "llm",
+        "id": "1608669918590102288"
+      },
+      {
+        "name": "Remus Lupin",
+        "type": "PERSON",
+        "properties": {
+          "occupation": "professor"
+        },
+        "source": "llm",
+        "id": "-5297272612263219317"
+      },
+      {
+        "name": "Patronus charm",
+        "type": "SPELL",
+        "properties": {},
+        "source": "llm",
+        "id": "5491757806301483609"
+      },
+      {
+        "name": "Shrieking Shack",
+        "type": "FACILITY",
+        "properties": {
+          "description": "a haunted house"
+        },
+        "source": "llm",
+        "id": "-1137612338536348270"
+      },
+      {
+        "name": "Hermione",
+        "type": "PERSON",
+        "properties": {
+          "used": "Time Turner",
+          "friend_of": "Harry",
+          "member_of": "Dumbledore's Army",
+          "attends": "Hogwarts",
+          "relationship": "married to Ron",
+          "children": "two"
+        },
+        "source": "llm",
+        "id": "226138125400072368"
+      },
+      {
+        "name": "James Potter",
+        "type": "PERSON",
+        "properties": {
+          "friend": "Sirius Black",
+          "friend/betrayer": "Peter Pettigrew",
+          "son": "Harry"
+        },
+        "source": "llm",
+        "id": "-6527886213152738222"
+      },
+      {
+        "name": "Peter Pettigrew",
+        "type": "PERSON",
+        "properties": {
+          "disguise": "Scabbers (Ron's pet rat)",
+          "relationship": "friend/betrayer of James Potter"
+        },
+        "source": "llm",
+        "id": "3712197279735447452"
+      },
+      {
+        "name": "Scabbers",
+        "type": "PERSON",
+        "properties": {
+          "true_identity": "Peter Pettigrew",
+          "owner": "Ron"
+        },
+        "source": "llm",
+        "id": "-7310153406880959958"
+      },
+      {
+        "name": "dementors",
+        "type": "CREATURE",
+        "properties": {},
+        "source": "llm",
+        "id": "-1625662530333695431"
+      },
+      {
+        "name": "Time Turner",
+        "type": "PRODUCT",
+        "properties": {
+          "users": "Harry and Hermione"
+        },
+        "source": "llm",
+        "id": "-4460104209994461312"
+      },
+      {
+        "name": "Hippogriff",
+        "type": "CREATURE",
+        "properties": {
+          "used_by": "Sirius Black (to escape)"
+        },
+        "source": "llm",
+        "id": "6247321999902369861"
+      },
+      {
+        "name": "Pettigrew",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm",
+        "id": "6096064088155522918"
+      },
+      {
+        "name": "Nicholson's Cafe",
+        "type": "FACILITY",
+        "properties": {
+          "former_name": "Nicholson's Cafe",
+          "current_name": "Spoon",
+          "floor": "1st",
+          "location": "Edinburgh"
+        },
+        "source": "llm",
+        "id": "-7030967051148713988"
+      },
+      {
+        "name": "Spoon",
+        "type": "FACILITY",
+        "properties": {
+          "former_name": "Nicholson's Cafe",
+          "current_name": "Spoon",
+          "floor": "1st",
+          "location": "Edinburgh"
+        },
+        "source": "llm",
+        "id": "4768509882227484897"
+      },
+      {
+        "name": "J. K. Rowling",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm",
+        "id": "-6401866138161890684"
+      },
+      {
+        "name": "Harry Potter and the Goblet of Fire",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "book"
+        },
+        "source": "llm",
+        "id": "4116440476267351652"
+      },
+      {
+        "name": "Triwizard Tournament",
+        "type": "EVENT",
+        "properties": {},
+        "source": "llm",
+        "id": "5239858617362809014"
+      },
+      {
+        "name": "Beauxbatons",
+        "type": "ORGANIZATION",
+        "properties": {
+          "type": "school"
+        },
+        "source": "llm",
+        "id": "-9144032731788797383"
+      },
+      {
+        "name": "Durmstrang",
+        "type": "ORGANIZATION",
+        "properties": {
+          "type": "school"
+        },
+        "source": "llm",
+        "id": "2692229732697193269"
+      },
+      {
+        "name": "Cedric Diggory",
+        "type": "PERSON",
+        "properties": {},
+        "source": "llm",
+        "id": "6907723472189692843"
+      },
+      {
+        "name": "Triwizard Cup",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "award"
+        },
+        "source": "llm",
+        "id": "2750111986003635629"
+      },
+      {
+        "name": "Death Eaters",
+        "type": "ORGANIZATION",
+        "properties": {
+          "affiliation": "Voldemort"
+        },
+        "source": "llm",
+        "id": "-2901161164644394068"
+      },
+      {
+        "name": "Barty Crouch, Jr",
+        "type": "PERSON",
+        "properties": {
+          "disguised_as": "Alastor \"Mad-Eye\" Moody",
+          "role": "Death Eater",
+          "helped": "Harry"
+        },
+        "source": "llm",
+        "id": "-6477886310894300734"
+      },
+      {
+        "name": "Alastor \"Mad-Eye\" Moody",
+        "type": "PERSON",
+        "properties": {
+          "impersonated_by": "Barty Crouch, Jr",
+          "role": "Defence Against the Dark Arts professor"
+        },
+        "source": "llm",
+        "id": "5461080683353713888"
+      },
+      {
+        "name": "Ministry of Magic",
+        "type": "ORGANIZATION",
+        "properties": {
+          "controls": "Hogwarts",
+          "denies_return_of": "Voldemort",
+          "employs": "Dolores Umbridge",
+          "location_of_dream": "Harry's dream"
+        },
+        "source": "llm",
+        "id": "-1289698933019466637"
+      },
+      {
+        "name": "Order of the Phoenix",
+        "type": "ORGANIZATION",
+        "properties": {
+          "reactivated_by": "Dumbledore",
+          "opposes": "Voldemort",
+          "opposed to": "Death Eaters"
+        },
+        "source": "llm",
+        "id": "-2938777542482782769"
+      },
+      {
+        "name": "Dolores Umbridge",
+        "type": "PERSON",
+        "properties": {
+          "role": "High Inquisitor of Hogwarts",
+          "employed_by": "Ministry of Magic",
+          "bans": "practical Defence Against the Dark Arts teaching"
+        },
+        "source": "llm",
+        "id": "-3418194841595912667"
+      },
+      {
+        "name": "Dumbledore's Army",
+        "type": "ORGANIZATION",
+        "properties": {
+          "founded_by": "Harry, Ron, and Hermione",
+          "purpose": "learning Defence Against the Dark Arts"
+        },
+        "source": "llm",
+        "id": "-4994304126905647859"
+      },
+      {
+        "name": "Sirius",
+        "type": "PERSON",
+        "properties": {
+          "dreamed_about_by": "Harry",
+          "possibly_located_at": "Ministry of Magic",
+          "fate": "killed in battle"
+        },
+        "source": "llm",
+        "id": "6937963303699044917"
+      },
+      {
+        "name": "Ministry",
+        "type": "ORGANIZATION",
+        "properties": {},
+        "source": "llm",
+        "id": "-5518825463118011296"
+      },
+      {
+        "name": "Harry Potter and the Half-Blood Prince",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "book",
+          "series": "Harry Potter",
+          "number": "sixth"
+        },
+        "source": "llm",
+        "id": "-1595016953590299726"
+      },
+      {
+        "name": "Snape",
+        "type": "PERSON",
+        "properties": {
+          "occupation": "Defence Against the Dark Arts teacher",
+          "relationship": "killed by Voldemort",
+          "action": "lends memories to Harry"
+        },
+        "source": "llm",
+        "id": "-2947499839392325776"
+      },
+      {
+        "name": "Defence Against the Dark Arts",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "subject"
+        },
+        "source": "llm",
+        "id": "4703185867989383834"
+      },
+      {
+        "name": "Horace Slughorn",
+        "type": "PERSON",
+        "properties": {
+          "occupation": "Potions master"
+        },
+        "source": "llm",
+        "id": "-6012764568618294463"
+      },
+      {
+        "name": "Potions",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "subject"
+        },
+        "source": "llm",
+        "id": "8758482096865386012"
+      },
+      {
+        "name": "Half-Blood Prince",
+        "type": "PERSON",
+        "properties": {
+          "relationship": "annotator of textbook"
+        },
+        "source": "llm",
+        "id": "511197103538914352"
+      },
+      {
+        "name": "Pensieve",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "device",
+          "purpose": "viewing memories"
+        },
+        "source": "llm",
+        "id": "-4053762038504238269"
+      },
+      {
+        "name": "Horcruxes",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "magical artifact",
+          "creator": "Voldemort"
+        },
+        "source": "llm",
+        "id": "6697237129150777552"
+      },
+      {
+        "name": "Horcruxes",
+        "type": "OBJECT",
+        "properties": {},
+        "source": "llm",
+        "id": "4834118848105978719"
+      },
+      {
+        "name": "Professor Snape",
+        "type": "PERSON",
+        "properties": {
+          "title": "Professor"
+        },
+        "source": "llm",
+        "id": "-1544475615250667972"
+      },
+      {
+        "name": "Harry Potter and the Deathly Hallows",
+        "type": "PRODUCT",
+        "properties": {
+          "type": "book",
+          "series": "Harry Potter",
+          "number": "seventh and final"
+        },
+        "source": "llm",
+        "id": "-3389365067274302754"
+      },
+      {
+        "name": "Deathly Hallows",
+        "type": "OBJECT",
+        "properties": {
+          "description": "legendary items that lead to mastery over death"
+        },
+        "source": "llm",
+        "id": "-6885957866237064803"
+      },
+      {
+        "name": "Godric's Hollow",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm",
+        "id": "6355012332083233742"
+      },
+      {
+        "name": "Nagini",
+        "type": "PERSON",
+        "properties": {
+          "description": "Voldemort's snake"
+        },
+        "source": "llm",
+        "id": "-3549607235152378859"
+      },
+      {
+        "name": "Hogwarts",
+        "type": "LOCATION",
+        "properties": {},
+        "source": "llm",
+        "id": "-934338565772717701"
+      },
+      {
+        "name": "Lily",
+        "type": "PERSON",
+        "properties": {
+          "relationship": "mother of Harry"
+        },
+        "source": "llm",
+        "id": "-260675144168681127"
+      }
+    ],
+    "relations": [
+      {
+        "from_entity": {
+          "name": "The Elephant House",
+          "type": "FACILITY",
+          "properties": {
+            "description": "a small, painted red café"
+          },
+          "source": "llm",
+          "id": "5226731435625450940"
+        },
+        "to_entity": {
+          "name": "Harry Potter and the Philosopher's Stone",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book",
+            "alternative_name": "Harry Potter and the Sorcerer's Stone",
+            "alternative_name_location": "US"
+          },
+          "source": "llm",
+          "id": "-2103281375149038184"
+        },
+        "relation": "WROTE CHAPTERS OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "The Elephant House",
+          "type": "FACILITY",
+          "properties": {
+            "description": "a small, painted red café"
+          },
+          "source": "llm",
+          "id": "5226731435625450940"
+        },
+        "to_entity": {
+          "name": "Edinburgh",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "1304286346303164782"
+        },
+        "relation": "IS LOCATED IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {
+            "description": "a boy",
+            "parents": "Lily and James Potter"
+          },
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Dursleys",
+          "type": "PERSON",
+          "properties": {
+            "relation": "aunt, uncle and cousin of",
+            "related_to": "Harry Potter"
+          },
+          "source": "llm",
+          "id": "-4157420451510316487"
+        },
+        "relation": "LIVES WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {
+            "description": "a boy",
+            "parents": "Lily and James Potter"
+          },
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Hogwarts School of Witchcraft and Wizardry",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school"
+          },
+          "source": "llm",
+          "id": "-8196961144909276733"
+        },
+        "relation": "RECEIVED ACCEPTANCE LETTER TO",
+        "confidence": 1.0,
+        "properties": {
+          "age": "11"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {
+            "description": "a boy",
+            "parents": "Lily and James Potter"
+          },
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Lily and James Potter",
+          "type": "PERSON",
+          "properties": {
+            "relation": "parents of",
+            "related_to": "Harry Potter"
+          },
+          "source": "llm",
+          "id": "75384401280796460"
+        },
+        "relation": "IS THE CHILD OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hagrid",
+          "type": "PERSON",
+          "properties": {
+            "description": "a half-giant"
+          },
+          "source": "llm",
+          "id": "2953846222057661961"
+        },
+        "to_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {
+            "description": "a boy",
+            "parents": "Lily and James Potter"
+          },
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "relation": "GAVE LETTER TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Lily and James Potter",
+          "type": "PERSON",
+          "properties": {
+            "relation": "parents of",
+            "related_to": "Harry Potter"
+          },
+          "source": "llm",
+          "id": "75384401280796460"
+        },
+        "to_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "description": "dark wizard",
+            "alias": "Voldemort"
+          },
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "relation": "WERE MURDERED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "alias": "Voldemort",
+            "description": "dark wizard"
+          },
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "ATTEMPTED TO KILL",
+        "confidence": 1.0,
+        "properties": {
+          "time": "when Harry was a baby"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "alias": "Voldemort",
+            "description": "dark wizard"
+          },
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "relation": "SURVIVED ATTACK BY",
+        "confidence": 1.0,
+        "properties": {
+          "time": "when Harry was a baby"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school",
+            "controlled_by": "Ministry of Magic",
+            "attended_by": "Harry",
+            "high_inquisitor": "Dolores Umbridge",
+            "status": "defended"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "relation": "BECOMES A STUDENT AT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Gryffindor House",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "Hogwarts house"
+          },
+          "source": "llm",
+          "id": "4791175013970032872"
+        },
+        "relation": "IS SORTED INTO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Ron Weasley",
+          "type": "PERSON",
+          "properties": {
+            "description": "member of a large but poor wizarding family",
+            "friend_of": "Hermione Granger"
+          },
+          "source": "llm",
+          "id": "-6645132028546081288"
+        },
+        "relation": "GAINS THE FRIENDSHIP OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Hermione Granger",
+          "type": "PERSON",
+          "properties": {
+            "description": "witch of Muggle parentage",
+            "friend_of": "Ron Weasley"
+          },
+          "source": "llm",
+          "id": "2576337919087739195"
+        },
+        "relation": "GAINS THE FRIENDSHIP OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Draco Malfoy",
+          "type": "PERSON",
+          "properties": {
+            "description": "rich pure-blood student",
+            "enemy_of": "Hermione Granger"
+          },
+          "source": "llm",
+          "id": "1227128133424235559"
+        },
+        "relation": "DEVELOPS AN ENMITY WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron Weasley",
+          "type": "PERSON",
+          "properties": {
+            "description": "member of a large but poor wizarding family",
+            "friend_of": "Hermione Granger"
+          },
+          "source": "llm",
+          "id": "-6645132028546081288"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "BECOMES FRIENDS WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione Granger",
+          "type": "PERSON",
+          "properties": {
+            "description": "witch of Muggle parentage",
+            "friend_of": "Ron Weasley"
+          },
+          "source": "llm",
+          "id": "2576337919087739195"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "BECOMES FRIENDS WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Draco Malfoy",
+          "type": "PERSON",
+          "properties": {
+            "description": "rich pure-blood student",
+            "enemy_of": "Hermione Granger"
+          },
+          "source": "llm",
+          "id": "1227128133424235559"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "DEVELOPS AN ENMITY WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Albus Dumbledore",
+          "type": "PERSON",
+          "properties": {
+            "role": "headmaster of Hogwarts"
+          },
+          "source": "llm",
+          "id": "-7463793937967088345"
+        },
+        "relation": "ENCOUNTERS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Severus Snape",
+          "type": "PERSON",
+          "properties": {
+            "role": "potions professor at Hogwarts",
+            "attitude_towards_harry": "dislike"
+          },
+          "source": "llm",
+          "id": "-3794304612489589967"
+        },
+        "relation": "ENCOUNTERS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Severus Snape",
+          "type": "PERSON",
+          "properties": {
+            "role": "potions professor at Hogwarts",
+            "attitude_towards_harry": "dislike"
+          },
+          "source": "llm",
+          "id": "-3794304612489589967"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "DISPLAYS A DISLIKE FOR",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "description": "survived Voldemort's curse",
+            "scar": "lightning-shaped scar on his forehead",
+            "action": "confrontation with Voldemort",
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner",
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts",
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Quirinus Quirrell",
+          "type": "PERSON",
+          "properties": {
+            "role": "Defence Against the Dark Arts teacher at Hogwarts",
+            "allied_with": "Lord Voldemort"
+          },
+          "source": "llm",
+          "id": "7660832957580537505"
+        },
+        "relation": "ENCOUNTERS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Quirinus Quirrell",
+          "type": "PERSON",
+          "properties": {
+            "role": "Defence Against the Dark Arts teacher at Hogwarts",
+            "allied_with": "Lord Voldemort"
+          },
+          "source": "llm",
+          "id": "7660832957580537505"
+        },
+        "to_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "alias": "Voldemort",
+            "description": "dark wizard"
+          },
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "relation": "IS ALLIED WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "status": "alive as a weak spirit",
+            "goal": "regain a body",
+            "desire": "possess the Philosopher's Stone",
+            "duel_with": "Harry",
+            "opposed_by": "Order of the Phoenix",
+            "relationship": "enemy of Harry Potter",
+            "action": "kills Snape",
+            "motivation": "paranoia"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Philosopher's Stone",
+          "type": "PRODUCT",
+          "properties": {
+            "effect": "bestows everlasting life"
+          },
+          "source": "llm",
+          "id": "-7587703770689955980"
+        },
+        "relation": "YEARNS TO POSSESS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter and the Chamber of Secrets",
+          "type": "PRODUCT",
+          "properties": {
+            "description": "describes Harry's second year at Hogwarts"
+          },
+          "source": "llm",
+          "id": "-5929073878392974977"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "action": "confrontation with Voldemort"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "DESCRIBES SECOND YEAR OF",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Hogwarts"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "action": "confrontation with Voldemort"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Parseltongue",
+          "type": "LANGUAGE",
+          "properties": {
+            "rarity": "rare",
+            "association": "Dark Arts"
+          },
+          "source": "llm",
+          "id": "-1331109423839708703"
+        },
+        "relation": "SPEAKS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ginny Weasley",
+          "type": "PERSON",
+          "properties": {
+            "status": "abducted",
+            "condition": "possessed by an old diary"
+          },
+          "source": "llm",
+          "id": "-3441497996891205026"
+        },
+        "to_entity": {
+          "name": "Chamber of Secrets",
+          "type": "FACILITY",
+          "properties": {
+            "description": "mythical chamber",
+            "event": "attacks fifty years earlier"
+          },
+          "source": "llm",
+          "id": "2430779528496416470"
+        },
+        "relation": "IS ABDUCTED INTO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "action": "confrontation with Voldemort"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Chamber of Secrets",
+          "type": "FACILITY",
+          "properties": {
+            "description": "mythical chamber",
+            "event": "attacks fifty years earlier"
+          },
+          "source": "llm",
+          "id": "2430779528496416470"
+        },
+        "relation": "UNCOVERS SECRETS OF AND ENTERS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {
+            "action": "uncover the chamber's secrets with Harry",
+            "pet": "Scabbers (Peter Pettigrew)",
+            "friend_of": "Harry",
+            "member_of": "Dumbledore's Army",
+            "attends": "Hogwarts",
+            "relationship": "married to Hermione",
+            "children": "two"
+          },
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Chamber of Secrets",
+          "type": "FACILITY",
+          "properties": {
+            "description": "mythical chamber",
+            "event": "attacks fifty years earlier"
+          },
+          "source": "llm",
+          "id": "2430779528496416470"
+        },
+        "relation": "UNCOVERS SECRETS OF AND ENTERS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Tom Marvolo Riddle",
+          "type": "PERSON",
+          "properties": {
+            "description": "Voldemort's younger self",
+            "location": "memory resides in an old diary"
+          },
+          "source": "llm",
+          "id": "-6731783605998599875"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "status": "alive as a weak spirit",
+            "goal": "regain a body",
+            "desire": "possess the Philosopher's Stone",
+            "duel_with": "Harry",
+            "opposed_by": "Order of the Phoenix",
+            "relationship": "enemy of Harry Potter",
+            "action": "kills Snape",
+            "motivation": "paranoia"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "IS YOUNGER SELF OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "status": "alive as a weak spirit",
+            "goal": "regain a body",
+            "desire": "possess the Philosopher's Stone",
+            "duel_with": "Harry",
+            "opposed_by": "Order of the Phoenix",
+            "relationship": "enemy of Harry Potter",
+            "action": "kills Snape",
+            "motivation": "paranoia"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "action": "confrontation with Voldemort"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "IS CONFRONTED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Tom Riddle",
+          "type": "PERSON",
+          "properties": {
+            "alias": "Voldemort's younger self",
+            "relationship": "Voldemort's real name"
+          },
+          "source": "llm",
+          "id": "-8811998185833096375"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "IS YOUNGER SELF OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ginny",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Harry",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "2281045269564170832"
+        },
+        "to_entity": {
+          "name": "Chamber of Secrets",
+          "type": "FACILITY",
+          "properties": {},
+          "source": "llm",
+          "id": "2430779528496416470"
+        },
+        "relation": "OPENED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ginny",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Harry",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "2281045269564170832"
+        },
+        "to_entity": {
+          "name": "basilisk",
+          "type": "CREATURE",
+          "properties": {
+            "description": "an ancient monster that kills or petrifies those who make direct or indirect eye contact"
+          },
+          "source": "llm",
+          "id": "-8770944103654805063"
+        },
+        "relation": "UNLEASHED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "basilisk",
+          "type": "CREATURE",
+          "properties": {
+            "description": "an ancient monster that kills or petrifies those who make direct or indirect eye contact"
+          },
+          "source": "llm",
+          "id": "-8770944103654805063"
+        },
+        "relation": "SLAYS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "diary",
+          "type": "OBJECT",
+          "properties": {
+            "owner": "Tom Riddle"
+          },
+          "source": "llm",
+          "id": "-5760964738856200276"
+        },
+        "relation": "DESTROYS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Fawkes",
+          "type": "CREATURE",
+          "properties": {
+            "type": "phoenix"
+          },
+          "source": "llm",
+          "id": "-7703931921648070585"
+        },
+        "to_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "object of Snape's loyalty"
+          },
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "relation": "BELONGS TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Fawkes",
+          "type": "CREATURE",
+          "properties": {
+            "type": "phoenix"
+          },
+          "source": "llm",
+          "id": "-7703931921648070585"
+        },
+        "relation": "AIDED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Sword of Gryffindor",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "6855303897238733343"
+        },
+        "relation": "USES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Harry Potter and the Prisoner of Azkaban",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "novel",
+            "number": "third"
+          },
+          "source": "llm",
+          "id": "3150787370812000457"
+        },
+        "relation": "IS IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "description": "an escaped convict",
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "relation": "IS TARGETED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dementors",
+          "type": "CREATURE",
+          "properties": {
+            "description": "creatures that feed on happiness"
+          },
+          "source": "llm",
+          "id": "1608669918590102288"
+        },
+        "to_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "description": "an escaped convict",
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "relation": "SEARCH FOR",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Dementors",
+          "type": "CREATURE",
+          "properties": {
+            "description": "creatures that feed on happiness"
+          },
+          "source": "llm",
+          "id": "1608669918590102288"
+        },
+        "relation": "STRUGGLES WITH REACTION TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Remus Lupin",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "professor"
+          },
+          "source": "llm",
+          "id": "-5297272612263219317"
+        },
+        "relation": "IS TAUGHT BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Remus Lupin",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "professor"
+          },
+          "source": "llm",
+          "id": "-5297272612263219317"
+        },
+        "to_entity": {
+          "name": "Patronus charm",
+          "type": "SPELL",
+          "properties": {},
+          "source": "llm",
+          "id": "5491757806301483609"
+        },
+        "relation": "TEACHES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Shrieking Shack",
+          "type": "FACILITY",
+          "properties": {
+            "description": "a haunted house"
+          },
+          "source": "llm",
+          "id": "-1137612338536348270"
+        },
+        "relation": "IS DRAGGED INTO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-9117073963624949205"
+        },
+        "to_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "relation": "FOLLOWS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {
+            "used": "Time Turner",
+            "friend_of": "Harry",
+            "member_of": "Dumbledore's Army",
+            "attends": "Hogwarts",
+            "relationship": "married to Ron",
+            "children": "two"
+          },
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "relation": "FOLLOWS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "to_entity": {
+          "name": "James Potter",
+          "type": "PERSON",
+          "properties": {
+            "friend": "Sirius Black",
+            "friend/betrayer": "Peter Pettigrew",
+            "son": "Harry"
+          },
+          "source": "llm",
+          "id": "-6527886213152738222"
+        },
+        "relation": "WAS BEST FRIEND OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "to_entity": {
+          "name": "Peter Pettigrew",
+          "type": "PERSON",
+          "properties": {
+            "disguise": "Scabbers (Ron's pet rat)",
+            "relationship": "friend/betrayer of James Potter"
+          },
+          "source": "llm",
+          "id": "3712197279735447452"
+        },
+        "relation": "WAS FRAMED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "James Potter",
+          "type": "PERSON",
+          "properties": {
+            "friend": "Sirius Black",
+            "friend/betrayer": "Peter Pettigrew",
+            "son": "Harry"
+          },
+          "source": "llm",
+          "id": "-6527886213152738222"
+        },
+        "to_entity": {
+          "name": "Peter Pettigrew",
+          "type": "PERSON",
+          "properties": {
+            "disguise": "Scabbers (Ron's pet rat)",
+            "relationship": "friend/betrayer of James Potter"
+          },
+          "source": "llm",
+          "id": "3712197279735447452"
+        },
+        "relation": "WAS FRIEND OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Peter Pettigrew",
+          "type": "PERSON",
+          "properties": {
+            "disguise": "Scabbers (Ron's pet rat)",
+            "relationship": "friend/betrayer of James Potter"
+          },
+          "source": "llm",
+          "id": "3712197279735447452"
+        },
+        "to_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {
+            "pet": "Scabbers (Peter Pettigrew)"
+          },
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "relation": "HIDES AS PET RAT OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {
+            "pet": "Scabbers (Peter Pettigrew)"
+          },
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Scabbers",
+          "type": "PERSON",
+          "properties": {
+            "true_identity": "Peter Pettigrew",
+            "owner": "Ron"
+          },
+          "source": "llm",
+          "id": "-7310153406880959958"
+        },
+        "relation": "HAS AS PET RAT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "relation": "TRAVELED BACK IN TIME WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Time Turner",
+          "type": "PRODUCT",
+          "properties": {
+            "users": "Harry and Hermione"
+          },
+          "source": "llm",
+          "id": "-4460104209994461312"
+        },
+        "relation": "USED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Time Turner",
+          "type": "PRODUCT",
+          "properties": {
+            "users": "Harry and Hermione"
+          },
+          "source": "llm",
+          "id": "-4460104209994461312"
+        },
+        "relation": "USED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "relation": "HELPED ESCAPE",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "relation": "HELPED ESCAPE",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "to_entity": {
+          "name": "Hippogriff",
+          "type": "CREATURE",
+          "properties": {
+            "used_by": "Sirius Black (to escape)"
+          },
+          "source": "llm",
+          "id": "6247321999902369861"
+        },
+        "relation": "ESCAPED ON",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "dementors",
+          "type": "CREATURE",
+          "properties": {},
+          "source": "llm",
+          "id": "-1625662530333695431"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "father": "James Potter",
+            "patronus": "stag",
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "SURROUNDED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "dementors",
+          "type": "CREATURE",
+          "properties": {},
+          "source": "llm",
+          "id": "-1625662530333695431"
+        },
+        "to_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {
+            "used": "Time Turner"
+          },
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "relation": "SURROUNDED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "dementors",
+          "type": "CREATURE",
+          "properties": {},
+          "source": "llm",
+          "id": "-1625662530333695431"
+        },
+        "to_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {
+            "pet": "Scabbers (Peter Pettigrew)"
+          },
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "relation": "SURROUNDED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "dementors",
+          "type": "CREATURE",
+          "properties": {},
+          "source": "llm",
+          "id": "-1625662530333695431"
+        },
+        "to_entity": {
+          "name": "Sirius Black",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "James Potter's best friend",
+            "status": "framed"
+          },
+          "source": "llm",
+          "id": "8314927984127880791"
+        },
+        "relation": "SURROUNDED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Pettigrew",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "6096064088155522918"
+        },
+        "to_entity": {
+          "name": "Cedric Diggory",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "6907723472189692843"
+        },
+        "relation": "KILLS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Pettigrew",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "6096064088155522918"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "RESURRECTS",
+        "confidence": 1.0,
+        "properties": {
+          "instrument": "Harry's blood"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Pettigrew",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "6096064088155522918"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "SUPPORTS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "properties": {
+            "affiliation": "Voldemort"
+          },
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "relation": "CONVENES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "DUELS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "J. K. Rowling",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-6401866138161890684"
+        },
+        "to_entity": {
+          "name": "Harry Potter and the Philosopher's Stone",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book"
+          },
+          "source": "llm",
+          "id": "-2103281375149038184"
+        },
+        "relation": "WROTE",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Spoon in Edinburgh",
+          "part": "first few chapters"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter and the Goblet of Fire",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book"
+          },
+          "source": "llm",
+          "id": "4116440476267351652"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "DETAILS",
+        "confidence": 1.0,
+        "properties": {
+          "time": "Harry's fourth year of school"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "to_entity": {
+          "name": "Triwizard Tournament",
+          "type": "EVENT",
+          "properties": {},
+          "source": "llm",
+          "id": "5239858617362809014"
+        },
+        "relation": "HOSTS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Triwizard Tournament",
+          "type": "EVENT",
+          "properties": {},
+          "source": "llm",
+          "id": "5239858617362809014"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "relation": "CONTEST BETWEEN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Triwizard Tournament",
+          "type": "EVENT",
+          "properties": {},
+          "source": "llm",
+          "id": "5239858617362809014"
+        },
+        "to_entity": {
+          "name": "Beauxbatons",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school"
+          },
+          "source": "llm",
+          "id": "-9144032731788797383"
+        },
+        "relation": "CONTEST BETWEEN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Triwizard Tournament",
+          "type": "EVENT",
+          "properties": {},
+          "source": "llm",
+          "id": "5239858617362809014"
+        },
+        "to_entity": {
+          "name": "Durmstrang",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school"
+          },
+          "source": "llm",
+          "id": "2692229732697193269"
+        },
+        "relation": "CONTEST BETWEEN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Triwizard Tournament",
+          "type": "EVENT",
+          "properties": {},
+          "source": "llm",
+          "id": "5239858617362809014"
+        },
+        "relation": "ENTERED IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Triwizard Cup",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "award"
+          },
+          "source": "llm",
+          "id": "2750111986003635629"
+        },
+        "relation": "CLAIMS",
+        "confidence": 1.0,
+        "properties": {
+          "companion": "Cedric Diggory"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Cedric Diggory",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "6907723472189692843"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "relation": "PARTICIPANT OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "type": "school"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "relation": "PARTICIPANT OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Spoon",
+          "type": "FACILITY",
+          "properties": {
+            "former_name": "Nicholson's Cafe",
+            "current_name": "Spoon",
+            "floor": "1st",
+            "location": "Edinburgh"
+          },
+          "source": "llm",
+          "id": "4768509882227484897"
+        },
+        "to_entity": {
+          "name": "Nicholson's Cafe",
+          "type": "FACILITY",
+          "properties": {
+            "former_name": "Nicholson's Cafe",
+            "current_name": "Spoon",
+            "floor": "1st",
+            "location": "Edinburgh"
+          },
+          "source": "llm",
+          "id": "-7030967051148713988"
+        },
+        "relation": "RENAMED FROM",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Spoon",
+          "type": "FACILITY",
+          "properties": {
+            "former_name": "Nicholson's Cafe",
+            "current_name": "Spoon",
+            "floor": "1st",
+            "location": "Edinburgh"
+          },
+          "source": "llm",
+          "id": "4768509882227484897"
+        },
+        "to_entity": {
+          "name": "Edinburgh",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "1304286346303164782"
+        },
+        "relation": "LOCATED IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "duel_with": "Harry",
+            "opposed_by": "Order of the Phoenix"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "DUELS WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "controlled_by": "Ministry of Magic",
+            "attended_by": "Harry",
+            "high_inquisitor": "Dolores Umbridge"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "relation": "RETURNS TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Barty Crouch, Jr",
+          "type": "PERSON",
+          "properties": {
+            "disguised_as": "Alastor \"Mad-Eye\" Moody",
+            "role": "Death Eater",
+            "helped": "Harry"
+          },
+          "source": "llm",
+          "id": "-6477886310894300734"
+        },
+        "to_entity": {
+          "name": "Alastor \"Mad-Eye\" Moody",
+          "type": "PERSON",
+          "properties": {
+            "impersonated_by": "Barty Crouch, Jr",
+            "role": "Defence Against the Dark Arts professor"
+          },
+          "source": "llm",
+          "id": "5461080683353713888"
+        },
+        "relation": "DISGUISED AS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Barty Crouch, Jr",
+          "type": "PERSON",
+          "properties": {
+            "disguised_as": "Alastor \"Mad-Eye\" Moody",
+            "role": "Death Eater",
+            "helped": "Harry"
+          },
+          "source": "llm",
+          "id": "-6477886310894300734"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "ENGINEERED ENTRY INTO THE TOURNAMENT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Barty Crouch, Jr",
+          "type": "PERSON",
+          "properties": {
+            "disguised_as": "Alastor \"Mad-Eye\" Moody",
+            "role": "Death Eater",
+            "helped": "Harry"
+          },
+          "source": "llm",
+          "id": "-6477886310894300734"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "HELPED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Barty Crouch, Jr",
+          "type": "PERSON",
+          "properties": {
+            "disguised_as": "Alastor \"Mad-Eye\" Moody",
+            "role": "Death Eater",
+            "helped": "Harry"
+          },
+          "source": "llm",
+          "id": "-6477886310894300734"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "TELEPORTED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "duel_with": "Harry",
+            "opposed_by": "Order of the Phoenix"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "TELEPORTED TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {
+            "controls": "Hogwarts",
+            "denies_return_of": "Voldemort",
+            "employs": "Dolores Umbridge",
+            "location_of_dream": "Harry's dream"
+          },
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "duel_with": "Harry",
+            "opposed_by": "Order of the Phoenix"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "REFUSES TO BELIEVE RETURN OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Order of the Phoenix",
+          "type": "ORGANIZATION",
+          "properties": {
+            "reactivated_by": "Dumbledore",
+            "opposes": "Voldemort",
+            "opposed to": "Death Eaters"
+          },
+          "source": "llm",
+          "id": "-2938777542482782769"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "duel_with": "Harry",
+            "opposed_by": "Order of the Phoenix"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "COUNTERS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {
+            "controls": "Hogwarts",
+            "denies_return_of": "Voldemort",
+            "employs": "Dolores Umbridge",
+            "location_of_dream": "Harry's dream"
+          },
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "controlled_by": "Ministry of Magic",
+            "attended_by": "Harry",
+            "high_inquisitor": "Dolores Umbridge"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "relation": "TIGHTENS CONTROL OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dolores Umbridge",
+          "type": "PERSON",
+          "properties": {
+            "role": "High Inquisitor of Hogwarts",
+            "employed_by": "Ministry of Magic",
+            "bans": "practical Defence Against the Dark Arts teaching"
+          },
+          "source": "llm",
+          "id": "-3418194841595912667"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "controlled_by": "Ministry of Magic",
+            "attended_by": "Harry",
+            "high_inquisitor": "Dolores Umbridge"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "relation": "APPOINTED HIGH INQUISITOR OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Dumbledore's Army",
+          "type": "ORGANIZATION",
+          "properties": {
+            "founded_by": "Harry, Ron, and Hermione",
+            "purpose": "learning Defence Against the Dark Arts"
+          },
+          "source": "llm",
+          "id": "-4994304126905647859"
+        },
+        "relation": "FORMS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {
+            "friend_of": "Harry",
+            "member_of": "Dumbledore's Army",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Dumbledore's Army",
+          "type": "ORGANIZATION",
+          "properties": {
+            "founded_by": "Harry, Ron, and Hermione",
+            "purpose": "learning Defence Against the Dark Arts"
+          },
+          "source": "llm",
+          "id": "-4994304126905647859"
+        },
+        "relation": "FORMS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {
+            "friend_of": "Harry",
+            "member_of": "Dumbledore's Army",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Dumbledore's Army",
+          "type": "ORGANIZATION",
+          "properties": {
+            "founded_by": "Harry, Ron, and Hermione",
+            "purpose": "learning Defence Against the Dark Arts"
+          },
+          "source": "llm",
+          "id": "-4994304126905647859"
+        },
+        "relation": "FORMS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "participated_in": "Triwizard Tournament",
+            "helped_by": "Barty Crouch, Jr",
+            "targeted_by": "Voldemort",
+            "leads": "Dumbledore's Army",
+            "dreams_about": "Sirius",
+            "attends": "Hogwarts"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {
+            "controls": "Hogwarts",
+            "denies_return_of": "Voldemort",
+            "employs": "Dolores Umbridge",
+            "location_of_dream": "Harry's dream"
+          },
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "relation": "DREAMS OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sirius",
+          "type": "PERSON",
+          "properties": {
+            "dreamed_about_by": "Harry",
+            "possibly_located_at": "Ministry of Magic",
+            "fate": "killed in battle"
+          },
+          "source": "llm",
+          "id": "6937963303699044917"
+        },
+        "to_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {
+            "controls": "Hogwarts",
+            "denies_return_of": "Voldemort",
+            "employs": "Dolores Umbridge",
+            "location_of_dream": "Harry's dream"
+          },
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "relation": "TORTURED IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sirius",
+          "type": "PERSON",
+          "properties": {
+            "fate": "killed in battle"
+          },
+          "source": "llm",
+          "id": "6937963303699044917"
+        },
+        "to_entity": {
+          "name": "Ministry",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-5518825463118011296"
+        },
+        "relation": "RACES TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "enemy of Harry Potter"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Sirius",
+          "type": "PERSON",
+          "properties": {
+            "fate": "killed in battle"
+          },
+          "source": "llm",
+          "id": "6937963303699044917"
+        },
+        "relation": "PLANTED TRAP IN HEAD OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "properties": {
+            "affiliation": "Voldemort"
+          },
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "to_entity": {
+          "name": "Sirius",
+          "type": "PERSON",
+          "properties": {
+            "fate": "killed in battle"
+          },
+          "source": "llm",
+          "id": "6937963303699044917"
+        },
+        "relation": "ATTACKED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Order of the Phoenix",
+          "type": "ORGANIZATION",
+          "properties": {
+            "opposed to": "Death Eaters"
+          },
+          "source": "llm",
+          "id": "-2938777542482782769"
+        },
+        "to_entity": {
+          "name": "Sirius",
+          "type": "PERSON",
+          "properties": {
+            "fate": "killed in battle"
+          },
+          "source": "llm",
+          "id": "6937963303699044917"
+        },
+        "relation": "SAVED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Sirius",
+          "type": "PERSON",
+          "properties": {
+            "fate": "killed in battle"
+          },
+          "source": "llm",
+          "id": "6937963303699044917"
+        },
+        "to_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "properties": {
+            "affiliation": "Voldemort"
+          },
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "relation": "KILLED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "enemy of Harry Potter"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "DUELS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "to_entity": {
+          "name": "Ministry",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-5518825463118011296"
+        },
+        "relation": "CONVINCES",
+        "confidence": 1.0,
+        "properties": {
+          "topic": "Voldemort's return"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter and the Half-Blood Prince",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book",
+            "series": "Harry Potter",
+            "number": "sixth"
+          },
+          "source": "llm",
+          "id": "-1595016953590299726"
+        },
+        "to_entity": {
+          "name": "Snape",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "Defence Against the Dark Arts teacher",
+            "relationship": "killed by Voldemort",
+            "action": "lends memories to Harry"
+          },
+          "source": "llm",
+          "id": "-2947499839392325776"
+        },
+        "relation": "FEATURES",
+        "confidence": 1.0,
+        "properties": {
+          "role": "teaching Defence Against the Dark Arts"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter and the Half-Blood Prince",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book",
+            "series": "Harry Potter",
+            "number": "sixth"
+          },
+          "source": "llm",
+          "id": "-1595016953590299726"
+        },
+        "to_entity": {
+          "name": "Horace Slughorn",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "Potions master"
+          },
+          "source": "llm",
+          "id": "-6012764568618294463"
+        },
+        "relation": "FEATURES",
+        "confidence": 1.0,
+        "properties": {
+          "role": "Potions master"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Snape",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "Defence Against the Dark Arts teacher",
+            "relationship": "killed by Voldemort",
+            "action": "lends memories to Harry"
+          },
+          "source": "llm",
+          "id": "-2947499839392325776"
+        },
+        "to_entity": {
+          "name": "Defence Against the Dark Arts",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "subject"
+          },
+          "source": "llm",
+          "id": "4703185867989383834"
+        },
+        "relation": "TEACHES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Horace Slughorn",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "Potions master"
+          },
+          "source": "llm",
+          "id": "-6012764568618294463"
+        },
+        "to_entity": {
+          "name": "Potions",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "subject"
+          },
+          "source": "llm",
+          "id": "8758482096865386012"
+        },
+        "relation": "BECOMES MASTER OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Half-Blood Prince",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "annotator of textbook"
+          },
+          "source": "llm",
+          "id": "511197103538914352"
+        },
+        "to_entity": {
+          "name": "Potions",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "subject"
+          },
+          "source": "llm",
+          "id": "8758482096865386012"
+        },
+        "relation": "ANNOTATES TEXTBOOK ABOUT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "to_entity": {
+          "name": "Harry Potter and the Half-Blood Prince",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book",
+            "series": "Harry Potter",
+            "number": "sixth"
+          },
+          "source": "llm",
+          "id": "-1595016953590299726"
+        },
+        "relation": "GIVES LESSONS TO HARRY IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "enemy of Harry Potter"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "SHOWS MEMORIES ABOUT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "to_entity": {
+          "name": "Pensieve",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "device",
+            "purpose": "viewing memories"
+          },
+          "source": "llm",
+          "id": "-4053762038504238269"
+        },
+        "relation": "USES",
+        "confidence": 1.0,
+        "properties": {
+          "purpose": "viewing memories"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Horace Slughorn",
+          "type": "PERSON",
+          "properties": {
+            "occupation": "Potions master"
+          },
+          "source": "llm",
+          "id": "-6012764568618294463"
+        },
+        "to_entity": {
+          "name": "Tom Riddle",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "Voldemort's real name"
+          },
+          "source": "llm",
+          "id": "-8811998185833096375"
+        },
+        "relation": "TAUGHT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Tom Riddle",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "Voldemort's real name"
+          },
+          "source": "llm",
+          "id": "-8811998185833096375"
+        },
+        "to_entity": {
+          "name": "Horcruxes",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "magical artifact",
+            "creator": "Voldemort"
+          },
+          "source": "llm",
+          "id": "6697237129150777552"
+        },
+        "relation": "CREATED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter and the Half-Blood Prince",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book",
+            "series": "Harry Potter",
+            "number": "sixth"
+          },
+          "source": "llm",
+          "id": "-1595016953590299726"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "enemy of Harry Potter"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "CONCERNS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "enemy of Harry Potter"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Harry Potter and the Half-Blood Prince",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book",
+            "series": "Harry Potter",
+            "number": "sixth"
+          },
+          "source": "llm",
+          "id": "-1595016953590299726"
+        },
+        "relation": "IS SUBJECT OF PROPHECY IN",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "to_entity": {
+          "name": "Horcruxes",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "4834118848105978719"
+        },
+        "relation": "CREATES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Horcruxes",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "4834118848105978719"
+        },
+        "relation": "DESTROYS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "to_entity": {
+          "name": "Horcruxes",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "4834118848105978719"
+        },
+        "relation": "DESTROYS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "TRAVELS WITH",
+        "confidence": 1.0,
+        "properties": {
+          "location": "distant lake"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Draco Malfoy",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "1227128133424235559"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-934338565772717701"
+        },
+        "relation": "ATTACKS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-934338565772717701"
+        },
+        "relation": "ATTACKS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Professor Snape",
+          "type": "PERSON",
+          "properties": {
+            "title": "Professor"
+          },
+          "source": "llm",
+          "id": "-1544475615250667972"
+        },
+        "to_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "relation": "KILLS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Professor Snape",
+          "type": "PERSON",
+          "properties": {
+            "title": "Professor"
+          },
+          "source": "llm",
+          "id": "-1544475615250667972"
+        },
+        "to_entity": {
+          "name": "Half-Blood Prince",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "511197103538914352"
+        },
+        "relation": "IS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "to_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "relation": "GAINS CONTROL OF",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Deathly Hallows",
+          "type": "OBJECT",
+          "properties": {
+            "description": "legendary items that lead to mastery over death"
+          },
+          "source": "llm",
+          "id": "-6885957866237064803"
+        },
+        "relation": "LEARNS ABOUT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Deathly Hallows",
+          "type": "OBJECT",
+          "properties": {
+            "description": "legendary items that lead to mastery over death"
+          },
+          "source": "llm",
+          "id": "-6885957866237064803"
+        },
+        "relation": "LEARNS ABOUT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Deathly Hallows",
+          "type": "OBJECT",
+          "properties": {
+            "description": "legendary items that lead to mastery over death"
+          },
+          "source": "llm",
+          "id": "-6885957866237064803"
+        },
+        "relation": "LEARNS ABOUT",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "relation": "INFILTRATES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "relation": "INFILTRATES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Ministry of Magic",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-1289698933019466637"
+        },
+        "relation": "INFILTRATES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Horcruxes",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "4834118848105978719"
+        },
+        "relation": "STEALS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Ministry of Magic"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Horcruxes",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "4834118848105978719"
+        },
+        "relation": "STEALS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Ministry of Magic"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Horcruxes",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "4834118848105978719"
+        },
+        "relation": "STEALS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Ministry of Magic"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Godric's Hollow",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "6355012332083233742"
+        },
+        "relation": "VISITS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Godric's Hollow",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "6355012332083233742"
+        },
+        "relation": "VISITS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Godric's Hollow",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "6355012332083233742"
+        },
+        "relation": "VISITS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Nagini",
+          "type": "PERSON",
+          "properties": {
+            "description": "Voldemort's snake"
+          },
+          "source": "llm",
+          "id": "-3549607235152378859"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "ATTACKS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Godric's Hollow"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Nagini",
+          "type": "PERSON",
+          "properties": {
+            "description": "Voldemort's snake"
+          },
+          "source": "llm",
+          "id": "-3549607235152378859"
+        },
+        "to_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "relation": "ATTACKS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Godric's Hollow"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Nagini",
+          "type": "PERSON",
+          "properties": {
+            "description": "Voldemort's snake"
+          },
+          "source": "llm",
+          "id": "-3549607235152378859"
+        },
+        "to_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "relation": "ATTACKS",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Godric's Hollow"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Nagini",
+          "type": "PERSON",
+          "properties": {
+            "description": "Voldemort's snake"
+          },
+          "source": "llm",
+          "id": "-3549607235152378859"
+        },
+        "to_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "relation": "'S SNAKE",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Sword of Gryffindor",
+          "type": "OBJECT",
+          "properties": {},
+          "source": "llm",
+          "id": "6855303897238733343"
+        },
+        "relation": "FINDS",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-934338565772717701"
+        },
+        "relation": "TRAVELS TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-934338565772717701"
+        },
+        "relation": "TRAVELS TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Hogwarts",
+          "type": "LOCATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-934338565772717701"
+        },
+        "relation": "TRAVELS TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "relation": "BATTLES",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Hogwarts"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "relation": "BATTLES",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Hogwarts"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "to_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "properties": {},
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "relation": "BATTLES",
+        "confidence": 1.0,
+        "properties": {
+          "location": "Hogwarts"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry Potter and the Deathly Hallows",
+          "type": "PRODUCT",
+          "properties": {
+            "type": "book",
+            "series": "Harry Potter",
+            "number": "seventh and final"
+          },
+          "source": "llm",
+          "id": "-3389365067274302754"
+        },
+        "to_entity": {
+          "name": "Lord Voldemort",
+          "type": "PERSON",
+          "properties": {},
+          "source": "llm",
+          "id": "-2549328065747439979"
+        },
+        "relation": "FEATURES",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Snape",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "killed by Voldemort",
+            "action": "lends memories to Harry"
+          },
+          "source": "llm",
+          "id": "-2947499839392325776"
+        },
+        "to_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "relation": "BATTLED WITH",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Snape",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "killed by Voldemort",
+            "action": "lends memories to Harry"
+          },
+          "source": "llm",
+          "id": "-2947499839392325776"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "KILLED BY",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Snape",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "killed by Voldemort",
+            "action": "lends memories to Harry"
+          },
+          "source": "llm",
+          "id": "-2947499839392325776"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "LENT",
+        "confidence": 1.0,
+        "properties": {
+          "what": "memories"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Snape",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "killed by Voldemort",
+            "action": "lends memories to Harry"
+          },
+          "source": "llm",
+          "id": "-2947499839392325776"
+        },
+        "to_entity": {
+          "name": "Dumbledore",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "object of Snape's loyalty"
+          },
+          "source": "llm",
+          "id": "-2685069431584811169"
+        },
+        "relation": "LOYAL TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "SURRENDERED TO",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "HIT BY",
+        "confidence": 1.0,
+        "properties": {
+          "what": "killing curse"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Lily",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "mother of Harry"
+          },
+          "source": "llm",
+          "id": "-260675144168681127"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "GAVE",
+        "confidence": 1.0,
+        "properties": {
+          "what": "protection"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "relation": "USED",
+        "confidence": 1.0,
+        "properties": {
+          "what": "blood",
+          "purpose": "to resurrect himself"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Hogwarts",
+          "type": "ORGANIZATION",
+          "properties": {
+            "status": "defended"
+          },
+          "source": "llm",
+          "id": "1094070127406587567"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "FOUGHT",
+        "confidence": 1.0,
+        "properties": {
+          "who": "defenders of"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "FACED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "relation": "KILLED",
+        "confidence": 1.0,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Voldemort",
+          "type": "PERSON",
+          "properties": {
+            "action": "kills Snape",
+            "motivation": "paranoia",
+            "relationship": "killed by Harry"
+          },
+          "source": "llm",
+          "id": "-6411189111669645727"
+        },
+        "to_entity": {
+          "name": "Death Eaters",
+          "type": "ORGANIZATION",
+          "source": "llm",
+          "id": "-2901161164644394068"
+        },
+        "relation": "LED",
+        "confidence": 0.8,
+        "properties": {}
+      },
+      {
+        "from_entity": {
+          "name": "Harry",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ginny",
+            "status": "Horcrux",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "-208416054643548976"
+        },
+        "to_entity": {
+          "name": "Ginny",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Harry",
+            "children": "three"
+          },
+          "source": "llm",
+          "id": "2281045269564170832"
+        },
+        "relation": "MARRIED TO",
+        "confidence": 1.0,
+        "properties": {
+          "time": "Nineteen Years Later"
+        }
+      },
+      {
+        "from_entity": {
+          "name": "Ron",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Hermione",
+            "children": "two"
+          },
+          "source": "llm",
+          "id": "-5545163210111174556"
+        },
+        "to_entity": {
+          "name": "Hermione",
+          "type": "PERSON",
+          "properties": {
+            "relationship": "married to Ron",
+            "children": "two"
+          },
+          "source": "llm",
+          "id": "226138125400072368"
+        },
+        "relation": "MARRIED TO",
+        "confidence": 1.0,
+        "properties": {
+          "time": "Nineteen Years Later"
+        }
+      }
+    ]
+  }
+}

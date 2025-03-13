@@ -1,0 +1,483 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#6A5ACD", "font": {"color": "#6A5ACD"}, "id": "5226731435625450940", "label": "The Elephant House", "properties": {"description": "a small, painted red caf\u00e9"}, "shape": "dot", "size": 10, "title": "The Elephant House (FACILITY)\n\nProperties:\n\u2022 description: a small, painted red caf\u00e9"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "-2103281375149038184", "label": "Harry Potter and the Philosopher\u0027s Stone", "properties": {"alternative_name": "Harry Potter and the Sorcerer\u0027s Stone", "alternative_name_location": "US", "related_to": "The Elephant House", "relation": "written at", "type": "book"}, "shape": "dot", "size": 10, "title": "Harry Potter and the Philosopher\u0027s Stone (PRODUCT)\n\nProperties:\n\u2022 type: book\n\u2022 relation: written at\n\u2022 related_to: The Elephant House\n\u2022 alternative_name: Harry Potter and the Sorcerer\u0027s Stone\n\u2022 alternative_name_location: US"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "1304286346303164782", "label": "Edinburgh", "properties": {}, "shape": "dot", "size": 10, "title": "Edinburgh (LOCATION)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-9117073963624949205", "label": "Harry Potter", "properties": {"description": "a boy", "parents": "Lily and James Potter"}, "shape": "dot", "size": 10, "title": "Harry Potter (PERSON)\n\nProperties:\n\u2022 description: a boy\n\u2022 parents: Lily and James Potter"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-4157420451510316487", "label": "Dursleys", "properties": {"related_to": "Harry Potter", "relation": "aunt, uncle and cousin of"}, "shape": "dot", "size": 10, "title": "Dursleys (PERSON)\n\nProperties:\n\u2022 relation: aunt, uncle and cousin of\n\u2022 related_to: Harry Potter"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "-8196961144909276733", "label": "Hogwarts School of Witchcraft and Wizardry", "properties": {"type": "school"}, "shape": "dot", "size": 10, "title": "Hogwarts School of Witchcraft and Wizardry (ORGANIZATION)\n\nProperties:\n\u2022 type: school"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "75384401280796460", "label": "Lily and James Potter", "properties": {"related_to": "Harry Potter", "relation": "parents of"}, "shape": "dot", "size": 10, "title": "Lily and James Potter (PERSON)\n\nProperties:\n\u2022 relation: parents of\n\u2022 related_to: Harry Potter"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "-8770944103654805063", "label": "basilisk", "properties": {"description": "an ancient monster that kills or petrifies those who make direct or indirect eye contact"}, "shape": "dot", "size": 10, "title": "basilisk (CREATURE)\n\nProperties:\n\u2022 description: an ancient monster that kills or petrifies those who make direct or indirect eye contact"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "-5760964738856200276", "label": "diary", "properties": {"owner": "Tom Riddle"}, "shape": "dot", "size": 10, "title": "diary (OBJECT)\n\nProperties:\n\u2022 owner: Tom Riddle"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "-7703931921648070585", "label": "Fawkes", "properties": {"type": "phoenix"}, "shape": "dot", "size": 10, "title": "Fawkes (CREATURE)\n\nProperties:\n\u2022 type: phoenix"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "6855303897238733343", "label": "Sword of Gryffindor", "properties": {}, "shape": "dot", "size": 10, "title": "Sword of Gryffindor (OBJECT)"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "3150787370812000457", "label": "Harry Potter and the Prisoner of Azkaban", "properties": {"number": "third", "type": "novel"}, "shape": "dot", "size": 10, "title": "Harry Potter and the Prisoner of Azkaban (PRODUCT)\n\nProperties:\n\u2022 type: novel\n\u2022 number: third"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "8314927984127880791", "label": "Sirius Black", "properties": {"description": "an escaped convict", "relationship": "James Potter\u0027s best friend", "status": "framed"}, "shape": "dot", "size": 10, "title": "Sirius Black (PERSON)\n\nProperties:\n\u2022 description: an escaped convict\n\u2022 relationship: James Potter\u0027s best friend\n\u2022 status: framed"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "1608669918590102288", "label": "Dementors", "properties": {"description": "creatures that feed on happiness"}, "shape": "dot", "size": 10, "title": "Dementors (CREATURE)\n\nProperties:\n\u2022 description: creatures that feed on happiness"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-5297272612263219317", "label": "Remus Lupin", "properties": {"occupation": "professor"}, "shape": "dot", "size": 10, "title": "Remus Lupin (PERSON)\n\nProperties:\n\u2022 occupation: professor"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-5545163210111174556", "label": "Ron", "properties": {"action": "uncover the chamber\u0027s secrets with Harry", "attends": "Hogwarts", "children": "two", "friend_of": "Harry", "member_of": "Dumbledore\u0027s Army", "pet": "Scabbers (Peter Pettigrew)", "relationship": "married to Hermione"}, "shape": "dot", "size": 10, "title": "Ron (PERSON)\n\nProperties:\n\u2022 action: uncover the chamber\u0027s secrets with Harry\n\u2022 pet: Scabbers (Peter Pettigrew)\n\u2022 friend_of: Harry\n\u2022 member_of: Dumbledore\u0027s Army\n\u2022 attends: Hogwarts\n\u2022 relationship: married to Hermione\n\u2022 children: two"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "2953846222057661961", "label": "Hagrid", "properties": {"description": "a half-giant"}, "shape": "dot", "size": 10, "title": "Hagrid (PERSON)\n\nProperties:\n\u2022 description: a half-giant"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-2549328065747439979", "label": "Lord Voldemort", "properties": {"alias": "Voldemort", "description": "dark wizard"}, "shape": "dot", "size": 10, "title": "Lord Voldemort (PERSON)\n\nProperties:\n\u2022 description: dark wizard\n\u2022 alias: Voldemort"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-208416054643548976", "label": "Harry", "properties": {"action": "confrontation with Voldemort", "attends": "Hogwarts", "children": "three", "description": "survived Voldemort\u0027s curse", "dreams_about": "Sirius", "father": "James Potter", "helped_by": "Barty Crouch, Jr", "leads": "Dumbledore\u0027s Army", "participated_in": "Triwizard Tournament", "patronus": "stag", "relationship": "married to Ginny", "scar": "lightning-shaped scar on his forehead", "status": "Horcrux", "targeted_by": "Voldemort", "used": "Time Turner"}, "shape": "dot", "size": 10, "title": "Harry (PERSON)\n\nProperties:\n\u2022 description: survived Voldemort\u0027s curse\n\u2022 scar: lightning-shaped scar on his forehead\n\u2022 action: confrontation with Voldemort\n\u2022 father: James Potter\n\u2022 patronus: stag\n\u2022 used: Time Turner\n\u2022 participated_in: Triwizard Tournament\n\u2022 helped_by: Barty Crouch, Jr\n\u2022 targeted_by: Voldemort\n\u2022 leads: Dumbledore\u0027s Army\n\u2022 dreams_about: Sirius\n\u2022 attends: Hogwarts\n\u2022 relationship: married to Ginny\n\u2022 status: Horcrux\n\u2022 children: three"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "4834118848105978719", "label": "Horcruxes", "properties": {}, "shape": "dot", "size": 10, "title": "Horcruxes (OBJECT)"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "-1289698933019466637", "label": "Ministry of Magic", "properties": {"controls": "Hogwarts", "denies_return_of": "Voldemort", "employs": "Dolores Umbridge", "location_of_dream": "Harry\u0027s dream"}, "shape": "dot", "size": 10, "title": "Ministry of Magic (ORGANIZATION)\n\nProperties:\n\u2022 controls: Hogwarts\n\u2022 denies_return_of: Voldemort\n\u2022 employs: Dolores Umbridge\n\u2022 location_of_dream: Harry\u0027s dream"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "1094070127406587567", "label": "Hogwarts", "properties": {"attended_by": "Harry", "controlled_by": "Ministry of Magic", "high_inquisitor": "Dolores Umbridge", "status": "defended", "type": "school"}, "shape": "dot", "size": 10, "title": "Hogwarts (ORGANIZATION)\n\nProperties:\n\u2022 type: school\n\u2022 controlled_by: Ministry of Magic\n\u2022 attended_by: Harry\n\u2022 high_inquisitor: Dolores Umbridge\n\u2022 status: defended"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "4791175013970032872", "label": "Gryffindor House", "properties": {"type": "Hogwarts house"}, "shape": "dot", "size": 10, "title": "Gryffindor House (ORGANIZATION)\n\nProperties:\n\u2022 type: Hogwarts house"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-6645132028546081288", "label": "Ron Weasley", "properties": {"description": "member of a large but poor wizarding family", "friend_of": "Hermione Granger"}, "shape": "dot", "size": 10, "title": "Ron Weasley (PERSON)\n\nProperties:\n\u2022 description: member of a large but poor wizarding family\n\u2022 friend_of: Hermione Granger"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "2576337919087739195", "label": "Hermione Granger", "properties": {"description": "witch of Muggle parentage", "friend_of": "Ron Weasley"}, "shape": "dot", "size": 10, "title": "Hermione Granger (PERSON)\n\nProperties:\n\u2022 description: witch of Muggle parentage\n\u2022 friend_of: Ron Weasley"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "1227128133424235559", "label": "Draco Malfoy", "properties": {"description": "rich pure-blood student", "enemy_of": "Hermione Granger"}, "shape": "dot", "size": 10, "title": "Draco Malfoy (PERSON)\n\nProperties:\n\u2022 description: rich pure-blood student\n\u2022 enemy_of: Hermione Granger"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-7463793937967088345", "label": "Albus Dumbledore", "properties": {"role": "headmaster of Hogwarts"}, "shape": "dot", "size": 10, "title": "Albus Dumbledore (PERSON)\n\nProperties:\n\u2022 role: headmaster of Hogwarts"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-3794304612489589967", "label": "Severus Snape", "properties": {"attitude_towards_harry": "dislike", "role": "potions professor at Hogwarts"}, "shape": "dot", "size": 10, "title": "Severus Snape (PERSON)\n\nProperties:\n\u2022 role: potions professor at Hogwarts\n\u2022 attitude_towards_harry: dislike"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "7660832957580537505", "label": "Quirinus Quirrell", "properties": {"allied_with": "Lord Voldemort", "role": "Defence Against the Dark Arts teacher at Hogwarts"}, "shape": "dot", "size": 10, "title": "Quirinus Quirrell (PERSON)\n\nProperties:\n\u2022 role: Defence Against the Dark Arts teacher at Hogwarts\n\u2022 allied_with: Lord Voldemort"}, {"color": "#708090", "font": {"color": "#708090"}, "id": "-1331109423839708703", "label": "Parseltongue", "properties": {"association": "Dark Arts", "rarity": "rare"}, "shape": "dot", "size": 10, "title": "Parseltongue (LANGUAGE)\n\nProperties:\n\u2022 rarity: rare\n\u2022 association: Dark Arts"}, {"color": "#6A5ACD", "font": {"color": "#6A5ACD"}, "id": "2430779528496416470", "label": "Chamber of Secrets", "properties": {"description": "mythical chamber", "event": "attacks fifty years earlier"}, "shape": "dot", "size": 10, "title": "Chamber of Secrets (FACILITY)\n\nProperties:\n\u2022 description: mythical chamber\n\u2022 event: attacks fifty years earlier"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "226138125400072368", "label": "Hermione", "properties": {"attends": "Hogwarts", "children": "two", "friend_of": "Harry", "member_of": "Dumbledore\u0027s Army", "relationship": "married to Ron", "used": "Time Turner"}, "shape": "dot", "size": 10, "title": "Hermione (PERSON)\n\nProperties:\n\u2022 used: Time Turner\n\u2022 friend_of: Harry\n\u2022 member_of: Dumbledore\u0027s Army\n\u2022 attends: Hogwarts\n\u2022 relationship: married to Ron\n\u2022 children: two"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "-4460104209994461312", "label": "Time Turner", "properties": {"users": "Harry and Hermione"}, "shape": "dot", "size": 10, "title": "Time Turner (PRODUCT)\n\nProperties:\n\u2022 users: Harry and Hermione"}, {"color": "#FFD700", "font": {"color": "#FFD700"}, "id": "5239858617362809014", "label": "Triwizard Tournament", "properties": {}, "shape": "dot", "size": 10, "title": "Triwizard Tournament (EVENT)"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "2750111986003635629", "label": "Triwizard Cup", "properties": {"type": "award"}, "shape": "dot", "size": 10, "title": "Triwizard Cup (PRODUCT)\n\nProperties:\n\u2022 type: award"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-6411189111669645727", "label": "Voldemort", "properties": {"action": "kills Snape", "desire": "possess the Philosopher\u0027s Stone", "duel_with": "Harry", "goal": "regain a body", "motivation": "paranoia", "opposed_by": "Order of the Phoenix", "relationship": "enemy of Harry Potter", "status": "alive as a weak spirit"}, "shape": "dot", "size": 10, "title": "Voldemort (PERSON)\n\nProperties:\n\u2022 status: alive as a weak spirit\n\u2022 goal: regain a body\n\u2022 desire: possess the Philosopher\u0027s Stone\n\u2022 duel_with: Harry\n\u2022 opposed_by: Order of the Phoenix\n\u2022 relationship: enemy of Harry Potter\n\u2022 action: kills Snape\n\u2022 motivation: paranoia"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "-4994304126905647859", "label": "Dumbledore\u0027s Army", "properties": {"founded_by": "Harry, Ron, and Hermione", "purpose": "learning Defence Against the Dark Arts"}, "shape": "dot", "size": 10, "title": "Dumbledore\u0027s Army (ORGANIZATION)\n\nProperties:\n\u2022 founded_by: Harry, Ron, and Hermione\n\u2022 purpose: learning Defence Against the Dark Arts"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "-6885957866237064803", "label": "Deathly Hallows", "properties": {"description": "legendary items that lead to mastery over death"}, "shape": "dot", "size": 10, "title": "Deathly Hallows (OBJECT)\n\nProperties:\n\u2022 description: legendary items that lead to mastery over death"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "6355012332083233742", "label": "Godric\u0027s Hollow", "properties": {}, "shape": "dot", "size": 10, "title": "Godric\u0027s Hollow (LOCATION)"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "-934338565772717701", "label": "Hogwarts", "properties": {}, "shape": "dot", "size": 10, "title": "Hogwarts (LOCATION)"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "-2901161164644394068", "label": "Death Eaters", "properties": {"affiliation": "Voldemort"}, "shape": "dot", "size": 10, "title": "Death Eaters (ORGANIZATION)\n\nProperties:\n\u2022 affiliation: Voldemort"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "2281045269564170832", "label": "Ginny", "properties": {"children": "three", "relationship": "married to Harry"}, "shape": "dot", "size": 10, "title": "Ginny (PERSON)\n\nProperties:\n\u2022 relationship: married to Harry\n\u2022 children: three"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "-7587703770689955980", "label": "Philosopher\u0027s Stone", "properties": {"effect": "bestows everlasting life"}, "shape": "dot", "size": 10, "title": "Philosopher\u0027s Stone (PRODUCT)\n\nProperties:\n\u2022 effect: bestows everlasting life"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "6937963303699044917", "label": "Sirius", "properties": {"dreamed_about_by": "Harry", "fate": "killed in battle", "possibly_located_at": "Ministry of Magic"}, "shape": "dot", "size": 10, "title": "Sirius (PERSON)\n\nProperties:\n\u2022 dreamed_about_by: Harry\n\u2022 possibly_located_at: Ministry of Magic\n\u2022 fate: killed in battle"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "-1595016953590299726", "label": "Harry Potter and the Half-Blood Prince", "properties": {"number": "sixth", "series": "Harry Potter", "type": "book"}, "shape": "dot", "size": 10, "title": "Harry Potter and the Half-Blood Prince (PRODUCT)\n\nProperties:\n\u2022 type: book\n\u2022 series: Harry Potter\n\u2022 number: sixth"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "-5929073878392974977", "label": "Harry Potter and the Chamber of Secrets", "properties": {"description": "describes Harry\u0027s second year at Hogwarts"}, "shape": "dot", "size": 10, "title": "Harry Potter and the Chamber of Secrets (PRODUCT)\n\nProperties:\n\u2022 description: describes Harry\u0027s second year at Hogwarts"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-3441497996891205026", "label": "Ginny Weasley", "properties": {"condition": "possessed by an old diary", "status": "abducted"}, "shape": "dot", "size": 10, "title": "Ginny Weasley (PERSON)\n\nProperties:\n\u2022 status: abducted\n\u2022 condition: possessed by an old diary"}, {"color": "#6A5ACD", "font": {"color": "#6A5ACD"}, "id": "-1137612338536348270", "label": "Shrieking Shack", "properties": {"description": "a haunted house"}, "shape": "dot", "size": 10, "title": "Shrieking Shack (FACILITY)\n\nProperties:\n\u2022 description: a haunted house"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-7310153406880959958", "label": "Scabbers", "properties": {"owner": "Ron", "true_identity": "Peter Pettigrew"}, "shape": "dot", "size": 10, "title": "Scabbers (PERSON)\n\nProperties:\n\u2022 true_identity: Peter Pettigrew\n\u2022 owner: Ron"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-6731783605998599875", "label": "Tom Marvolo Riddle", "properties": {"description": "Voldemort\u0027s younger self", "location": "memory resides in an old diary"}, "shape": "dot", "size": 10, "title": "Tom Marvolo Riddle (PERSON)\n\nProperties:\n\u2022 description: Voldemort\u0027s younger self\n\u2022 location: memory resides in an old diary"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-8811998185833096375", "label": "Tom Riddle", "properties": {"alias": "Voldemort\u0027s younger self", "relationship": "Voldemort\u0027s real name"}, "shape": "dot", "size": 10, "title": "Tom Riddle (PERSON)\n\nProperties:\n\u2022 alias: Voldemort\u0027s younger self\n\u2022 relationship: Voldemort\u0027s real name"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "6697237129150777552", "label": "Horcruxes", "properties": {"creator": "Voldemort", "type": "magical artifact"}, "shape": "dot", "size": 10, "title": "Horcruxes (PRODUCT)\n\nProperties:\n\u2022 type: magical artifact\n\u2022 creator: Voldemort"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-2685069431584811169", "label": "Dumbledore", "properties": {"relationship": "object of Snape\u0027s loyalty"}, "shape": "dot", "size": 10, "title": "Dumbledore (PERSON)\n\nProperties:\n\u2022 relationship: object of Snape\u0027s loyalty"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "-5518825463118011296", "label": "Ministry", "properties": {}, "shape": "dot", "size": 10, "title": "Ministry (ORGANIZATION)"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "-4053762038504238269", "label": "Pensieve", "properties": {"purpose": "viewing memories", "type": "device"}, "shape": "dot", "size": 10, "title": "Pensieve (PRODUCT)\n\nProperties:\n\u2022 type: device\n\u2022 purpose: viewing memories"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-6527886213152738222", "label": "James Potter", "properties": {"friend": "Sirius Black", "friend/betrayer": "Peter Pettigrew", "son": "Harry"}, "shape": "dot", "size": 10, "title": "James Potter (PERSON)\n\nProperties:\n\u2022 friend: Sirius Black\n\u2022 friend/betrayer: Peter Pettigrew\n\u2022 son: Harry"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "3712197279735447452", "label": "Peter Pettigrew", "properties": {"disguise": "Scabbers (Ron\u0027s pet rat)", "relationship": "friend/betrayer of James Potter"}, "shape": "dot", "size": 10, "title": "Peter Pettigrew (PERSON)\n\nProperties:\n\u2022 disguise: Scabbers (Ron\u0027s pet rat)\n\u2022 relationship: friend/betrayer of James Potter"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "6247321999902369861", "label": "Hippogriff", "properties": {"used_by": "Sirius Black (to escape)"}, "shape": "dot", "size": 10, "title": "Hippogriff (CREATURE)\n\nProperties:\n\u2022 used_by: Sirius Black (to escape)"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "5491757806301483609", "label": "Patronus charm", "properties": {}, "shape": "dot", "size": 10, "title": "Patronus charm (SPELL)"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "-1625662530333695431", "label": "dementors", "properties": {}, "shape": "dot", "size": 10, "title": "dementors (CREATURE)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "6096064088155522918", "label": "Pettigrew", "properties": {}, "shape": "dot", "size": 10, "title": "Pettigrew (PERSON)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "6907723472189692843", "label": "Cedric Diggory", "properties": {}, "shape": "dot", "size": 10, "title": "Cedric Diggory (PERSON)"}, {"color": "#6A5ACD", "font": {"color": "#6A5ACD"}, "id": "4768509882227484897", "label": "Spoon", "properties": {"current_name": "Spoon", "floor": "1st", "former_name": "Nicholson\u0027s Cafe", "location": "Edinburgh"}, "shape": "dot", "size": 10, "title": "Spoon (FACILITY)\n\nProperties:\n\u2022 former_name: Nicholson\u0027s Cafe\n\u2022 current_name: Spoon\n\u2022 floor: 1st\n\u2022 location: Edinburgh"}, {"color": "#6A5ACD", "font": {"color": "#6A5ACD"}, "id": "-7030967051148713988", "label": "Nicholson\u0027s Cafe", "properties": {"current_name": "Spoon", "floor": "1st", "former_name": "Nicholson\u0027s Cafe", "location": "Edinburgh"}, "shape": "dot", "size": 10, "title": "Nicholson\u0027s Cafe (FACILITY)\n\nProperties:\n\u2022 former_name: Nicholson\u0027s Cafe\n\u2022 current_name: Spoon\n\u2022 floor: 1st\n\u2022 location: Edinburgh"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-6401866138161890684", "label": "J. K. Rowling", "properties": {}, "shape": "dot", "size": 10, "title": "J. K. Rowling (PERSON)"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "4116440476267351652", "label": "Harry Potter and the Goblet of Fire", "properties": {"type": "book"}, "shape": "dot", "size": 10, "title": "Harry Potter and the Goblet of Fire (PRODUCT)\n\nProperties:\n\u2022 type: book"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "-9144032731788797383", "label": "Beauxbatons", "properties": {"type": "school"}, "shape": "dot", "size": 10, "title": "Beauxbatons (ORGANIZATION)\n\nProperties:\n\u2022 type: school"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "2692229732697193269", "label": "Durmstrang", "properties": {"type": "school"}, "shape": "dot", "size": 10, "title": "Durmstrang (ORGANIZATION)\n\nProperties:\n\u2022 type: school"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-6477886310894300734", "label": "Barty Crouch, Jr", "properties": {"disguised_as": "Alastor \"Mad-Eye\" Moody", "helped": "Harry", "role": "Death Eater"}, "shape": "dot", "size": 10, "title": "Barty Crouch, Jr (PERSON)\n\nProperties:\n\u2022 disguised_as: Alastor \"Mad-Eye\" Moody\n\u2022 role: Death Eater\n\u2022 helped: Harry"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "5461080683353713888", "label": "Alastor \"Mad-Eye\" Moody", "properties": {"impersonated_by": "Barty Crouch, Jr", "role": "Defence Against the Dark Arts professor"}, "shape": "dot", "size": 10, "title": "Alastor \"Mad-Eye\" Moody (PERSON)\n\nProperties:\n\u2022 impersonated_by: Barty Crouch, Jr\n\u2022 role: Defence Against the Dark Arts professor"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "-2938777542482782769", "label": "Order of the Phoenix", "properties": {"opposed to": "Death Eaters", "opposes": "Voldemort", "reactivated_by": "Dumbledore"}, "shape": "dot", "size": 10, "title": "Order of the Phoenix (ORGANIZATION)\n\nProperties:\n\u2022 reactivated_by: Dumbledore\n\u2022 opposes: Voldemort\n\u2022 opposed to: Death Eaters"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-3418194841595912667", "label": "Dolores Umbridge", "properties": {"bans": "practical Defence Against the Dark Arts teaching", "employed_by": "Ministry of Magic", "role": "High Inquisitor of Hogwarts"}, "shape": "dot", "size": 10, "title": "Dolores Umbridge (PERSON)\n\nProperties:\n\u2022 role: High Inquisitor of Hogwarts\n\u2022 employed_by: Ministry of Magic\n\u2022 bans: practical Defence Against the Dark Arts teaching"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-2947499839392325776", "label": "Snape", "properties": {"action": "lends memories to Harry", "occupation": "Defence Against the Dark Arts teacher", "relationship": "killed by Voldemort"}, "shape": "dot", "size": 10, "title": "Snape (PERSON)\n\nProperties:\n\u2022 occupation: Defence Against the Dark Arts teacher\n\u2022 relationship: killed by Voldemort\n\u2022 action: lends memories to Harry"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-6012764568618294463", "label": "Horace Slughorn", "properties": {"occupation": "Potions master"}, "shape": "dot", "size": 10, "title": "Horace Slughorn (PERSON)\n\nProperties:\n\u2022 occupation: Potions master"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "4703185867989383834", "label": "Defence Against the Dark Arts", "properties": {"type": "subject"}, "shape": "dot", "size": 10, "title": "Defence Against the Dark Arts (PRODUCT)\n\nProperties:\n\u2022 type: subject"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "8758482096865386012", "label": "Potions", "properties": {"type": "subject"}, "shape": "dot", "size": 10, "title": "Potions (PRODUCT)\n\nProperties:\n\u2022 type: subject"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "511197103538914352", "label": "Half-Blood Prince", "properties": {"relationship": "annotator of textbook"}, "shape": "dot", "size": 10, "title": "Half-Blood Prince (PERSON)\n\nProperties:\n\u2022 relationship: annotator of textbook"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-1544475615250667972", "label": "Professor Snape", "properties": {"title": "Professor"}, "shape": "dot", "size": 10, "title": "Professor Snape (PERSON)\n\nProperties:\n\u2022 title: Professor"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "-3389365067274302754", "label": "Harry Potter and the Deathly Hallows", "properties": {"number": "seventh and final", "series": "Harry Potter", "type": "book"}, "shape": "dot", "size": 10, "title": "Harry Potter and the Deathly Hallows (PRODUCT)\n\nProperties:\n\u2022 type: book\n\u2022 series: Harry Potter\n\u2022 number: seventh and final"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-3549607235152378859", "label": "Nagini", "properties": {"description": "Voldemort\u0027s snake"}, "shape": "dot", "size": 10, "title": "Nagini (PERSON)\n\nProperties:\n\u2022 description: Voldemort\u0027s snake"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "-260675144168681127", "label": "Lily", "properties": {"relationship": "mother of Harry"}, "shape": "dot", "size": 10, "title": "Lily (PERSON)\n\nProperties:\n\u2022 relationship: mother of Harry"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#000000", "from": "5226731435625450940", "label": "WROTE CHAPTERS OF", "properties": {}, "title": "WROTE CHAPTERS OF", "to": "-2103281375149038184", "width": 1}, {"arrows": "to", "color": "#000000", "from": "5226731435625450940", "label": "IS LOCATED IN", "properties": {}, "title": "IS LOCATED IN", "to": "1304286346303164782", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "LIVES WITH", "properties": {}, "title": "LIVES WITH", "to": "-4157420451510316487", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "RECEIVED ACCEPTANCE LETTER TO", "properties": {"age": "11"}, "title": "RECEIVED ACCEPTANCE LETTER TO\n\nProperties:\n\u2022 age: 11", "to": "-8196961144909276733", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "IS THE CHILD OF", "properties": {}, "title": "IS THE CHILD OF", "to": "75384401280796460", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "SLAYS", "properties": {}, "title": "SLAYS", "to": "-8770944103654805063", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "DESTROYS", "properties": {}, "title": "DESTROYS", "to": "-5760964738856200276", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "AIDED BY", "properties": {}, "title": "AIDED BY", "to": "-7703931921648070585", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "USES", "properties": {}, "title": "USES", "to": "6855303897238733343", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "IS IN", "properties": {}, "title": "IS IN", "to": "3150787370812000457", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "IS TARGETED BY", "properties": {}, "title": "IS TARGETED BY", "to": "8314927984127880791", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "STRUGGLES WITH REACTION TO", "properties": {}, "title": "STRUGGLES WITH REACTION TO", "to": "1608669918590102288", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "IS TAUGHT BY", "properties": {}, "title": "IS TAUGHT BY", "to": "-5297272612263219317", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-9117073963624949205", "label": "FOLLOWS", "properties": {}, "title": "FOLLOWS", "to": "-5545163210111174556", "width": 1}, {"arrows": "to", "color": "#000000", "from": "2953846222057661961", "label": "GAVE LETTER TO", "properties": {}, "title": "GAVE LETTER TO", "to": "-9117073963624949205", "width": 1}, {"arrows": "to", "color": "#000000", "from": "75384401280796460", "label": "WERE MURDERED BY", "properties": {}, "title": "WERE MURDERED BY", "to": "-2549328065747439979", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2549328065747439979", "label": "ATTEMPTED TO KILL", "properties": {"time": "when Harry was a baby"}, "title": "ATTEMPTED TO KILL\n\nProperties:\n\u2022 time: when Harry was a baby", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2549328065747439979", "label": "CREATES", "properties": {}, "title": "CREATES", "to": "4834118848105978719", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2549328065747439979", "label": "GAINS CONTROL OF", "properties": {}, "title": "GAINS CONTROL OF", "to": "-1289698933019466637", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "SURVIVED ATTACK BY", "properties": {"time": "when Harry was a baby"}, "title": "SURVIVED ATTACK BY\n\nProperties:\n\u2022 time: when Harry was a baby", "to": "-2549328065747439979", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "RETURNS TO", "properties": {}, "title": "RETURNS TO", "to": "1094070127406587567", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "IS SORTED INTO", "properties": {}, "title": "IS SORTED INTO", "to": "4791175013970032872", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "GAINS THE FRIENDSHIP OF", "properties": {}, "title": "GAINS THE FRIENDSHIP OF", "to": "-6645132028546081288", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "GAINS THE FRIENDSHIP OF", "properties": {}, "title": "GAINS THE FRIENDSHIP OF", "to": "2576337919087739195", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "DEVELOPS AN ENMITY WITH", "properties": {}, "title": "DEVELOPS AN ENMITY WITH", "to": "1227128133424235559", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "ENCOUNTERS", "properties": {}, "title": "ENCOUNTERS", "to": "-7463793937967088345", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "ENCOUNTERS", "properties": {}, "title": "ENCOUNTERS", "to": "-3794304612489589967", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "ENCOUNTERS", "properties": {}, "title": "ENCOUNTERS", "to": "7660832957580537505", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "SPEAKS", "properties": {}, "title": "SPEAKS", "to": "-1331109423839708703", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "UNCOVERS SECRETS OF AND ENTERS", "properties": {}, "title": "UNCOVERS SECRETS OF AND ENTERS", "to": "2430779528496416470", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "TRAVELED BACK IN TIME WITH", "properties": {}, "title": "TRAVELED BACK IN TIME WITH", "to": "226138125400072368", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "USED", "properties": {}, "title": "USED", "to": "-4460104209994461312", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "HELPED ESCAPE", "properties": {}, "title": "HELPED ESCAPE", "to": "8314927984127880791", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "ENTERED IN", "properties": {}, "title": "ENTERED IN", "to": "5239858617362809014", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "CLAIMS", "properties": {"companion": "Cedric Diggory"}, "title": "CLAIMS\n\nProperties:\n\u2022 companion: Cedric Diggory", "to": "2750111986003635629", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "KILLED", "properties": {}, "title": "KILLED", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "FORMS", "properties": {}, "title": "FORMS", "to": "-4994304126905647859", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "INFILTRATES", "properties": {}, "title": "INFILTRATES", "to": "-1289698933019466637", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "STEALS", "properties": {"location": "Ministry of Magic"}, "title": "STEALS\n\nProperties:\n\u2022 location: Ministry of Magic", "to": "4834118848105978719", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "LEARNS ABOUT", "properties": {}, "title": "LEARNS ABOUT", "to": "-6885957866237064803", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "VISITS", "properties": {}, "title": "VISITS", "to": "6355012332083233742", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "FINDS", "properties": {}, "title": "FINDS", "to": "6855303897238733343", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "TRAVELS TO", "properties": {}, "title": "TRAVELS TO", "to": "-934338565772717701", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "BATTLES", "properties": {"location": "Hogwarts"}, "title": "BATTLES\n\nProperties:\n\u2022 location: Hogwarts", "to": "-2901161164644394068", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-208416054643548976", "label": "MARRIED TO", "properties": {"time": "Nineteen Years Later"}, "title": "MARRIED TO\n\nProperties:\n\u2022 time: Nineteen Years Later", "to": "2281045269564170832", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1094070127406587567", "label": "HOSTS", "properties": {}, "title": "HOSTS", "to": "5239858617362809014", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1094070127406587567", "label": "FOUGHT", "properties": {"who": "defenders of"}, "title": "FOUGHT\n\nProperties:\n\u2022 who: defenders of", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6645132028546081288", "label": "BECOMES FRIENDS WITH", "properties": {}, "title": "BECOMES FRIENDS WITH", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "2576337919087739195", "label": "BECOMES FRIENDS WITH", "properties": {}, "title": "BECOMES FRIENDS WITH", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1227128133424235559", "label": "DEVELOPS AN ENMITY WITH", "properties": {}, "title": "DEVELOPS AN ENMITY WITH", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1227128133424235559", "label": "ATTACKS", "properties": {}, "title": "ATTACKS", "to": "-934338565772717701", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3794304612489589967", "label": "DISPLAYS A DISLIKE FOR", "properties": {}, "title": "DISPLAYS A DISLIKE FOR", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "7660832957580537505", "label": "IS ALLIED WITH", "properties": {}, "title": "IS ALLIED WITH", "to": "-2549328065747439979", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6411189111669645727", "label": "YEARNS TO POSSESS", "properties": {}, "title": "YEARNS TO POSSESS", "to": "-7587703770689955980", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6411189111669645727", "label": "USED", "properties": {"purpose": "to resurrect himself", "what": "blood"}, "title": "USED\n\nProperties:\n\u2022 what: blood\n\u2022 purpose: to resurrect himself", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6411189111669645727", "label": "LED", "properties": {}, "title": "LED", "to": "-2901161164644394068", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6411189111669645727", "label": "PLANTED TRAP IN HEAD OF", "properties": {}, "title": "PLANTED TRAP IN HEAD OF", "to": "6937963303699044917", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6411189111669645727", "label": "IS SUBJECT OF PROPHECY IN", "properties": {}, "title": "IS SUBJECT OF PROPHECY IN", "to": "-1595016953590299726", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5929073878392974977", "label": "DESCRIBES SECOND YEAR OF", "properties": {"location": "Hogwarts"}, "title": "DESCRIBES SECOND YEAR OF\n\nProperties:\n\u2022 location: Hogwarts", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3441497996891205026", "label": "IS ABDUCTED INTO", "properties": {}, "title": "IS ABDUCTED INTO", "to": "2430779528496416470", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "UNCOVERS SECRETS OF AND ENTERS", "properties": {}, "title": "UNCOVERS SECRETS OF AND ENTERS", "to": "2430779528496416470", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "IS DRAGGED INTO", "properties": {}, "title": "IS DRAGGED INTO", "to": "-1137612338536348270", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "HAS AS PET RAT", "properties": {}, "title": "HAS AS PET RAT", "to": "-7310153406880959958", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "FORMS", "properties": {}, "title": "FORMS", "to": "-4994304126905647859", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "LEARNS ABOUT", "properties": {}, "title": "LEARNS ABOUT", "to": "-6885957866237064803", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "INFILTRATES", "properties": {}, "title": "INFILTRATES", "to": "-1289698933019466637", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "STEALS", "properties": {"location": "Ministry of Magic"}, "title": "STEALS\n\nProperties:\n\u2022 location: Ministry of Magic", "to": "4834118848105978719", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "VISITS", "properties": {}, "title": "VISITS", "to": "6355012332083233742", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "TRAVELS TO", "properties": {}, "title": "TRAVELS TO", "to": "-934338565772717701", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "BATTLES", "properties": {"location": "Hogwarts"}, "title": "BATTLES\n\nProperties:\n\u2022 location: Hogwarts", "to": "-2901161164644394068", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5545163210111174556", "label": "MARRIED TO", "properties": {"time": "Nineteen Years Later"}, "title": "MARRIED TO\n\nProperties:\n\u2022 time: Nineteen Years Later", "to": "226138125400072368", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6731783605998599875", "label": "IS YOUNGER SELF OF", "properties": {}, "title": "IS YOUNGER SELF OF", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-8811998185833096375", "label": "IS YOUNGER SELF OF", "properties": {}, "title": "IS YOUNGER SELF OF", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-8811998185833096375", "label": "CREATED", "properties": {}, "title": "CREATED", "to": "6697237129150777552", "width": 1}, {"arrows": "to", "color": "#000000", "from": "2281045269564170832", "label": "OPENED", "properties": {}, "title": "OPENED", "to": "2430779528496416470", "width": 1}, {"arrows": "to", "color": "#000000", "from": "2281045269564170832", "label": "UNLEASHED", "properties": {}, "title": "UNLEASHED", "to": "-8770944103654805063", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2685069431584811169", "label": "SHOWS MEMORIES ABOUT", "properties": {}, "title": "SHOWS MEMORIES ABOUT", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2685069431584811169", "label": "CONVINCES", "properties": {"topic": "Voldemort\u0027s return"}, "title": "CONVINCES\n\nProperties:\n\u2022 topic: Voldemort\u0027s return", "to": "-5518825463118011296", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2685069431584811169", "label": "GIVES LESSONS TO HARRY IN", "properties": {}, "title": "GIVES LESSONS TO HARRY IN", "to": "-1595016953590299726", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2685069431584811169", "label": "USES", "properties": {"purpose": "viewing memories"}, "title": "USES\n\nProperties:\n\u2022 purpose: viewing memories", "to": "-4053762038504238269", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2685069431584811169", "label": "DESTROYS", "properties": {}, "title": "DESTROYS", "to": "4834118848105978719", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2685069431584811169", "label": "TRAVELS WITH", "properties": {"location": "distant lake"}, "title": "TRAVELS WITH\n\nProperties:\n\u2022 location: distant lake", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-7703931921648070585", "label": "BELONGS TO", "properties": {}, "title": "BELONGS TO", "to": "-2685069431584811169", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8314927984127880791", "label": "WAS BEST FRIEND OF", "properties": {}, "title": "WAS BEST FRIEND OF", "to": "-6527886213152738222", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8314927984127880791", "label": "WAS FRAMED BY", "properties": {}, "title": "WAS FRAMED BY", "to": "3712197279735447452", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8314927984127880791", "label": "ESCAPED ON", "properties": {}, "title": "ESCAPED ON", "to": "6247321999902369861", "width": 1}, {"arrows": "to", "color": "#000000", "from": "1608669918590102288", "label": "SEARCH FOR", "properties": {}, "title": "SEARCH FOR", "to": "8314927984127880791", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-5297272612263219317", "label": "TEACHES", "properties": {}, "title": "TEACHES", "to": "5491757806301483609", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "FOLLOWS", "properties": {}, "title": "FOLLOWS", "to": "-5545163210111174556", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "USED", "properties": {}, "title": "USED", "to": "-4460104209994461312", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "HELPED ESCAPE", "properties": {}, "title": "HELPED ESCAPE", "to": "8314927984127880791", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "FORMS", "properties": {}, "title": "FORMS", "to": "-4994304126905647859", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "LEARNS ABOUT", "properties": {}, "title": "LEARNS ABOUT", "to": "-6885957866237064803", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "INFILTRATES", "properties": {}, "title": "INFILTRATES", "to": "-1289698933019466637", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "STEALS", "properties": {"location": "Ministry of Magic"}, "title": "STEALS\n\nProperties:\n\u2022 location: Ministry of Magic", "to": "4834118848105978719", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "VISITS", "properties": {}, "title": "VISITS", "to": "6355012332083233742", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "TRAVELS TO", "properties": {}, "title": "TRAVELS TO", "to": "-934338565772717701", "width": 1}, {"arrows": "to", "color": "#000000", "from": "226138125400072368", "label": "BATTLES", "properties": {"location": "Hogwarts"}, "title": "BATTLES\n\nProperties:\n\u2022 location: Hogwarts", "to": "-2901161164644394068", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6527886213152738222", "label": "WAS FRIEND OF", "properties": {}, "title": "WAS FRIEND OF", "to": "3712197279735447452", "width": 1}, {"arrows": "to", "color": "#000000", "from": "3712197279735447452", "label": "HIDES AS PET RAT OF", "properties": {}, "title": "HIDES AS PET RAT OF", "to": "-5545163210111174556", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1625662530333695431", "label": "SURROUNDED", "properties": {}, "title": "SURROUNDED", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1625662530333695431", "label": "SURROUNDED", "properties": {}, "title": "SURROUNDED", "to": "226138125400072368", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1625662530333695431", "label": "SURROUNDED", "properties": {}, "title": "SURROUNDED", "to": "-5545163210111174556", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1625662530333695431", "label": "SURROUNDED", "properties": {}, "title": "SURROUNDED", "to": "8314927984127880791", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6096064088155522918", "label": "KILLS", "properties": {}, "title": "KILLS", "to": "6907723472189692843", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6096064088155522918", "label": "SUPPORTS", "properties": {}, "title": "SUPPORTS", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "4768509882227484897", "label": "RENAMED FROM", "properties": {}, "title": "RENAMED FROM", "to": "-7030967051148713988", "width": 1}, {"arrows": "to", "color": "#000000", "from": "4768509882227484897", "label": "LOCATED IN", "properties": {}, "title": "LOCATED IN", "to": "1304286346303164782", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6401866138161890684", "label": "WROTE", "properties": {"location": "Spoon in Edinburgh", "part": "first few chapters"}, "title": "WROTE\n\nProperties:\n\u2022 location: Spoon in Edinburgh\n\u2022 part: first few chapters", "to": "-2103281375149038184", "width": 1}, {"arrows": "to", "color": "#000000", "from": "4116440476267351652", "label": "DETAILS", "properties": {"time": "Harry\u0027s fourth year of school"}, "title": "DETAILS\n\nProperties:\n\u2022 time: Harry\u0027s fourth year of school", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "5239858617362809014", "label": "CONTEST BETWEEN", "properties": {}, "title": "CONTEST BETWEEN", "to": "1094070127406587567", "width": 1}, {"arrows": "to", "color": "#000000", "from": "5239858617362809014", "label": "CONTEST BETWEEN", "properties": {}, "title": "CONTEST BETWEEN", "to": "-9144032731788797383", "width": 1}, {"arrows": "to", "color": "#000000", "from": "5239858617362809014", "label": "CONTEST BETWEEN", "properties": {}, "title": "CONTEST BETWEEN", "to": "2692229732697193269", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6907723472189692843", "label": "PARTICIPANT OF", "properties": {}, "title": "PARTICIPANT OF", "to": "1094070127406587567", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2901161164644394068", "label": "ATTACKED", "properties": {}, "title": "ATTACKED", "to": "6937963303699044917", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2901161164644394068", "label": "ATTACKS", "properties": {}, "title": "ATTACKS", "to": "-934338565772717701", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6477886310894300734", "label": "DISGUISED AS", "properties": {}, "title": "DISGUISED AS", "to": "5461080683353713888", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6477886310894300734", "label": "TELEPORTED", "properties": {}, "title": "TELEPORTED", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1289698933019466637", "label": "REFUSES TO BELIEVE RETURN OF", "properties": {}, "title": "REFUSES TO BELIEVE RETURN OF", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1289698933019466637", "label": "TIGHTENS CONTROL OF", "properties": {}, "title": "TIGHTENS CONTROL OF", "to": "1094070127406587567", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2938777542482782769", "label": "COUNTERS", "properties": {}, "title": "COUNTERS", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2938777542482782769", "label": "SAVED", "properties": {}, "title": "SAVED", "to": "6937963303699044917", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3418194841595912667", "label": "APPOINTED HIGH INQUISITOR OF", "properties": {}, "title": "APPOINTED HIGH INQUISITOR OF", "to": "1094070127406587567", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6937963303699044917", "label": "TORTURED IN", "properties": {}, "title": "TORTURED IN", "to": "-1289698933019466637", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6937963303699044917", "label": "RACES TO", "properties": {}, "title": "RACES TO", "to": "-5518825463118011296", "width": 1}, {"arrows": "to", "color": "#000000", "from": "6937963303699044917", "label": "KILLED BY", "properties": {}, "title": "KILLED BY", "to": "-2901161164644394068", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1595016953590299726", "label": "FEATURES", "properties": {"role": "teaching Defence Against the Dark Arts"}, "title": "FEATURES\n\nProperties:\n\u2022 role: teaching Defence Against the Dark Arts", "to": "-2947499839392325776", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1595016953590299726", "label": "FEATURES", "properties": {"role": "Potions master"}, "title": "FEATURES\n\nProperties:\n\u2022 role: Potions master", "to": "-6012764568618294463", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1595016953590299726", "label": "CONCERNS", "properties": {}, "title": "CONCERNS", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2947499839392325776", "label": "TEACHES", "properties": {}, "title": "TEACHES", "to": "4703185867989383834", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2947499839392325776", "label": "BATTLED WITH", "properties": {}, "title": "BATTLED WITH", "to": "-2901161164644394068", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2947499839392325776", "label": "KILLED BY", "properties": {}, "title": "KILLED BY", "to": "-6411189111669645727", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2947499839392325776", "label": "LENT", "properties": {"what": "memories"}, "title": "LENT\n\nProperties:\n\u2022 what: memories", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-2947499839392325776", "label": "LOYAL TO", "properties": {}, "title": "LOYAL TO", "to": "-2685069431584811169", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6012764568618294463", "label": "BECOMES MASTER OF", "properties": {}, "title": "BECOMES MASTER OF", "to": "8758482096865386012", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-6012764568618294463", "label": "TAUGHT", "properties": {}, "title": "TAUGHT", "to": "-8811998185833096375", "width": 1}, {"arrows": "to", "color": "#000000", "from": "511197103538914352", "label": "ANNOTATES TEXTBOOK ABOUT", "properties": {}, "title": "ANNOTATES TEXTBOOK ABOUT", "to": "8758482096865386012", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1544475615250667972", "label": "KILLS", "properties": {}, "title": "KILLS", "to": "-2685069431584811169", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-1544475615250667972", "label": "IS", "properties": {}, "title": "IS", "to": "511197103538914352", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3389365067274302754", "label": "FEATURES", "properties": {}, "title": "FEATURES", "to": "-2549328065747439979", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3549607235152378859", "label": "ATTACKS", "properties": {"location": "Godric\u0027s Hollow"}, "title": "ATTACKS\n\nProperties:\n\u2022 location: Godric\u0027s Hollow", "to": "-208416054643548976", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3549607235152378859", "label": "ATTACKS", "properties": {"location": "Godric\u0027s Hollow"}, "title": "ATTACKS\n\nProperties:\n\u2022 location: Godric\u0027s Hollow", "to": "-5545163210111174556", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3549607235152378859", "label": "ATTACKS", "properties": {"location": "Godric\u0027s Hollow"}, "title": "ATTACKS\n\nProperties:\n\u2022 location: Godric\u0027s Hollow", "to": "226138125400072368", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-3549607235152378859", "label": "\u0027S SNAKE", "properties": {}, "title": "\u0027S SNAKE", "to": "-2549328065747439979", "width": 1}, {"arrows": "to", "color": "#000000", "from": "-260675144168681127", "label": "GAVE", "properties": {"what": "protection"}, "title": "GAVE\n\nProperties:\n\u2022 what: protection", "to": "-208416054643548976", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"shape": "dot", "size": 25, "font": {"size": 32, "face": "Tahoma", "color": "inherit"}}, "edges": {"font": {"size": 32, "align": "middle"}, "color": {"color": "#000000", "inherit": false}, "smooth": {"type": "continuous", "forceDirection": "none"}}, "physics": {"barnesHut": {"gravitationalConstant": -80000, "springLength": 250, "springConstant": 0.001}, "minVelocity": 0.75}, "interaction": {"hover": {"enabled": true}, "navigationButtons": true, "keyboard": true, "tooltipDelay": 200, "hideEdgesOnDrag": false, "multiselect": false, "hoverConnectedEdges": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+        <div style="position: absolute; top: 10px; right: 10px; background-color: white; 
+                    border: 1px solid #ccc; padding: 10px; border-radius: 5px; max-width: 250px;">
+            <h3 style="margin-top: 0; text-align: center;">Entity Types</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th style="text-align: left; padding: 5px;">Type</th>
+                    <th style="text-align: left; padding: 5px;">Color</th>
+                </tr>
+        
+                <tr>
+                    <td style="padding: 5px;">CREATURE</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #AAAAAA; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">EVENT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FFD700; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">FACILITY</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #6A5ACD; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">LANGUAGE</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #708090; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">LOCATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33FF57; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">OBJECT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #AAAAAA; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">ORGANIZATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33A8FF; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PERSON</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FF5733; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PRODUCT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #00CED1; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">SPELL</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #AAAAAA; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+            </table>
+            <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
+                <div style="display: flex; align-items: center; margin-top: 5px;">
+                    <span style="margin-right: 5px; font-size: 12px;">A</span>
+                    <input type="range" id="textSizeSlider" min="8" max="64" value="32" style="flex-grow: 1;">
+                    <span style="margin-left: 5px; font-size: 18px;">A</span>
+                </div>
+                <div style="text-align: center; margin-top: 5px;">
+                    <span id="currentTextSize">32px</span>
+                </div>
+            </div>
+            <script>
+                // Add event listener to the slider
+                document.addEventListener('DOMContentLoaded', function() {
+                    var slider = document.getElementById('textSizeSlider');
+                    var sizeDisplay = document.getElementById('currentTextSize');
+                    
+                    // Function to update text size
+                    function updateTextSize(size) {
+                        // Update the display
+                        sizeDisplay.textContent = size + 'px';
+                        
+                        // Make sure network is defined
+                        if (typeof network === 'undefined') {
+                            console.warn('Network variable not found. Text size control may not work properly.');
+                            return;
+                        }
+                        
+                        // Update node font size
+                        var nodeOptions = {
+                            font: {
+                                size: size,
+                                color: 'inherit'
+                            }
+                        };
+                        network.setOptions({ nodes: nodeOptions });
+                        
+                        // Update edge font size
+                        var edgeOptions = {
+                            font: {
+                                size: size
+                            }
+                        };
+                        network.setOptions({ edges: edgeOptions });
+                    }
+                    
+                    // Add event listener for slider changes
+                    slider.addEventListener('input', function() {
+                        updateTextSize(parseInt(this.value));
+                    });
+                    
+                    // Initialize with default values
+                    updateTextSize(parseInt(slider.value));
+                    
+                    // Set global variable to always enable tooltips
+                    window.tooltipsEnabled = true;
+                });
+            </script>
+        </div>
+        
+        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+            <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+        </div>
+        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0;">Source Text</h3>
+            </div>
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px;">
+                <p style="white-space: pre-wrap;"># Source: File: input/harry_potter.md
+
+Early years
+&quot;The Elephant House&quot;, a small, painted red café where Rowling wrote a few chapters of Harry Potter and the Philosopher&#x27;s Stone
+The Elephant House was one of the cafés in Edinburgh where Rowling wrote the first part of Harry Potter.
+The series follows the life of a boy named Harry Potter. In the first book, Harry Potter and the Philosopher&#x27;s Stone (Harry Potter and the Sorcerer&#x27;s Stone in the US), Harry lives in a cupboard under the stairs in the house of the Dursleys, his aunt, uncle and cousin, who all treat him poorly. At the age of 11, Harry discovers that he is a wizard. He meets a half-giant named Hagrid who gives him a letter of acceptance to attend the Hogwarts School of Witchcraft and Wizardry. Harry learns that his parents, Lily and James Potter, also had magical powers and were murdered by the dark wizard Lord Voldemort when Harry was a baby. When Voldemort attempted to kill Harry, his curse rebounded, seemingly killing Voldemort, and Harry survived with a lightning-shaped scar on his forehead. The event made Harry famous among the community of wizards and witches.
+
+Harry becomes a student at Hogwarts and is sorted into Gryffindor House. He gains the friendship of Ron Weasley, a member of a large but poor wizarding family, and Hermione Granger, a witch of non-magical, or Muggle, parentage. The trio develop an enmity with the rich pure-blood student Draco Malfoy. Harry encounters the school&#x27;s headmaster, Albus Dumbledore; the potions professor, Severus Snape, who displays a dislike for him; and the Defence Against the Dark Arts teacher, Quirinus Quirrell. Quirrell turns out to be allied with Voldemort, who is still alive as a weak spirit. The first book concludes with Harry&#x27;s confrontation with Voldemort, who, in his quest to regain a body, yearns to possess the Philosopher&#x27;s Stone, a substance that bestows everlasting life.
+
+Harry Potter and the Chamber of Secrets describes Harry&#x27;s second year at Hogwarts. Students are attacked and petrified by an unknown creature; wizards of Muggle parentage are the primary targets. The attacks appear related to the mythical Chamber of Secrets and resemble attacks fifty years earlier. Harry discovers an ability to speak the snake language Parseltongue, which he learns is rare and associated with the Dark Arts. When Hermione is attacked and Ron&#x27;s younger sister Ginny Weasley is abducted, Harry and Ron uncover the chamber&#x27;s secrets and enter it. Harry discovers that Ginny was possessed by an old diary, inside which the memory of Tom Marvolo Riddle, Voldemort&#x27;s younger self, resides. On Voldemort&#x27;s behalf, Ginny opened the chamber and unleashed the basilisk, an ancient monster that kills or petrifies those who make direct or indirect eye contact, respectively. With the help of Dumbledore&#x27;s phoenix, Fawkes, and the Sword of Gryffindor, Harry slays the basilisk and destroys the diary.
+
+In the third novel, Harry Potter and the Prisoner of Azkaban, Harry learns that he is targeted by Sirius Black, an escaped convict who allegedly assisted in his parents&#x27; murder. Dementors, creatures that feed on happiness, search for Sirius and guard the school. As Harry struggles with his reaction to the dementors, he reaches out to Remus Lupin, a new professor who teaches him the Patronus charm. On a windy night, Ron is dragged by a black dog into the Shrieking Shack, a haunted house, and Harry and Hermione follow. The dog is revealed to be Sirius Black. Lupin enters the shack and explains that Sirius was James Potter&#x27;s best friend; he was framed by another friend of James, Peter Pettigrew, who hides as Ron&#x27;s pet rat, Scabbers. As the full moon rises, Lupin transforms into a werewolf and bounds away, and the group chase after him. They are surrounded by dementors, but are saved by a figure resembling James who casts a stag Patronus. This is later revealed to be a future version of Harry, who traveled back in time with Hermione using a device called a Time Turner. The duo help Sirius escape on a Hippogriff, while Pettigrew escapes.
+
+Voldemort returns
+
+The former 1st floor Nicholson&#x27;s Cafe now renamed Spoon in Edinburgh where J. K. Rowling wrote the first few chapters of Harry Potter and the Philosopher&#x27;s Stone
+In Harry&#x27;s fourth year of school (detailed in Harry Potter and the Goblet of Fire), Hogwarts hosts the Triwizard Tournament, a contest between Hogwarts and the schools Beauxbatons and Durmstrang. Harry is unwillingly entered into the contest, becoming Hogwarts&#x27; second participant after Cedric Diggory, an unusual occurrence that causes his friends to distance themselves from him. Harry claims the Triwizard Cup with Cedric, but he is teleported to a graveyard where Pettigrew kills Cedric, then resurrects Voldemort using Harry&#x27;s blood. Voldemort convenes his supporters, the Death Eaters, and Harry manages to escape after a duel with Voldemort. Upon returning to Hogwarts, it is revealed that a Death Eater, Barty Crouch, Jr, in disguise as the new Defence Against the Dark Arts professor, Alastor &quot;Mad-Eye&quot; Moody, engineered Harry&#x27;s entry into the tournament, secretly helped him, and had him teleported to Voldemort.
+
+In the fifth book, Harry Potter and the Order of the Phoenix, the Ministry of Magic refuses to believe that Voldemort has returned. Dumbledore re-activates the Order of the Phoenix, a secret society to counter Voldemort; meanwhile, the Ministry tightens control of Hogwarts by appointing Dolores Umbridge as High Inquisitor of Hogwarts, and she gradually increases her powers. When Umbridge bans practical teaching of Defence Against the Dark Arts, Harry, Ron and Hermione form &quot;Dumbledore&#x27;s Army&quot;, a secret group to continue the teachings. Harry has recurring dreams of a dark corridor in the Ministry of Magic, eventually dreaming that Sirius is being tortured there. He races to the Ministry with his friends, but it is a trap, planted in his head by Voldemort. The group are attacked by Death Eaters and saved by the Order of the Phoenix, but Sirius is killed in the battle. A duel between Dumbledore and Voldemort convinces the ministry of Voldemort&#x27;s return. A prophecy concerning Harry and Voldemort is revealed: one must die at the hands of the other.
+
+In the sixth book, Harry Potter and the Half-Blood Prince, Snape teaches Defence Against the Dark Arts while Horace Slughorn becomes the Potions master. Harry finds an old textbook with annotations by the Half-Blood Prince, due to which he achieves success in Potions class. Harry also takes lessons with Dumbledore, viewing memories about the early life of Voldemort in a device called a Pensieve. Harry learns from a drunken Slughorn that he used to teach Tom Riddle, and that Voldemort divided his soul into pieces, creating a series of Horcruxes. Harry and Dumbledore travel to a distant lake to destroy a Horcrux; they succeed, but Dumbledore weakens. On their return, they find Draco Malfoy and Death Eaters attacking the school. The book ends with the killing of Dumbledore by Professor Snape, the titular Half-Blood Prince.
+
+In Harry Potter and the Deathly Hallows, the seventh and final novel in the series, Lord Voldemort gains control of the Ministry of Magic. Harry, Ron and Hermione learn about the Deathly Hallows, legendary items that lead to mastery over death. The group infiltrates the ministry, where they steal a locket Horcrux, and visit Godric&#x27;s Hollow, where they are attacked by Nagini, Voldemort&#x27;s snake. A silver doe Patronus leads them to the Sword of Gryffindor, with which they destroy the locket. They steal a Horcrux from Gringotts and travel to Hogwarts, culminating in a battle with the Death Eaters. Snape is killed by Voldemort out of paranoia, but he lends Harry his memories before he dies. Harry learns that Snape was always loyal to Dumbledore, and that Harry is himself a Horcrux. Harry surrenders to Voldemort and is hit with the killing curse; however he is not killed as the protection Lily gave him lives on within Voldemort since he used Harry’s blood to resurrect himself . The defenders of Hogwarts continue to fight on; Harry comes back from limbo, faces Voldemort and kills him.
+
+An epilogue titled &quot;Nineteen Years Later&quot; describes the lives of the surviving characters and the impact of Voldemort&#x27;s death. Harry and Ginny are married with three children, and Ron and Hermione are married with two children.
+
+</p>
+            </div>
+        </div>
+        
+        <script>
+            // Make sure this script runs after the network is initialized
+            document.addEventListener('DOMContentLoaded', function() {
+                // Ensure network variable is accessible
+                if (typeof network === 'undefined') {
+                    console.warn('Network variable not found. Some features may not work properly.');
+                }
+                
+                // Initially maximize the network container height since text is hidden
+                var networkContainer = document.getElementById('mynetwork');
+                var windowHeight = window.innerHeight;
+                var networkTop = networkContainer.getBoundingClientRect().top;
+                var newHeight = windowHeight - networkTop - 20; // 20px padding
+                networkContainer.style.height = newHeight + 'px';
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            });
+            
+            function toggleSourceText() {
+                var textSection = document.getElementById('textSection');
+                var btn = document.getElementById('toggleTextBtn');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                if (textSection.style.display === 'none') {
+                    // Show text
+                    textSection.style.display = 'block';
+                    btn.innerText = 'Hide Text';
+                    btn.style.backgroundColor = '#f44336'; // Red color for hide button
+                    
+                    // Restore original network container height
+                    networkContainer.style.height = '750px';
+                } else {
+                    // Hide text
+                    textSection.style.display = 'none';
+                    btn.innerText = 'Show Text';
+                    btn.style.backgroundColor = '#4CAF50'; // Green color for show button
+                    
+                    // Maximize network container height
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                }
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            }
+            
+            // Add window resize event listener to adjust the graph size when window is resized
+            window.addEventListener('resize', function() {
+                var textSection = document.getElementById('textSection');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                // Only adjust if text is hidden
+                if (textSection.style.display === 'none') {
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                    
+                    // Redraw the network to fit the new container size
+                    if (typeof network !== 'undefined') {
+                        network.fit();
+                    }
+                }
+            });
+        </script>
+        <style>
+        .custom-tooltip {
+            position: absolute;
+            display: none;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 300px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        </style>
+        <div id="custom-tooltip" class="custom-tooltip"></div>
+        <script>
+        // Initialize global variable for tooltip control - always enabled
+        window.tooltipsEnabled = true;
+        
+        // Add the tooltip functionality after the page has fully loaded
+        window.addEventListener('load', function() {
+            // Make sure the network variable exists
+            if (typeof network === 'undefined') {
+                console.warn('Network variable not found');
+                return;
+            }
+            
+            var tooltip = document.getElementById('custom-tooltip');
+            
+            // Function to disable default tooltips
+            function disableDefaultTooltips() {
+                // Remove title attributes from all nodes and edges to prevent default browser tooltips
+                if (network && network.body) {
+                    // For nodes
+                    Object.values(network.body.nodes).forEach(function(node) {
+                        if (node.element) {
+                            node.element.removeAttribute('title');
+                        }
+                    });
+                    
+                    // For edges
+                    Object.values(network.body.edges).forEach(function(edge) {
+                        if (edge.element) {
+                            edge.element.removeAttribute('title');
+                        }
+                    });
+                }
+            }
+            
+            // Call once on load
+            disableDefaultTooltips();
+            
+            // Function to show tooltip
+            function showTooltip(text, x, y) {
+                tooltip.textContent = text;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (x + 10) + 'px';
+                tooltip.style.top = (y + 10) + 'px';
+            }
+            
+            // Function to hide tooltip
+            function hideTooltip() {
+                tooltip.style.display = 'none';
+            }
+            
+            // Add event listeners to the network
+            network.on('hoverNode', function(params) {
+                var nodeId = params.node;
+                var node = network.body.nodes[nodeId];
+                if (node && node.options && node.options.title) {
+                    showTooltip(node.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('hoverEdge', function(params) {
+                var edgeId = params.edge;
+                var edge = network.body.edges[edgeId];
+                if (edge && edge.options && edge.options.title) {
+                    showTooltip(edge.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('blurNode', function() {
+                hideTooltip();
+            });
+            
+            network.on('blurEdge', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during drag operations
+            network.on('dragStart', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during zoom operations
+            network.on('zoom', function() {
+                hideTooltip();
+            });
+            
+            // Ensure hover is enabled for tooltips
+            network.setOptions({
+                interaction: {
+                    hover: {
+                        enabled: true
+                    }
+                }
+            });
+        });
+        </script>
+        </body>
+</html>

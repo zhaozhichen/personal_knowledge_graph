@@ -35,8 +35,8 @@ from src.graph_db.nlp.mock_entity_extractor import MockEntityExtractor
 from neo4j.exceptions import ServiceUnavailable, AuthError
 
 # Constants for chunking
-MAX_CHUNK_SIZE = 8000  # Maximum characters per chunk
-CHUNK_OVERLAP = 1000   # Overlap between chunks to maintain context
+MAX_CHUNK_SIZE = 1000  # Maximum characters per chunk
+CHUNK_OVERLAP = 50   # Overlap between chunks to maintain context
 
 def process_text(text: str, 
                 db_uri: str = "bolt://localhost:7687",

@@ -31,37 +31,18 @@ class MockEntityExtractor:
         # Generate mock entities based on the text content
         all_entities = []
         all_relations = []
+
+        newton_entities, newton_relations = self._generate_newton_data()
+        einstein_entities, einstein_relations = self._generate_einstein_data()
+        descartes_entities, descartes_relations = self._generate_descartes_data()
         
-        # Check for keywords to determine which entities to create
-        if "Newton" in text:
-            entities, relations = self._generate_newton_data()
-            all_entities.extend(entities)
-            all_relations.extend(relations)
-            
-        if "Einstein" in text:
-            entities, relations = self._generate_einstein_data()
-            all_entities.extend(entities)
-            all_relations.extend(relations)
-            
-        if "Descartes" in text:
-            entities, relations = self._generate_descartes_data()
-            all_entities.extend(entities)
-            all_relations.extend(relations)
+        all_entities.extend(newton_entities)
+        all_entities.extend(einstein_entities)
+        all_entities.extend(descartes_entities)
         
-        # If no specific scientists were found, generate data for all three
-        if not all_entities:
-            self.logger.info("No specific scientists found in text, generating data for all three")
-            newton_entities, newton_relations = self._generate_newton_data()
-            einstein_entities, einstein_relations = self._generate_einstein_data()
-            descartes_entities, descartes_relations = self._generate_descartes_data()
-            
-            all_entities.extend(newton_entities)
-            all_entities.extend(einstein_entities)
-            all_entities.extend(descartes_entities)
-            
-            all_relations.extend(newton_relations)
-            all_relations.extend(einstein_relations)
-            all_relations.extend(descartes_relations)
+        all_relations.extend(newton_relations)
+        all_relations.extend(einstein_relations)
+        all_relations.extend(descartes_relations)
         
         # Add cross-connections between scientists if multiple scientists are present
         if len(all_entities) > 15:  # A simple heuristic to check if we have multiple scientists

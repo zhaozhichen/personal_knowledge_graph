@@ -1,0 +1,442 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "Isaac Newton", "properties": {"birth_year": "1642", "death_year": "1727"}, "shape": "dot", "size": 10, "title": "Isaac Newton (PERSON)\n\nProperties:\n\u2022 birth_year: 1642\n\u2022 death_year: 1727"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "f1eb944c-baa7-45d8-b028-e27be10d4cc5", "label": "Woolsthorpe", "properties": {"country": "England"}, "shape": "dot", "size": 10, "title": "Woolsthorpe (LOCATION)\n\nProperties:\n\u2022 country: England"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "a497d3d5-a855-41da-b45d-135e8ecf5629", "label": "Trinity College, Cambridge", "properties": {"founded": "1546"}, "shape": "dot", "size": 10, "title": "Trinity College, Cambridge (ORGANIZATION)\n\nProperties:\n\u2022 founded: 1546"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "00bd8fa4-73b0-46e1-bb94-e62536316812", "label": "Calculus", "properties": {"field": "Mathematics"}, "shape": "dot", "size": 10, "title": "Calculus (WORK_OF_ART)\n\nProperties:\n\u2022 field: Mathematics"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "c01477d0-f155-4c9a-947e-a4b249357b48", "label": "Principia Mathematica", "properties": {"field": "Physics", "published": "1687"}, "shape": "dot", "size": 10, "title": "Principia Mathematica (WORK_OF_ART)\n\nProperties:\n\u2022 published: 1687\n\u2022 field: Physics"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "4d7d1982-c8dd-4a09-baf4-f4e8dbcfb0e0", "label": "Three Laws of Motion", "properties": {"field": "Physics"}, "shape": "dot", "size": 10, "title": "Three Laws of Motion (WORK_OF_ART)\n\nProperties:\n\u2022 field: Physics"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "5c180ead-08b6-412f-b15f-520213c08347", "label": "Law of Universal Gravitation", "properties": {"field": "Physics"}, "shape": "dot", "size": 10, "title": "Law of Universal Gravitation (WORK_OF_ART)\n\nProperties:\n\u2022 field: Physics"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "6ee18ae3-70e0-49af-a00d-371f9130501b", "label": "Reflecting Telescope", "properties": {"invented": "1668"}, "shape": "dot", "size": 10, "title": "Reflecting Telescope (PRODUCT)\n\nProperties:\n\u2022 invented: 1668"}, {"color": "#00CED1", "font": {"color": "#00CED1"}, "id": "8fdae9cb-b569-4243-ade5-56da7c265506", "label": "Prism", "properties": {}, "shape": "dot", "size": 10, "title": "Prism (PRODUCT)"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "3a695147-8c1f-47ab-8b5b-0c13f9fc3cfa", "label": "Royal Mint", "properties": {"country": "England"}, "shape": "dot", "size": 10, "title": "Royal Mint (ORGANIZATION)\n\nProperties:\n\u2022 country: England"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "e112c779-8f97-4ca8-9aba-5ac6699a7a43", "label": "Royal Society", "properties": {"founded": "1660"}, "shape": "dot", "size": 10, "title": "Royal Society (ORGANIZATION)\n\nProperties:\n\u2022 founded: 1660"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "Ren\u00e9 Descartes", "properties": {"birth_year": "1596", "death_year": "1650"}, "shape": "dot", "size": 10, "title": "Ren\u00e9 Descartes (PERSON)\n\nProperties:\n\u2022 birth_year: 1596\n\u2022 death_year: 1650"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "66965d63-ec15-48bd-818b-f0acc1f46d50", "label": "Mathematics", "properties": {"description": "The study of numbers, quantities, and shapes"}, "shape": "dot", "size": 10, "title": "Mathematics (FIELD)\n\nProperties:\n\u2022 description: The study of numbers, quantities, and shapes"}, {"color": "#AAAAAA", "font": {"color": "#AAAAAA"}, "id": "61ac3d7f-6674-4b9a-9f0d-ac4d11ba8be6", "label": "Physics", "properties": {"description": "The study of matter, energy, and their interactions"}, "shape": "dot", "size": 10, "title": "Physics (FIELD)\n\nProperties:\n\u2022 description: The study of matter, energy, and their interactions"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "22bbbe8a-c27c-4cca-b3b0-3126912f86f1", "label": "Analytical Geometry", "properties": {}, "shape": "dot", "size": 10, "title": "Analytical Geometry (WORK_OF_ART)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "2619796f-4a69-466b-b9dd-ca422806a69f", "label": "Gottfried Wilhelm Leibniz", "properties": {"birth_year": "1646", "death_year": "1716"}, "shape": "dot", "size": 10, "title": "Gottfried Wilhelm Leibniz (PERSON)\n\nProperties:\n\u2022 birth_year: 1646\n\u2022 death_year: 1716"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "Albert Einstein", "properties": {"birth_year": "1879", "death_year": "1955"}, "shape": "dot", "size": 10, "title": "Albert Einstein (PERSON)\n\nProperties:\n\u2022 birth_year: 1879\n\u2022 death_year: 1955"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "759074c3-7c96-49cf-9da1-594cb8abf406", "label": "Queen Anne", "properties": {"reign": "1702-1714"}, "shape": "dot", "size": 10, "title": "Queen Anne (PERSON)\n\nProperties:\n\u2022 reign: 1702-1714"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "93c1f8e6-9cc1-4179-992b-dbffe4c90d9f", "label": "Ulm", "properties": {"country": "Germany"}, "shape": "dot", "size": 10, "title": "Ulm (LOCATION)\n\nProperties:\n\u2022 country: Germany"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "c212e789-3017-4961-a90a-52824bf48a3e", "label": "Swiss Federal Polytechnic School", "properties": {}, "shape": "dot", "size": 10, "title": "Swiss Federal Polytechnic School (ORGANIZATION)"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "92f8c1b8-ae86-4442-ae0f-7528cd7ce3fe", "label": "Theory of Special Relativity", "properties": {"year": "1905"}, "shape": "dot", "size": 10, "title": "Theory of Special Relativity (WORK_OF_ART)\n\nProperties:\n\u2022 year: 1905"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "4d2368f3-6fea-4e0c-aaa0-4a9651581a6e", "label": "General Theory of Relativity", "properties": {"year": "1915"}, "shape": "dot", "size": 10, "title": "General Theory of Relativity (WORK_OF_ART)\n\nProperties:\n\u2022 year: 1915"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "a65d4f74-5893-4fe3-ad94-5ec03aa69e67", "label": "Photoelectric Effect", "properties": {"year": "1905"}, "shape": "dot", "size": 10, "title": "Photoelectric Effect (WORK_OF_ART)\n\nProperties:\n\u2022 year: 1905"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "c2603eaa-fcc1-45aa-a28c-c55f764c79a5", "label": "Brownian Motion", "properties": {"year": "1905"}, "shape": "dot", "size": 10, "title": "Brownian Motion (WORK_OF_ART)\n\nProperties:\n\u2022 year: 1905"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "dcbb1c37-7df8-4b27-bf64-c0bad49ac021", "label": "Mass-Energy Equivalence", "properties": {"equation": "E=mc\u00b2"}, "shape": "dot", "size": 10, "title": "Mass-Energy Equivalence (WORK_OF_ART)\n\nProperties:\n\u2022 equation: E=mc\u00b2"}, {"color": "#FFD700", "font": {"color": "#FFD700"}, "id": "992e85e7-14df-4530-b8e9-fc400e780a71", "label": "1921 Nobel Prize in Physics", "properties": {}, "shape": "dot", "size": 10, "title": "1921 Nobel Prize in Physics (EVENT)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "45d46b94-771f-4914-9120-7698dda6b5e1", "label": "Mileva Mari\u0107", "properties": {}, "shape": "dot", "size": 10, "title": "Mileva Mari\u0107 (PERSON)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "798b90ff-4ebd-4a62-948c-d6ccddf2af40", "label": "Elsa L\u00f6wenthal", "properties": {}, "shape": "dot", "size": 10, "title": "Elsa L\u00f6wenthal (PERSON)"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "9bad418d-45e5-45f1-b03b-4af51c299831", "label": "Germany", "properties": {}, "shape": "dot", "size": 10, "title": "Germany (LOCATION)"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "3f10119b-9787-49ff-b838-b0536a4bbca6", "label": "United States", "properties": {}, "shape": "dot", "size": 10, "title": "United States (LOCATION)"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "e8989493-9999-4259-8344-e5a7a6e4bcc1", "label": "Institute for Advanced Study in Princeton", "properties": {}, "shape": "dot", "size": 10, "title": "Institute for Advanced Study in Princeton (ORGANIZATION)"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "a1d945a0-a75e-4099-a709-e2ece4fb1a51", "label": "Cartesian Dualism", "properties": {}, "shape": "dot", "size": 10, "title": "Cartesian Dualism (WORK_OF_ART)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "63b84816-9fe4-417c-9974-10e5287a2215", "label": "Adolf Hitler", "properties": {}, "shape": "dot", "size": 10, "title": "Adolf Hitler (PERSON)"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "10bc5324-ce81-46e6-8f18-4513a827de48", "label": "La Haye en Touraine", "properties": {"country": "France"}, "shape": "dot", "size": 10, "title": "La Haye en Touraine (LOCATION)\n\nProperties:\n\u2022 country: France"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "70c91beb-dcd9-4389-a2b0-6daa1f032568", "label": "Jesuit College of La Fl\u00e8che", "properties": {}, "shape": "dot", "size": 10, "title": "Jesuit College of La Fl\u00e8che (ORGANIZATION)"}, {"color": "#33A8FF", "font": {"color": "#33A8FF"}, "id": "fda0c386-edf9-4bbd-b870-da983e3e822f", "label": "University of Poitiers", "properties": {}, "shape": "dot", "size": 10, "title": "University of Poitiers (ORGANIZATION)"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "caa6d80c-a4cc-4af5-940b-654231c3ac74", "label": "Netherlands", "properties": {}, "shape": "dot", "size": 10, "title": "Netherlands (LOCATION)"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "65c70470-96b2-4b7a-a0cf-4120249e6fa1", "label": "Cogito, ergo sum", "properties": {"translation": "I think, therefore I am"}, "shape": "dot", "size": 10, "title": "Cogito, ergo sum (WORK_OF_ART)\n\nProperties:\n\u2022 translation: I think, therefore I am"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "1c395fc9-eb66-4fd1-8768-3c929eb6e7f1", "label": "Discourse on the Method", "properties": {"year": "1637"}, "shape": "dot", "size": 10, "title": "Discourse on the Method (WORK_OF_ART)\n\nProperties:\n\u2022 year: 1637"}, {"color": "#FF8C00", "font": {"color": "#FF8C00"}, "id": "7138d49a-39e0-4520-bccc-c6a6dd9e45e4", "label": "Meditations on First Philosophy", "properties": {"year": "1641"}, "shape": "dot", "size": 10, "title": "Meditations on First Philosophy (WORK_OF_ART)\n\nProperties:\n\u2022 year: 1641"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "057d2d39-bca5-4140-8f3f-6382a3dbb61f", "label": "Sweden", "properties": {}, "shape": "dot", "size": 10, "title": "Sweden (LOCATION)"}, {"color": "#33FF57", "font": {"color": "#33FF57"}, "id": "27eca9e6-a566-48c7-9d5e-2e69cc45d0bd", "label": "France", "properties": {}, "shape": "dot", "size": 10, "title": "France (LOCATION)"}, {"color": "#FF5733", "font": {"color": "#FF5733"}, "id": "b9ba407e-3cd3-4d1c-ae3d-1bb7c5511bd3", "label": "Queen Christina", "properties": {"country": "Sweden"}, "shape": "dot", "size": 10, "title": "Queen Christina (PERSON)\n\nProperties:\n\u2022 country: Sweden"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "BORN IN", "properties": {"year": "1642"}, "title": "BORN IN\n\nProperties:\n\u2022 year: 1642", "to": "f1eb944c-baa7-45d8-b028-e27be10d4cc5", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "STUDIED AT", "properties": {"year": "1661"}, "title": "STUDIED AT\n\nProperties:\n\u2022 year: 1661", "to": "a497d3d5-a855-41da-b45d-135e8ecf5629", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "DEVELOPED", "properties": {"year": "1665-1666"}, "title": "DEVELOPED\n\nProperties:\n\u2022 year: 1665-1666", "to": "00bd8fa4-73b0-46e1-bb94-e62536316812", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "WROTE", "properties": {"year": "1687"}, "title": "WROTE\n\nProperties:\n\u2022 year: 1687", "to": "c01477d0-f155-4c9a-947e-a4b249357b48", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "FORMULATED", "properties": {}, "title": "FORMULATED", "to": "4d7d1982-c8dd-4a09-baf4-f4e8dbcfb0e0", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "DISCOVERED", "properties": {}, "title": "DISCOVERED", "to": "5c180ead-08b6-412f-b15f-520213c08347", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "INVENTED", "properties": {"year": "1668"}, "title": "INVENTED\n\nProperties:\n\u2022 year: 1668", "to": "6ee18ae3-70e0-49af-a00d-371f9130501b", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "EXPERIMENTED WITH", "properties": {"discovery": "Light Spectrum"}, "title": "EXPERIMENTED WITH\n\nProperties:\n\u2022 discovery: Light Spectrum", "to": "8fdae9cb-b569-4243-ade5-56da7c265506", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "SERVED AS MASTER OF", "properties": {"period": "1699-1727"}, "title": "SERVED AS MASTER OF\n\nProperties:\n\u2022 period: 1699-1727", "to": "3a695147-8c1f-47ab-8b5b-0c13f9fc3cfa", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "BECAME PRESIDENT OF", "properties": {"year": "1703"}, "title": "BECAME PRESIDENT OF\n\nProperties:\n\u2022 year: 1703", "to": "e112c779-8f97-4ca8-9aba-5ac6699a7a43", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "INFLUENCED BY", "properties": {"area": "Mathematics and Philosophy", "significance": "Moderate"}, "title": "INFLUENCED BY\n\nProperties:\n\u2022 area: Mathematics and Philosophy\n\u2022 significance: Moderate", "to": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "CONTRIBUTED TO\n\nProperties:\n\u2022 significance: Major", "to": "66965d63-ec15-48bd-818b-f0acc1f46d50", "width": 1}, {"arrows": "to", "color": "#000000", "from": "a5be81db-5233-4afd-9fd4-05c580818c31", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "CONTRIBUTED TO\n\nProperties:\n\u2022 significance: Major", "to": "61ac3d7f-6674-4b9a-9f0d-ac4d11ba8be6", "width": 1}, {"arrows": "to", "color": "#000000", "from": "00bd8fa4-73b0-46e1-bb94-e62536316812", "label": "BUILT UPON", "properties": {"note": "Calculus extended concepts from analytical geometry"}, "title": "BUILT UPON\n\nProperties:\n\u2022 note: Calculus extended concepts from analytical geometry", "to": "22bbbe8a-c27c-4cca-b3b0-3126912f86f1", "width": 1}, {"arrows": "to", "color": "#000000", "from": "2619796f-4a69-466b-b9dd-ca422806a69f", "label": "DEVELOPED", "properties": {"year": "1675-1676"}, "title": "DEVELOPED\n\nProperties:\n\u2022 year: 1675-1676", "to": "00bd8fa4-73b0-46e1-bb94-e62536316812", "width": 1}, {"arrows": "to", "color": "#000000", "from": "e112c779-8f97-4ca8-9aba-5ac6699a7a43", "label": "FOUNDED AFTER DEATH OF", "properties": {"note": "Royal Society founded in 1660, Descartes died in 1650", "years_after": "10"}, "title": "FOUNDED AFTER DEATH OF\n\nProperties:\n\u2022 years_after: 10\n\u2022 note: Royal Society founded in 1660, Descartes died in 1650", "to": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "width": 1}, {"arrows": "to", "color": "#000000", "from": "e112c779-8f97-4ca8-9aba-5ac6699a7a43", "label": "ELECTED AS FOREIGN MEMBER", "properties": {"note": "Same year as Nobel Prize", "year": "1921"}, "title": "ELECTED AS FOREIGN MEMBER\n\nProperties:\n\u2022 year: 1921\n\u2022 note: Same year as Nobel Prize", "to": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "width": 1}, {"arrows": "to", "color": "#000000", "from": "759074c3-7c96-49cf-9da1-594cb8abf406", "label": "KNIGHTED", "properties": {"year": "1705"}, "title": "KNIGHTED\n\nProperties:\n\u2022 year: 1705", "to": "a5be81db-5233-4afd-9fd4-05c580818c31", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "BORN IN", "properties": {"year": "1879"}, "title": "BORN IN\n\nProperties:\n\u2022 year: 1879", "to": "93c1f8e6-9cc1-4179-992b-dbffe4c90d9f", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "STUDIED AT", "properties": {}, "title": "STUDIED AT", "to": "c212e789-3017-4961-a90a-52824bf48a3e", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "INTRODUCED", "properties": {"year": "1905"}, "title": "INTRODUCED\n\nProperties:\n\u2022 year: 1905", "to": "92f8c1b8-ae86-4442-ae0f-7528cd7ce3fe", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "DEVELOPED", "properties": {"year": "1915"}, "title": "DEVELOPED\n\nProperties:\n\u2022 year: 1915", "to": "4d2368f3-6fea-4e0c-aaa0-4a9651581a6e", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "EXPLAINED", "properties": {"year": "1905"}, "title": "EXPLAINED\n\nProperties:\n\u2022 year: 1905", "to": "a65d4f74-5893-4fe3-ad94-5ec03aa69e67", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "EXPLAINED", "properties": {"year": "1905"}, "title": "EXPLAINED\n\nProperties:\n\u2022 year: 1905", "to": "c2603eaa-fcc1-45aa-a28c-c55f764c79a5", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "FORMULATED", "properties": {"year": "1905"}, "title": "FORMULATED\n\nProperties:\n\u2022 year: 1905", "to": "dcbb1c37-7df8-4b27-bf64-c0bad49ac021", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "EARNED", "properties": {"year": "1921"}, "title": "EARNED\n\nProperties:\n\u2022 year: 1921", "to": "992e85e7-14df-4530-b8e9-fc400e780a71", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "MARRIED", "properties": {"period": "1903-1919"}, "title": "MARRIED\n\nProperties:\n\u2022 period: 1903-1919", "to": "45d46b94-771f-4914-9120-7698dda6b5e1", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "MARRIED", "properties": {"period": "1919-1936"}, "title": "MARRIED\n\nProperties:\n\u2022 period: 1919-1936", "to": "798b90ff-4ebd-4a62-948c-d6ccddf2af40", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "FLED", "properties": {"year": "1933"}, "title": "FLED\n\nProperties:\n\u2022 year: 1933", "to": "9bad418d-45e5-45f1-b03b-4af51c299831", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "BECAME CITIZEN OF", "properties": {"year": "1940"}, "title": "BECAME CITIZEN OF\n\nProperties:\n\u2022 year: 1940", "to": "3f10119b-9787-49ff-b838-b0536a4bbca6", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "BECAME PROFESSOR AT", "properties": {"year": "1933"}, "title": "BECAME PROFESSOR AT\n\nProperties:\n\u2022 year: 1933", "to": "e8989493-9999-4259-8344-e5a7a6e4bcc1", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "INFLUENCED BY", "properties": {"area": "Physics", "significance": "High"}, "title": "INFLUENCED BY\n\nProperties:\n\u2022 area: Physics\n\u2022 significance: High", "to": "a5be81db-5233-4afd-9fd4-05c580818c31", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "REFERENCED", "properties": {"area": "Philosophy of Science", "significance": "Low"}, "title": "REFERENCED\n\nProperties:\n\u2022 area: Philosophy of Science\n\u2022 significance: Low", "to": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "CHALLENGED", "properties": {"note": "Einstein\u0027s work on relativity questioned absolute space and time"}, "title": "CHALLENGED\n\nProperties:\n\u2022 note: Einstein\u0027s work on relativity questioned absolute space and time", "to": "a1d945a0-a75e-4099-a709-e2ece4fb1a51", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "CONTRIBUTED TO\n\nProperties:\n\u2022 significance: Major", "to": "66965d63-ec15-48bd-818b-f0acc1f46d50", "width": 1}, {"arrows": "to", "color": "#000000", "from": "8b88181e-e2c9-472b-b503-ec36c5170ba5", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "CONTRIBUTED TO\n\nProperties:\n\u2022 significance: Major", "to": "61ac3d7f-6674-4b9a-9f0d-ac4d11ba8be6", "width": 1}, {"arrows": "to", "color": "#000000", "from": "93c1f8e6-9cc1-4179-992b-dbffe4c90d9f", "label": "LOCATED IN", "properties": {}, "title": "LOCATED IN", "to": "9bad418d-45e5-45f1-b03b-4af51c299831", "width": 1}, {"arrows": "to", "color": "#000000", "from": "4d2368f3-6fea-4e0c-aaa0-4a9651581a6e", "label": "EXTENDED", "properties": {"note": "Einstein\u0027s theory provided a more complete description of gravity", "year": "1915"}, "title": "EXTENDED\n\nProperties:\n\u2022 year: 1915\n\u2022 note: Einstein\u0027s theory provided a more complete description of gravity", "to": "5c180ead-08b6-412f-b15f-520213c08347", "width": 1}, {"arrows": "to", "color": "#000000", "from": "63b84816-9fe4-417c-9974-10e5287a2215", "label": "ROSE TO POWER IN", "properties": {"year": "1933"}, "title": "ROSE TO POWER IN\n\nProperties:\n\u2022 year: 1933", "to": "9bad418d-45e5-45f1-b03b-4af51c299831", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "BORN IN", "properties": {"year": "1596"}, "title": "BORN IN\n\nProperties:\n\u2022 year: 1596", "to": "10bc5324-ce81-46e6-8f18-4513a827de48", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "EDUCATED AT", "properties": {"period": "1607-1614"}, "title": "EDUCATED AT\n\nProperties:\n\u2022 period: 1607-1614", "to": "70c91beb-dcd9-4389-a2b0-6daa1f032568", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "GRADUATED FROM", "properties": {"degree": "Law", "year": "1616"}, "title": "GRADUATED FROM\n\nProperties:\n\u2022 year: 1616\n\u2022 degree: Law", "to": "fda0c386-edf9-4bbd-b870-da983e3e822f", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "LIVED IN", "properties": {"period": "1628-1649"}, "title": "LIVED IN\n\nProperties:\n\u2022 period: 1628-1649", "to": "caa6d80c-a4cc-4af5-940b-654231c3ac74", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "FORMULATED", "properties": {}, "title": "FORMULATED", "to": "65c70470-96b2-4b7a-a0cf-4120249e6fa1", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "WROTE", "properties": {"year": "1637"}, "title": "WROTE\n\nProperties:\n\u2022 year: 1637", "to": "1c395fc9-eb66-4fd1-8768-3c929eb6e7f1", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "WROTE", "properties": {"year": "1641"}, "title": "WROTE\n\nProperties:\n\u2022 year: 1641", "to": "7138d49a-39e0-4520-bccc-c6a6dd9e45e4", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "DEVELOPED", "properties": {}, "title": "DEVELOPED", "to": "a1d945a0-a75e-4099-a709-e2ece4fb1a51", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "INVENTED", "properties": {}, "title": "INVENTED", "to": "22bbbe8a-c27c-4cca-b3b0-3126912f86f1", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "DIED IN", "properties": {"cause": "Pneumonia", "year": "1650"}, "title": "DIED IN\n\nProperties:\n\u2022 year: 1650\n\u2022 cause: Pneumonia", "to": "057d2d39-bca5-4140-8f3f-6382a3dbb61f", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "CONTRIBUTED TO", "properties": {"significance": "Major"}, "title": "CONTRIBUTED TO\n\nProperties:\n\u2022 significance: Major", "to": "66965d63-ec15-48bd-818b-f0acc1f46d50", "width": 1}, {"arrows": "to", "color": "#000000", "from": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "label": "CONTRIBUTED TO", "properties": {"significance": "Moderate"}, "title": "CONTRIBUTED TO\n\nProperties:\n\u2022 significance: Moderate", "to": "61ac3d7f-6674-4b9a-9f0d-ac4d11ba8be6", "width": 1}, {"arrows": "to", "color": "#000000", "from": "10bc5324-ce81-46e6-8f18-4513a827de48", "label": "LOCATED IN", "properties": {}, "title": "LOCATED IN", "to": "27eca9e6-a566-48c7-9d5e-2e69cc45d0bd", "width": 1}, {"arrows": "to", "color": "#000000", "from": "b9ba407e-3cd3-4d1c-ae3d-1bb7c5511bd3", "label": "INVITED TO COURT", "properties": {"year": "1649"}, "title": "INVITED TO COURT\n\nProperties:\n\u2022 year: 1649", "to": "dfe2b9ee-2e0a-4493-aefb-5568b08ccb6f", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"nodes": {"shape": "dot", "size": 25, "font": {"size": 32, "face": "Tahoma", "color": "inherit"}}, "edges": {"font": {"size": 32, "align": "middle"}, "color": {"color": "#000000", "inherit": false}, "smooth": {"type": "continuous", "forceDirection": "none"}}, "physics": {"barnesHut": {"gravitationalConstant": -80000, "springLength": 250, "springConstant": 0.001}, "minVelocity": 0.75}, "interaction": {"hover": {"enabled": true}, "navigationButtons": true, "keyboard": true, "tooltipDelay": 200, "hideEdgesOnDrag": false, "multiselect": false, "hoverConnectedEdges": true}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+        <div style="position: absolute; top: 10px; right: 10px; background-color: white; 
+                    border: 1px solid #ccc; padding: 10px; border-radius: 5px; max-width: 250px;">
+            <h3 style="margin-top: 0; text-align: center;">Entity Types</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                    <th style="text-align: left; padding: 5px;">Type</th>
+                    <th style="text-align: left; padding: 5px;">Color</th>
+                </tr>
+        
+                <tr>
+                    <td style="padding: 5px;">EVENT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FFD700; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">FIELD</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #AAAAAA; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">LOCATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33FF57; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">ORGANIZATION</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #33A8FF; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PERSON</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FF5733; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">PRODUCT</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #00CED1; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+                <tr>
+                    <td style="padding: 5px;">WORK_OF_ART</td>
+                    <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: #FF8C00; 
+                                                border-radius: 50%; display: inline-block;"></div></td>
+                </tr>
+            
+            </table>
+            <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
+                <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
+                <div style="display: flex; align-items: center; margin-top: 5px;">
+                    <span style="margin-right: 5px; font-size: 12px;">A</span>
+                    <input type="range" id="textSizeSlider" min="8" max="64" value="32" style="flex-grow: 1;">
+                    <span style="margin-left: 5px; font-size: 18px;">A</span>
+                </div>
+                <div style="text-align: center; margin-top: 5px;">
+                    <span id="currentTextSize">32px</span>
+                </div>
+            </div>
+            <script>
+                // Add event listener to the slider
+                document.addEventListener('DOMContentLoaded', function() {
+                    var slider = document.getElementById('textSizeSlider');
+                    var sizeDisplay = document.getElementById('currentTextSize');
+                    
+                    // Function to update text size
+                    function updateTextSize(size) {
+                        // Update the display
+                        sizeDisplay.textContent = size + 'px';
+                        
+                        // Make sure network is defined
+                        if (typeof network === 'undefined') {
+                            console.warn('Network variable not found. Text size control may not work properly.');
+                            return;
+                        }
+                        
+                        // Update node font size
+                        var nodeOptions = {
+                            font: {
+                                size: size,
+                                color: 'inherit'
+                            }
+                        };
+                        network.setOptions({ nodes: nodeOptions });
+                        
+                        // Update edge font size
+                        var edgeOptions = {
+                            font: {
+                                size: size
+                            }
+                        };
+                        network.setOptions({ edges: edgeOptions });
+                    }
+                    
+                    // Add event listener for slider changes
+                    slider.addEventListener('input', function() {
+                        updateTextSize(parseInt(this.value));
+                    });
+                    
+                    // Initialize with default values
+                    updateTextSize(parseInt(slider.value));
+                    
+                    // Set global variable to always enable tooltips
+                    window.tooltipsEnabled = true;
+                });
+            </script>
+        </div>
+        
+        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+            <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+        </div>
+        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h3 style="margin: 0;">Source Text</h3>
+            </div>
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px;">
+                <p style="white-space: pre-wrap;"># Source: File: 
+(mock graph, no source text.)
+
+</p>
+            </div>
+        </div>
+        
+        <script>
+            // Make sure this script runs after the network is initialized
+            document.addEventListener('DOMContentLoaded', function() {
+                // Ensure network variable is accessible
+                if (typeof network === 'undefined') {
+                    console.warn('Network variable not found. Some features may not work properly.');
+                }
+                
+                // Initially maximize the network container height since text is hidden
+                var networkContainer = document.getElementById('mynetwork');
+                var windowHeight = window.innerHeight;
+                var networkTop = networkContainer.getBoundingClientRect().top;
+                var newHeight = windowHeight - networkTop - 20; // 20px padding
+                networkContainer.style.height = newHeight + 'px';
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            });
+            
+            function toggleSourceText() {
+                var textSection = document.getElementById('textSection');
+                var btn = document.getElementById('toggleTextBtn');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                if (textSection.style.display === 'none') {
+                    // Show text
+                    textSection.style.display = 'block';
+                    btn.innerText = 'Hide Text';
+                    btn.style.backgroundColor = '#f44336'; // Red color for hide button
+                    
+                    // Restore original network container height
+                    networkContainer.style.height = '750px';
+                } else {
+                    // Hide text
+                    textSection.style.display = 'none';
+                    btn.innerText = 'Show Text';
+                    btn.style.backgroundColor = '#4CAF50'; // Green color for show button
+                    
+                    // Maximize network container height
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                }
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {
+                    network.fit();
+                }
+            }
+            
+            // Add window resize event listener to adjust the graph size when window is resized
+            window.addEventListener('resize', function() {
+                var textSection = document.getElementById('textSection');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                // Only adjust if text is hidden
+                if (textSection.style.display === 'none') {
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                    
+                    // Redraw the network to fit the new container size
+                    if (typeof network !== 'undefined') {
+                        network.fit();
+                    }
+                }
+            });
+        </script>
+        <style>
+        .custom-tooltip {
+            position: absolute;
+            display: none;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-width: 300px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        </style>
+        <div id="custom-tooltip" class="custom-tooltip"></div>
+        <script>
+        // Initialize global variable for tooltip control - always enabled
+        window.tooltipsEnabled = true;
+        
+        // Add the tooltip functionality after the page has fully loaded
+        window.addEventListener('load', function() {
+            // Make sure the network variable exists
+            if (typeof network === 'undefined') {
+                console.warn('Network variable not found');
+                return;
+            }
+            
+            var tooltip = document.getElementById('custom-tooltip');
+            
+            // Function to disable default tooltips
+            function disableDefaultTooltips() {
+                // Remove title attributes from all nodes and edges to prevent default browser tooltips
+                if (network && network.body) {
+                    // For nodes
+                    Object.values(network.body.nodes).forEach(function(node) {
+                        if (node.element) {
+                            node.element.removeAttribute('title');
+                        }
+                    });
+                    
+                    // For edges
+                    Object.values(network.body.edges).forEach(function(edge) {
+                        if (edge.element) {
+                            edge.element.removeAttribute('title');
+                        }
+                    });
+                }
+            }
+            
+            // Call once on load
+            disableDefaultTooltips();
+            
+            // Function to show tooltip
+            function showTooltip(text, x, y) {
+                tooltip.textContent = text;
+                tooltip.style.display = 'block';
+                tooltip.style.left = (x + 10) + 'px';
+                tooltip.style.top = (y + 10) + 'px';
+            }
+            
+            // Function to hide tooltip
+            function hideTooltip() {
+                tooltip.style.display = 'none';
+            }
+            
+            // Add event listeners to the network
+            network.on('hoverNode', function(params) {
+                var nodeId = params.node;
+                var node = network.body.nodes[nodeId];
+                if (node && node.options && node.options.title) {
+                    showTooltip(node.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('hoverEdge', function(params) {
+                var edgeId = params.edge;
+                var edge = network.body.edges[edgeId];
+                if (edge && edge.options && edge.options.title) {
+                    showTooltip(edge.options.title, params.pointer.DOM.x, params.pointer.DOM.y);
+                }
+            });
+            
+            network.on('blurNode', function() {
+                hideTooltip();
+            });
+            
+            network.on('blurEdge', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during drag operations
+            network.on('dragStart', function() {
+                hideTooltip();
+            });
+            
+            // Hide tooltip during zoom operations
+            network.on('zoom', function() {
+                hideTooltip();
+            });
+            
+            // Ensure hover is enabled for tooltips
+            network.setOptions({
+                interaction: {
+                    hover: {
+                        enabled: true
+                    }
+                }
+            });
+        });
+        </script>
+        </body>
+</html>
