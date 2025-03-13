@@ -207,7 +207,7 @@ class GraphVisualizer:
         <div style="position: absolute; top: 10px; right: 10px; background-color: white; 
                     border: 1px solid #ccc; padding: 10px; border-radius: 5px; max-width: 250px;">
             <h3 style="margin-top: 0; text-align: center;">Entity Types</h3>
-            <table style="width: 100%; border-collapse: collapse;">
+            <table style="width: 100%; border-collapse: collapse;" id="entityTypeTable">
                 <tr>
                     <th style="text-align: left; padding: 5px;">Type</th>
                     <th style="text-align: left; padding: 5px;">Color</th>
@@ -217,7 +217,7 @@ class GraphVisualizer:
         for entity_type in sorted(used_entity_types):
             color = self.entity_colors.get(entity_type, self.default_color)
             legend_html += f"""
-                <tr>
+                <tr class="entity-type-row" data-entity-type="{entity_type}" style="cursor: pointer;">
                     <td style="padding: 5px;">{entity_type}</td>
                     <td style="padding: 5px;"><div style="width: 20px; height: 20px; background-color: {color}; 
                                                 border-radius: 50%; display: inline-block;"></div></td>
@@ -226,6 +226,9 @@ class GraphVisualizer:
             
         legend_html += """
             </table>
+            <div style="margin-top: 10px; text-align: center;">
+                <button id="resetHighlightBtn" style="padding: 5px 10px; background-color: #f0f0f0; border: 1px solid #ccc; border-radius: 3px; cursor: pointer;">Reset Highlight</button>
+            </div>
             <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
                 <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
                 <div style="display: flex; align-items: center; margin-top: 5px;">
@@ -282,6 +285,155 @@ class GraphVisualizer:
                     
                     // Set global variable to always enable tooltips
                     window.tooltipsEnabled = true;
+                    
+                    // Add event listeners for entity type highlighting
+                    var entityTypeRows = document.querySelectorAll('.entity-type-row');
+                    entityTypeRows.forEach(function(row) {
+                        row.addEventListener('click', function() {
+                            var entityType = this.getAttribute('data-entity-type');
+                            highlightNodesByType(entityType);
+                            
+                            // Update visual feedback in the table
+                            entityTypeRows.forEach(function(r) {
+                                r.style.backgroundColor = '';
+                                r.style.fontWeight = 'normal';
+                            });
+                            this.style.backgroundColor = '#f0f0f0';
+                            this.style.fontWeight = 'bold';
+                        });
+                    });
+                    
+                    // Add event listener for reset button
+                    var resetBtn = document.getElementById('resetHighlightBtn');
+                    if (resetBtn) {
+                        resetBtn.addEventListener('click', function() {
+                            resetHighlighting();
+                            
+                            // Reset visual feedback in the table
+                            entityTypeRows.forEach(function(r) {
+                                r.style.backgroundColor = '';
+                                r.style.fontWeight = 'normal';
+                            });
+                        });
+                    }
+                    
+                    // Function to highlight nodes by type
+                    function highlightNodesByType(entityType) {
+                        if (typeof network === 'undefined') {
+                            console.warn('Network variable not found. Highlighting may not work properly.');
+                            return;
+                        }
+                        
+                        var allNodes = network.body.nodes;
+                        var allEdges = network.body.edges;
+                        
+                        // Lowlight all nodes and edges
+                        Object.values(allNodes).forEach(function(node) {
+                            if (node.options) {
+                                // Save original values if not already saved
+                                if (!node.options._originalColor) {
+                                    node.options._originalColor = node.options.color;
+                                    node.options._originalFont = JSON.parse(JSON.stringify(node.options.font));
+                                    node.options._originalSize = node.options.size;
+                                }
+                                
+                                // Apply lowlight effect
+                                node.options.color = {
+                                    background: '#f0f0f0',
+                                    border: '#e0e0e0'
+                                };
+                                node.options.font.color = '#aaaaaa';
+                                node.options.size = node.options.size * 0.8;
+                            }
+                        });
+                        
+                        Object.values(allEdges).forEach(function(edge) {
+                            if (edge.options) {
+                                // Save original values if not already saved
+                                if (!edge.options._originalColor) {
+                                    edge.options._originalColor = edge.options.color;
+                                    edge.options._originalWidth = edge.options.width;
+                                    edge.options._originalFont = JSON.parse(JSON.stringify(edge.options.font));
+                                }
+                                
+                                // Apply lowlight effect
+                                edge.options.color = {
+                                    color: '#e0e0e0',
+                                    highlight: '#e0e0e0'
+                                };
+                                edge.options.width = edge.options.width * 0.5;
+                                edge.options.font.color = '#aaaaaa';
+                            }
+                        });
+                        
+                        // Highlight nodes of the selected type and their connections
+                        var highlightedNodeIds = [];
+                        Object.values(allNodes).forEach(function(node) {
+                            if (node.options && node.options.title && node.options.title.includes('(' + entityType + ')')) {
+                                // Restore original values for this node
+                                if (node.options._originalColor) {
+                                    node.options.color = node.options._originalColor;
+                                    node.options.font = JSON.parse(JSON.stringify(node.options._originalFont));
+                                    node.options.size = node.options._originalSize * 1.2; // Make slightly larger
+                                }
+                                highlightedNodeIds.push(node.id);
+                            }
+                        });
+                        
+                        // Highlight edges connected to highlighted nodes
+                        Object.values(allEdges).forEach(function(edge) {
+                            if (edge.options && 
+                                (highlightedNodeIds.includes(edge.from) || highlightedNodeIds.includes(edge.to))) {
+                                // Restore original values for this edge
+                                if (edge.options._originalColor) {
+                                    edge.options.color = edge.options._originalColor;
+                                    edge.options.width = edge.options._originalWidth;
+                                    edge.options.font = JSON.parse(JSON.stringify(edge.options._originalFont));
+                                }
+                            }
+                        });
+                        
+                        // Refresh the network
+                        network.redraw();
+                    }
+                    
+                    // Function to reset highlighting
+                    function resetHighlighting() {
+                        if (typeof network === 'undefined') {
+                            console.warn('Network variable not found. Reset may not work properly.');
+                            return;
+                        }
+                        
+                        // Restore all nodes and edges to original state
+                        Object.values(network.body.nodes).forEach(function(node) {
+                            if (node.options && node.options._originalColor) {
+                                node.options.color = node.options._originalColor;
+                                node.options.font = JSON.parse(JSON.stringify(node.options._originalFont));
+                                node.options.size = node.options._originalSize;
+                                
+                                // Clear saved original values
+                                delete node.options._originalColor;
+                                delete node.options._originalFont;
+                                delete node.options._originalSize;
+                            }
+                        });
+                        
+                        Object.values(network.body.edges).forEach(function(edge) {
+                            if (edge.options && edge.options._originalColor) {
+                                edge.options.color = edge.options._originalColor;
+                                edge.options.width = edge.options._originalWidth;
+                                edge.options.font = JSON.parse(JSON.stringify(edge.options._originalFont));
+                                
+                                // Clear saved original values
+                                delete edge.options._originalColor;
+                                delete edge.options._originalWidth;
+                                delete edge.options._originalFont;
+                            }
+                        });
+                        
+                        // Refresh the network
+                        network.redraw();
+                    }
                 });
             </script>
         </div>
