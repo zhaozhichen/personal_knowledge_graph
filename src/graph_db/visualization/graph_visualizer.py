@@ -416,8 +416,8 @@ class GraphVisualizer:
                                 });
                                 
                                 if (nodeMatches) {
-                                    // Make node 10X larger and restore label
-                                    node.options.size = node.options._originalSize * 5;
+                                    // Make node 3X larger and restore label
+                                    node.options.size = node.options._originalSize * 3;
                                     node.options.label = node.options._originalLabel;
                                     
                                     // Restore original color
