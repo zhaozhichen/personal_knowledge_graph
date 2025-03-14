@@ -364,7 +364,7 @@ def process_input_sources(
             if use_mock:
                 entities, relations = entity_extractor.process_text(chunk)
             else:
-                entities, relations = entity_extractor.extract_entities_and_relations(chunk)
+                entities, relations = entity_extractor.process_text(chunk)
             all_entities.extend(entities)
             all_relations.extend(relations)
         else:
