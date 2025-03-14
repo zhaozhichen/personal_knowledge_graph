@@ -29,7 +29,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 class NodeDeduplicator:
-    def __init__(self, similarity_threshold: float = 0.85, use_embeddings: bool = True):
+    def __init__(self, similarity_threshold: float = 0.95, use_embeddings: bool = True):
         """
         Initialize the node deduplicator.
         
@@ -114,9 +114,29 @@ class NodeDeduplicator:
         # Fall back to SequenceMatcher if embeddings are not enabled or failed
         return SequenceMatcher(None, str1_norm, str2_norm).ratio()
     
+    def get_node_representation(self, entity: Dict[str, Any]) -> str:
+        """
+        Create a comprehensive text representation of a node including name, type, and properties.
+        
+        Args:
+            entity (Dict[str, Any]): The entity dictionary
+            
+        Returns:
+            str: Text representation of the entity
+        """
+        # Start with the entity name and type
+        representation = f"{entity['name']} ({entity['type']})"
+        
+        # Add properties if they exist
+        if "properties" in entity and entity["properties"]:
+            properties_str = "; ".join([f"{k}: {v}" for k, v in entity["properties"].items()])
+            representation += f" | Properties: {properties_str}"
+        
+        return representation
+    
     def find_similar_nodes(self, entities: List[Dict[str, Any]]) -> Dict[str, List[str]]:
         """
-        Find groups of similar nodes based on name similarity.
+        Find groups of similar nodes based on comprehensive node similarity.
         
         Args:
             entities (List[Dict[str, Any]]): List of entity dictionaries
@@ -132,6 +152,9 @@ class NodeDeduplicator:
         
         # Create a dictionary of node IDs to node types for type checking
         node_id_to_type = {entity["id"]: entity["type"] for entity in entities}
+        
+        # Create a dictionary of node IDs to entity objects for representation
+        node_id_to_entity = {entity["id"]: entity for entity in entities}
         
         # Create a set to track processed nodes
         processed_nodes = set()
@@ -163,11 +186,12 @@ class NodeDeduplicator:
                 if node_id_to_type[entity_id] != node_id_to_type[other_id]:
                     continue
                 
-                # Calculate similarity
-                similarity = self.calculate_similarity(
-                    node_id_to_name[entity_id], 
-                    node_id_to_name[other_id]
-                )
+                # Get comprehensive representations of both entities
+                entity_repr = self.get_node_representation(node_id_to_entity[entity_id])
+                other_repr = self.get_node_representation(node_id_to_entity[other_id])
+                
+                # Calculate similarity using the comprehensive representations
+                similarity = self.calculate_similarity(entity_repr, other_repr)
                 
                 # If similarity is above threshold, add to group
                 if similarity >= self.similarity_threshold:
