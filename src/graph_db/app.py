@@ -276,7 +276,7 @@ def process_input_sources(
     chunk_size: int = MAX_CHUNK_SIZE,
     chunk_overlap: int = CHUNK_OVERLAP,
     use_mock: bool = False,
-    deduplicate_nodes: bool = True,
+    deduplicate_nodes: bool = False,
     similarity_threshold: float = 0.85,
     use_embeddings: bool = True,
 ) -> bool:
@@ -299,7 +299,7 @@ def process_input_sources(
         chunk_size (int): Maximum chunk size for processing large texts
         chunk_overlap (int): Overlap between chunks
         use_mock (bool): Use MockEntityExtractor instead of LLMEntityExtractor
-        deduplicate_nodes (bool): Whether to deduplicate similar nodes
+        deduplicate_nodes (bool): Whether to deduplicate similar nodes (default: False)
         similarity_threshold (float): Threshold for string similarity (0.0 to 1.0)
         use_embeddings (bool): Whether to use LLM embeddings for similarity calculation
         
@@ -472,7 +472,7 @@ def main():
     parser.add_argument("--chunk-size", type=int, default=MAX_CHUNK_SIZE, help=f"Maximum chunk size for processing large texts (default: {MAX_CHUNK_SIZE})")
     parser.add_argument("--chunk-overlap", type=int, default=CHUNK_OVERLAP, help=f"Overlap between chunks (default: {CHUNK_OVERLAP})")
     parser.add_argument("--use-mock", action="store_true", help="Use MockEntityExtractor instead of LLMEntityExtractor")
-    parser.add_argument("--no-dedup", action="store_true", help="Disable node deduplication")
+    parser.add_argument("--dedup", action="store_true", help="Enable node deduplication")
     parser.add_argument("--similarity-threshold", type=float, default=0.85, help="Threshold for string similarity in node deduplication (0.0 to 1.0)")
     parser.add_argument("--use-embeddings", action="store_true", help="Use LLM embeddings for similarity calculation in node deduplication")
     
@@ -508,7 +508,7 @@ def main():
         chunk_size=MAX_CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
         use_mock=args.use_mock,
-        deduplicate_nodes=not args.no_dedup,
+        deduplicate_nodes=args.dedup,
         similarity_threshold=args.similarity_threshold,
         use_embeddings=args.use_embeddings,
     )

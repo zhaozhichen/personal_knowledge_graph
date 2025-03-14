@@ -381,7 +381,7 @@ class NodeDeduplicator:
         
         return deduplicated_graph
 
-def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_threshold: float = 0.85, use_embeddings: bool = True) -> bool:
+def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_threshold: float = 0.85, use_embeddings: bool = True, deduplicate: bool = False) -> bool:
     """
     Deduplicate nodes and relations in a graph file.
     
@@ -390,6 +390,7 @@ def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_
         output_file (str, optional): Path to the output JSON file. If None, overwrites the input file.
         similarity_threshold (float, optional): Threshold for string similarity (0.0 to 1.0)
         use_embeddings (bool, optional): Whether to use LLM embeddings for similarity calculation
+        deduplicate (bool, optional): Whether to perform deduplication. If False, just copies the input file to output.
         
     Returns:
         bool: True if deduplication was successful, False otherwise
@@ -402,6 +403,14 @@ def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_
         # Read the input file
         with open(input_file, 'r', encoding='utf-8') as f:
             graph_data = json.load(f)
+        
+        # If deduplication is disabled, just write the input to the output
+        if not deduplicate:
+            logger.info(f"Deduplication is disabled. Copying input to output without changes.")
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump(graph_data, f, indent=2, ensure_ascii=False)
+            logger.info(f"Graph data saved to {output_file}")
+            return True
         
         # Create a deduplicator and deduplicate the graph
         deduplicator = NodeDeduplicator(
@@ -436,6 +445,7 @@ if __name__ == "__main__":
     parser.add_argument('--output-file', '-o', help='Path to the output JSON file (default: overwrite input)')
     parser.add_argument('--threshold', '-t', type=float, default=0.85, help='Similarity threshold (0.0 to 1.0)')
     parser.add_argument('--use-embeddings', action='store_true', help='Use LLM embeddings for similarity calculation')
+    parser.add_argument('--deduplicate', '-d', action='store_true', help='Enable deduplication (default: disabled)')
     
     args = parser.parse_args()
     
@@ -444,10 +454,11 @@ if __name__ == "__main__":
         args.input_file, 
         args.output_file, 
         args.threshold,
-        args.use_embeddings
+        args.use_embeddings,
+        args.deduplicate
     )
     
     if success:
-        print(f"Deduplication complete. Output saved to {args.output_file or args.input_file}")
+        print(f"Processing complete. Output saved to {args.output_file or args.input_file}")
     else:
-        print("Deduplication failed. See log for details.") 
+        print("Processing failed. See log for details.") 
