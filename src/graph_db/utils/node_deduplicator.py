@@ -8,25 +8,79 @@ It merges similar nodes and updates the corresponding edges.
 import json
 import logging
 import re
-from typing import Dict, List, Any, Tuple, Set
+from typing import Dict, List, Any, Tuple, Set, Optional, Union
 from difflib import SequenceMatcher
+import os
+import sys
+from pathlib import Path
+
+# Add the project root to the Python path to allow importing from tools
+project_root = Path(__file__).parent.parent.parent.parent
+sys.path.append(str(project_root))
+
+# Import embedding functions from tools
+try:
+    from tools.llm_api import get_embedding, cosine_similarity
+except ImportError:
+    print(f"Warning: Could not import embedding functions from tools.llm_api. Falling back to SequenceMatcher.", file=sys.stderr)
+    get_embedding = None
+    cosine_similarity = None
 
 logger = logging.getLogger(__name__)
 
 class NodeDeduplicator:
-    def __init__(self, similarity_threshold: float = 0.85):
+    def __init__(self, similarity_threshold: float = 0.85, use_embeddings: bool = True):
         """
         Initialize the node deduplicator.
         
         Args:
             similarity_threshold (float): Threshold for string similarity (0.0 to 1.0)
+            use_embeddings (bool): Whether to use LLM embeddings for similarity calculation
         """
         self.similarity_threshold = similarity_threshold
+        self.use_embeddings = use_embeddings and get_embedding is not None
         self.logger = logging.getLogger(__name__)
+        
+        # Cache for embeddings to avoid redundant API calls
+        self.embedding_cache = {}
+        
+        if self.use_embeddings:
+            self.logger.info("Using LLM embeddings for similarity calculation")
+        else:
+            self.logger.info("Using SequenceMatcher for similarity calculation")
+    
+    def get_text_embedding(self, text: str) -> Optional[List[float]]:
+        """
+        Get embedding for a text string, using cache if available.
+        
+        Args:
+            text (str): Text to get embedding for
+            
+        Returns:
+            Optional[List[float]]: Embedding vector or None if embedding failed
+        """
+        if not self.use_embeddings:
+            return None
+            
+        # Normalize text for cache key
+        cache_key = text.lower().strip()
+        
+        # Return cached embedding if available
+        if cache_key in self.embedding_cache:
+            return self.embedding_cache[cache_key]
+        
+        # Get embedding from API
+        embedding = get_embedding(text)
+        
+        # Cache the embedding
+        if embedding:
+            self.embedding_cache[cache_key] = embedding
+        
+        return embedding
     
     def calculate_similarity(self, str1: str, str2: str) -> float:
         """
-        Calculate string similarity using SequenceMatcher.
+        Calculate string similarity using LLM embeddings or SequenceMatcher.
         
         Args:
             str1 (str): First string
@@ -43,7 +97,21 @@ class NodeDeduplicator:
         if str1_norm == str2_norm:
             return 1.0
         
-        # Use SequenceMatcher for similarity calculation
+        # Use LLM embeddings if enabled
+        if self.use_embeddings:
+            # Get embeddings
+            embedding1 = self.get_text_embedding(str1)
+            embedding2 = self.get_text_embedding(str2)
+            
+            # Calculate cosine similarity if embeddings are available
+            if embedding1 and embedding2:
+                # Cosine similarity ranges from -1 to 1, so normalize to 0 to 1
+                similarity = (cosine_similarity(embedding1, embedding2) + 1) / 2
+                return similarity
+            else:
+                self.logger.warning(f"Failed to get embeddings for similarity calculation. Falling back to SequenceMatcher.")
+        
+        # Fall back to SequenceMatcher if embeddings are not enabled or failed
         return SequenceMatcher(None, str1_norm, str2_norm).ratio()
     
     def find_similar_nodes(self, entities: List[Dict[str, Any]]) -> Dict[str, List[str]]:
@@ -289,7 +357,7 @@ class NodeDeduplicator:
         
         return deduplicated_graph
 
-def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_threshold: float = 0.85) -> bool:
+def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_threshold: float = 0.85, use_embeddings: bool = True) -> bool:
     """
     Deduplicate nodes and relations in a graph file.
     
@@ -297,6 +365,7 @@ def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_
         input_file (str): Path to the input JSON file
         output_file (str, optional): Path to the output JSON file. If None, overwrites the input file.
         similarity_threshold (float, optional): Threshold for string similarity (0.0 to 1.0)
+        use_embeddings (bool, optional): Whether to use LLM embeddings for similarity calculation
         
     Returns:
         bool: True if deduplication was successful, False otherwise
@@ -311,7 +380,10 @@ def deduplicate_graph_file(input_file: str, output_file: str = None, similarity_
             graph_data = json.load(f)
         
         # Create a deduplicator and deduplicate the graph
-        deduplicator = NodeDeduplicator(similarity_threshold=similarity_threshold)
+        deduplicator = NodeDeduplicator(
+            similarity_threshold=similarity_threshold,
+            use_embeddings=use_embeddings
+        )
         deduplicated_graph = deduplicator.deduplicate_graph(graph_data)
         
         # Write the deduplicated graph to the output file
@@ -339,11 +411,17 @@ if __name__ == "__main__":
     parser.add_argument('input_file', help='Path to the input JSON file')
     parser.add_argument('--output-file', '-o', help='Path to the output JSON file (default: overwrite input)')
     parser.add_argument('--threshold', '-t', type=float, default=0.85, help='Similarity threshold (0.0 to 1.0)')
+    parser.add_argument('--use-embeddings', action='store_true', help='Use LLM embeddings for similarity calculation')
     
     args = parser.parse_args()
     
     # Deduplicate the graph
-    success = deduplicate_graph_file(args.input_file, args.output_file, args.threshold)
+    success = deduplicate_graph_file(
+        args.input_file, 
+        args.output_file, 
+        args.threshold,
+        args.use_embeddings
+    )
     
     if success:
         print(f"Deduplication complete. Output saved to {args.output_file or args.input_file}")

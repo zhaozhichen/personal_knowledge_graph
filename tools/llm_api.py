@@ -273,6 +273,68 @@ def query_llm(prompt: str, client=None, model=None, provider="openai", image_pat
         print(f"Error querying LLM: {e}", file=sys.stderr)
         return None
 
+def get_embedding(text: str, client=None, model="text-embedding-3-small", provider="openai") -> List[float]:
+    """
+    Generate an embedding vector for the given text using OpenAI's embedding API.
+    
+    Args:
+        text (str): The text to generate an embedding for
+        client: The LLM client to use (if None, one will be created)
+        model (str): The embedding model to use
+        provider (str): The provider to use (currently only OpenAI is supported)
+        
+    Returns:
+        List[float]: The embedding vector
+    """
+    if provider != "openai":
+        raise ValueError("Currently only OpenAI is supported for embeddings")
+    
+    # Create client if not provided
+    if client is None:
+        client = create_llm_client(provider)
+    
+    try:
+        # Get embedding from OpenAI
+        response = client.embeddings.create(
+            model=model,
+            input=text,
+            encoding_format="float"
+        )
+        
+        # Return the embedding vector
+        return response.data[0].embedding
+    except Exception as e:
+        print(f"Error generating embedding: {e}", file=sys.stderr)
+        return None
+
+def cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
+    """
+    Calculate the cosine similarity between two vectors.
+    
+    Args:
+        vec1 (List[float]): First vector
+        vec2 (List[float]): Second vector
+        
+    Returns:
+        float: Cosine similarity between the vectors (between -1 and 1)
+    """
+    if not vec1 or not vec2:
+        return 0.0
+        
+    # Calculate dot product
+    dot_product = sum(a * b for a, b in zip(vec1, vec2))
+    
+    # Calculate magnitudes
+    magnitude1 = sum(a * a for a in vec1) ** 0.5
+    magnitude2 = sum(b * b for b in vec2) ** 0.5
+    
+    # Avoid division by zero
+    if magnitude1 == 0 or magnitude2 == 0:
+        return 0.0
+        
+    # Calculate cosine similarity
+    return dot_product / (magnitude1 * magnitude2)
+
 def main():
     parser = argparse.ArgumentParser(description='Query an LLM with a prompt')
     parser.add_argument('--prompt', type=str, help='The prompt to send to the LLM', required=True)

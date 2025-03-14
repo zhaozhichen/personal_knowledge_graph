@@ -277,7 +277,8 @@ def process_input_sources(
     chunk_overlap: int = CHUNK_OVERLAP,
     use_mock: bool = False,
     deduplicate_nodes: bool = True,
-    similarity_threshold: float = 0.85
+    similarity_threshold: float = 0.85,
+    use_embeddings: bool = True,
 ) -> bool:
     """
     Process multiple input sources and generate a combined graph.
@@ -300,6 +301,7 @@ def process_input_sources(
         use_mock (bool): Use MockEntityExtractor instead of LLMEntityExtractor
         deduplicate_nodes (bool): Whether to deduplicate similar nodes
         similarity_threshold (float): Threshold for string similarity (0.0 to 1.0)
+        use_embeddings (bool): Whether to use LLM embeddings for similarity calculation
         
     Returns:
         bool: True if processing was successful, False otherwise
@@ -406,7 +408,10 @@ def process_input_sources(
     # Apply node deduplication if enabled
     if deduplicate_nodes:
         logger.info(f"Applying node deduplication with similarity threshold: {similarity_threshold}")
-        deduplicator = NodeDeduplicator(similarity_threshold=similarity_threshold)
+        deduplicator = NodeDeduplicator(
+            similarity_threshold=similarity_threshold,
+            use_embeddings=use_embeddings
+        )
         deduplicated_graph = deduplicator.deduplicate_graph(graph_data)
         unique_entities = deduplicated_graph["data"]["entities"]
         unique_relations = deduplicated_graph["data"]["relations"]
@@ -469,6 +474,7 @@ def main():
     parser.add_argument("--use-mock", action="store_true", help="Use MockEntityExtractor instead of LLMEntityExtractor")
     parser.add_argument("--no-dedup", action="store_true", help="Disable node deduplication")
     parser.add_argument("--similarity-threshold", type=float, default=0.85, help="Threshold for string similarity in node deduplication (0.0 to 1.0)")
+    parser.add_argument("--use-embeddings", action="store_true", help="Use LLM embeddings for similarity calculation in node deduplication")
     
     args = parser.parse_args()
     
@@ -503,7 +509,8 @@ def main():
         chunk_overlap=CHUNK_OVERLAP,
         use_mock=args.use_mock,
         deduplicate_nodes=not args.no_dedup,
-        similarity_threshold=args.similarity_threshold
+        similarity_threshold=args.similarity_threshold,
+        use_embeddings=args.use_embeddings,
     )
 
 if __name__ == "__main__":
