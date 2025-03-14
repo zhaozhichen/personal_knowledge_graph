@@ -105,10 +105,20 @@ class NodeDeduplicator:
                 if similarity >= self.similarity_threshold:
                     similar_nodes[entity_id].append(other_id)
                     processed_nodes.add(other_id)
-                    self.logger.info(f"Merging similar nodes: '{node_id_to_name[entity_id]}' and '{node_id_to_name[other_id]}' (similarity: {similarity:.2f})")
+                    self.logger.info(f"Merging similar nodes: '{node_id_to_name[entity_id]}' ({node_id_to_type[entity_id]}) and '{node_id_to_name[other_id]}' ({node_id_to_type[other_id]}) (similarity: {similarity:.2f})")
         
         # Remove empty groups
         similar_nodes = {k: v for k, v in similar_nodes.items() if v}
+        
+        # Log the total number of node groups that will be merged
+        if similar_nodes:
+            self.logger.info(f"Found {len(similar_nodes)} groups of similar nodes to merge")
+            for primary_id, similar_ids in similar_nodes.items():
+                self.logger.info(f"  Group with primary node '{node_id_to_name[primary_id]}' ({node_id_to_type[primary_id]}) will merge {len(similar_ids)} similar nodes:")
+                for similar_id in similar_ids:
+                    self.logger.info(f"    - '{node_id_to_name[similar_id]}' ({node_id_to_type[similar_id]})")
+        else:
+            self.logger.info("No similar nodes found to merge")
         
         return similar_nodes
     
@@ -168,6 +178,10 @@ class NodeDeduplicator:
         # Track unique relation signatures to avoid duplicates
         unique_relations = set()
         
+        # Track updated and deduplicated relations for logging
+        updated_relation_count = 0
+        deduplicated_relation_count = 0
+        
         for relation in relations:
             # Get the from and to entity IDs
             from_id = relation["from_entity"]["id"]
@@ -176,6 +190,13 @@ class NodeDeduplicator:
             # Map to new IDs if they exist in the mapping
             new_from_id = node_mapping.get(from_id, from_id)
             new_to_id = node_mapping.get(to_id, to_id)
+            
+            # Check if this relation is being updated
+            if from_id != new_from_id or to_id != new_to_id:
+                updated_relation_count += 1
+                self.logger.info(f"Updating relation: '{relation['from_entity']['name']}' --[{relation['relation']}]--> '{relation['to_entity']['name']}'")
+                self.logger.info(f"  From ID: {from_id} -> {new_from_id}")
+                self.logger.info(f"  To ID: {to_id} -> {new_to_id}")
             
             # Update the entity IDs in the relation
             updated_relation = relation.copy()
@@ -193,6 +214,15 @@ class NodeDeduplicator:
             if relation_signature not in unique_relations:
                 unique_relations.add(relation_signature)
                 updated_relations.append(updated_relation)
+            else:
+                deduplicated_relation_count += 1
+                self.logger.info(f"Deduplicating relation: '{updated_relation['from_entity']['name']}' --[{updated_relation['relation']}]--> '{updated_relation['to_entity']['name']}'")
+        
+        # Log summary of relation updates
+        if updated_relation_count > 0:
+            self.logger.info(f"Updated {updated_relation_count} relations with new entity IDs")
+        if deduplicated_relation_count > 0:
+            self.logger.info(f"Deduplicated {deduplicated_relation_count} duplicate relations")
         
         return updated_relations
     
@@ -222,6 +252,10 @@ class NodeDeduplicator:
             for similar_id in similar_ids:
                 node_mapping[similar_id] = primary_id
         
+        # Log the node mapping
+        if node_mapping:
+            self.logger.info(f"Created mapping for {len(node_mapping)} nodes to be merged")
+        
         # Merge properties of similar nodes
         for primary_id, similar_ids in similar_nodes.items():
             primary_entity = entity_dict[primary_id]
@@ -246,6 +280,12 @@ class NodeDeduplicator:
         # Log deduplication statistics
         self.logger.info(f"Deduplication complete: {len(entities)} entities -> {len(deduplicated_entities)} entities")
         self.logger.info(f"Deduplication complete: {len(relations)} relations -> {len(deduplicated_relations)} relations")
+        
+        # Log the entities that were kept after deduplication
+        if len(deduplicated_entities) > 0:
+            self.logger.info("Entities after deduplication:")
+            for entity in deduplicated_entities:
+                self.logger.info(f"  - {entity['name']} ({entity['type']})")
         
         return deduplicated_graph
 
