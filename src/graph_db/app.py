@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 from src.graph_db.core.graph_builder import GraphBuilder
 from src.graph_db.visualization.graph_visualizer import GraphVisualizer
 from src.graph_db.utils.web_scraper import scrape_url
+from src.graph_db.utils.node_deduplicator import NodeDeduplicator
 from src.graph_db.input.input_processor import InputProcessor
 from src.graph_db.nlp.llm_entity_extractor import LLMEntityExtractor
 from src.graph_db.nlp.mock_entity_extractor import MockEntityExtractor
@@ -196,37 +197,6 @@ def deduplicate_relations(relations: List[Dict[str, Any]]) -> List[Dict[str, Any
     
     return list(unique_relations.values())
 
-def detect_historical_content(text: str) -> bool:
-    """
-    Detect if the text is about historical events.
-    
-    Args:
-        text (str): Text to analyze
-        
-    Returns:
-        bool: True if the text is about historical events, False otherwise
-    """
-    historical_keywords = [
-        "World War", "WWII", "World War 2", "World War II",
-        "Nazi Germany", "Adolf Hitler", "Winston Churchill",
-        "Franklin D. Roosevelt", "Joseph Stalin", "Axis Powers", 
-        "Allied Powers", "Pearl Harbor", "D-Day", "Holocaust",
-        "Normandy", "Hiroshima", "Nagasaki", "atomic bomb",
-        "Stalingrad", "Operation Barbarossa", "Blitzkrieg",
-        "Cold War", "Soviet Union", "Iron Curtain", "Berlin Wall",
-        "Great Depression", "American Revolution", "Civil War",
-        "French Revolution", "Industrial Revolution", "Ancient Rome",
-        "Medieval", "Renaissance", "Enlightenment", "Ottoman Empire",
-        "Byzantine Empire", "Mongol Empire", "British Empire",
-        "colonization", "imperialism", "monarchy", "dynasty"
-    ]
-    
-    # Count the number of historical keywords in the text
-    keyword_count = sum(1 for keyword in historical_keywords if keyword.lower() in text.lower())
-    
-    # If more than 3 keywords are found, consider it historical content
-    return keyword_count >= 3
-
 def process_with_entity_extractor(text: str, 
                                  llm_model: str = "gpt-4o", 
                                  verbose: bool = False,
@@ -290,95 +260,130 @@ def process_with_entity_extractor(text: str,
     
     return entities, relations
 
-def process_input_sources(text: Optional[Union[str, List[str]]] = None,
-                         files: Optional[Union[str, List[str]]] = None,
-                         urls: Optional[Union[str, List[str]]] = None,
-                         input_dir: Optional[str] = None,
-                         output_path: str = "graph.html",
-                         visualization_only: bool = True,
-                         llm_model: str = "gpt-4o",
-                         verbose: bool = False,
-                         chunk_size: int = MAX_CHUNK_SIZE,
-                         chunk_overlap: int = CHUNK_OVERLAP,
-                         use_mock: bool = False) -> bool:
+def process_input_sources(
+    text: Optional[str] = None,
+    files: Optional[List[str]] = None,
+    urls: Optional[List[str]] = None,
+    input_dir: Optional[str] = None,
+    output_path: str = "graph.html",
+    db_uri: str = "bolt://localhost:7687",
+    db_username: str = "neo4j",
+    db_password: str = "password",
+    clear_existing: bool = False,
+    visualization_only: bool = False,
+    llm_model: str = "gpt-4o",
+    verbose: bool = False,
+    chunk_size: int = MAX_CHUNK_SIZE,
+    chunk_overlap: int = CHUNK_OVERLAP,
+    use_mock: bool = False,
+    deduplicate_nodes: bool = True,
+    similarity_threshold: float = 0.85
+) -> bool:
     """
-    Process various input sources and generate a graph.
+    Process multiple input sources and generate a combined graph.
     
     Args:
-        text (str or List[str]): Text chunk(s) to process
-        files (str or List[str]): File path(s) to process
-        urls (str or List[str]): URL(s) to process
-        input_dir (str): Directory containing files to process
-        output_path (str): Path to save the visualization
-        visualization_only (bool): Whether to skip Neo4j connection
+        text (Optional[str]): Text to process
+        files (Optional[List[str]]): List of files to process
+        urls (Optional[List[str]]): List of URLs to process
+        input_dir (Optional[str]): Directory containing files to process
+        output_path (str): Output file path
+        db_uri (str): Neo4j URI
+        db_username (str): Neo4j username
+        db_password (str): Neo4j password
+        clear_existing (bool): Clear existing data
+        visualization_only (bool): Skip Neo4j connection and only create visualization
         llm_model (str): LLM model to use
-        verbose (bool): Whether to display detailed information
-        chunk_size (int): Maximum chunk size
+        verbose (bool): Display detailed information about extracted entities and relations
+        chunk_size (int): Maximum chunk size for processing large texts
         chunk_overlap (int): Overlap between chunks
-        use_mock (bool): Whether to use MockEntityExtractor instead of LLMEntityExtractor
+        use_mock (bool): Use MockEntityExtractor instead of LLMEntityExtractor
+        deduplicate_nodes (bool): Whether to deduplicate similar nodes
+        similarity_threshold (float): Threshold for string similarity (0.0 to 1.0)
         
     Returns:
-        bool: True if processing successful, False otherwise
+        bool: True if processing was successful, False otherwise
     """
     # Initialize the input processor
-    processor = InputProcessor(
+    input_processor = InputProcessor(
         input_dir="input",
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap
     )
     
-    # Log input information
-    if files:
-        if isinstance(files, list):
-            logger.info(f"Processing {len(files)} files: {', '.join(files)}")
-        else:
-            logger.info(f"Processing file: {files}")
-    
-    if urls:
-        if isinstance(urls, list):
-            logger.info(f"Processing {len(urls)} URLs: {', '.join(urls)}")
-        else:
-            logger.info(f"Processing URL: {urls}")
-    
-    # Process input directory if specified
-    if input_dir:
-        logger.info(f"Processing all files in directory: {input_dir}")
-        result = processor.process_directory(input_dir)
-    else:
-        # Process other input sources
-        result = processor.process_input(text=text, files=files, urls=urls)
-    
-    if not result["success"]:
-        logger.error(f"Error processing input: {result.get('error', 'Unknown error')}")
-        return False
-    
-    # Check if the content is about historical events
-    is_historical = detect_historical_content(result["merged_text"])
-    if is_historical:
-        logger.info("Detected historical content, using specialized historical prompts")
-    
-    # Initialize the visualizer
+    # Initialize the graph visualizer
     visualizer = GraphVisualizer()
     
-    # Lists to store all entities and relations
+    # Process input sources
+    if input_dir:
+        # Process all files in the directory
+        result = input_processor.process_directory(input_dir)
+    else:
+        # Process other input sources
+        result = input_processor.process_input(text=text, files=files, urls=urls)
+    
+    if not result["success"]:
+        logger.error("Failed to process input sources")
+        return False
+    
+    # Initialize the entity extractor
+    if use_mock:
+        logger.info("Using MockEntityExtractor for UI debugging")
+        entity_extractor = MockEntityExtractor()
+    else:
+        entity_extractor = LLMEntityExtractor(model=llm_model)
+    
+    # Initialize the graph builder
+    if not visualization_only:
+        try:
+            graph_builder = GraphBuilder(
+                uri=db_uri,
+                username=db_username,
+                password=db_password,
+                entity_extractor=entity_extractor
+            )
+            
+            # Clear existing data if requested
+            if clear_existing:
+                graph_builder.clear_database()
+                
+        except (ServiceUnavailable, AuthError) as e:
+            logger.error(f"Failed to connect to Neo4j: {str(e)}")
+            logger.info("Falling back to visualization-only mode")
+            visualization_only = True
+    
+    # Process each chunk
     all_entities = []
     all_relations = []
     
-    # Process each chunk
     for i, chunk in enumerate(result["chunks"]):
         logger.info(f"Processing chunk {i+1}/{len(result['chunks'])} ({len(chunk)} characters)")
         
-        # Extract entities and relations
-        entities, relations = process_with_entity_extractor(
-            chunk, 
-            llm_model, 
-            verbose, 
-            use_mock
-        )
-        
-        # Add to the combined lists
-        all_entities.extend(entities)
-        all_relations.extend(relations)
+        if visualization_only:
+            # Extract entities and relations without Neo4j
+            if use_mock:
+                entities, relations = entity_extractor.process_text(chunk)
+            else:
+                entities, relations = entity_extractor.extract_entities_and_relations(chunk)
+            all_entities.extend(entities)
+            all_relations.extend(relations)
+        else:
+            # Process the chunk with Neo4j
+            entities, relations = graph_builder.process_text(chunk)
+            all_entities.extend(entities)
+            all_relations.extend(relations)
+    
+    # Log the extracted entities and relations
+    if verbose:
+        logger.info(f"Extracted {len(all_entities)} entities:")
+        for entity in all_entities:
+            logger.info(f"  - {entity['name']} ({entity['type']})")
+            
+        logger.info(f"Extracted {len(all_relations)} relations:")
+        for relation in all_relations:
+            logger.info(f"  - {relation['from_entity']['name']} --[{relation['relation']}]--> {relation['to_entity']['name']} (confidence: {relation['confidence']:.2f})")
+    else:
+        logger.info(f"Successfully extracted {len(all_entities)} entities and {len(all_relations)} relations using {'MockEntityExtractor' if use_mock else 'LLMEntityExtractor'}")
     
     # Deduplicate entities and relations
     unique_entities = deduplicate_entities(all_entities)
@@ -386,13 +391,40 @@ def process_input_sources(text: Optional[Union[str, List[str]]] = None,
     
     logger.info(f"After deduplication: {len(unique_entities)} entities and {len(unique_relations)} relations")
     
+    # Create graph data structure
+    graph_data = {
+        "schema": {
+            "entity_types": list(set(entity["type"] for entity in unique_entities)),
+            "relation_types": list(set(relation["relation"] for relation in unique_relations))
+        },
+        "data": {
+            "entities": unique_entities,
+            "relations": unique_relations
+        }
+    }
+    
+    # Apply node deduplication if enabled
+    if deduplicate_nodes:
+        logger.info(f"Applying node deduplication with similarity threshold: {similarity_threshold}")
+        deduplicator = NodeDeduplicator(similarity_threshold=similarity_threshold)
+        deduplicated_graph = deduplicator.deduplicate_graph(graph_data)
+        unique_entities = deduplicated_graph["data"]["entities"]
+        unique_relations = deduplicated_graph["data"]["relations"]
+        logger.info(f"After node deduplication: {len(unique_entities)} entities and {len(unique_relations)} relations")
+    
     # Save the extracted data to a JSON file
     json_output_path = output_path.replace('.html', '.json')
     try:
         with open(json_output_path, 'w') as f:
             json.dump({
-                "entities": unique_entities,
-                "relations": unique_relations
+                "schema": {
+                    "entity_types": list(set(entity["type"] for entity in unique_entities)),
+                    "relation_types": list(set(relation["relation"] for relation in unique_relations))
+                },
+                "data": {
+                    "entities": unique_entities,
+                    "relations": unique_relations
+                }
             }, f, indent=2)
         logger.info(f"Graph data saved to {json_output_path}")
     except Exception as e:
@@ -435,6 +467,8 @@ def main():
     parser.add_argument("--chunk-size", type=int, default=MAX_CHUNK_SIZE, help=f"Maximum chunk size for processing large texts (default: {MAX_CHUNK_SIZE})")
     parser.add_argument("--chunk-overlap", type=int, default=CHUNK_OVERLAP, help=f"Overlap between chunks (default: {CHUNK_OVERLAP})")
     parser.add_argument("--use-mock", action="store_true", help="Use MockEntityExtractor instead of LLMEntityExtractor")
+    parser.add_argument("--no-dedup", action="store_true", help="Disable node deduplication")
+    parser.add_argument("--similarity-threshold", type=float, default=0.85, help="Threshold for string similarity in node deduplication (0.0 to 1.0)")
     
     args = parser.parse_args()
     
@@ -467,7 +501,9 @@ def main():
         verbose=args.verbose,
         chunk_size=MAX_CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
-        use_mock=args.use_mock
+        use_mock=args.use_mock,
+        deduplicate_nodes=not args.no_dedup,
+        similarity_threshold=args.similarity_threshold
     )
 
 if __name__ == "__main__":
