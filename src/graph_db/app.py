@@ -306,15 +306,125 @@ def process_input_sources(
     Returns:
         bool: True if processing was successful, False otherwise
     """
+    # Initialize the graph visualizer
+    visualizer = GraphVisualizer()
+    
+    # Step 1: Check if corresponding JSON file exists, if not generate it from input sources
+    json_output_path = output_path.replace('.html', '.json')
+    
+    # Check if the JSON file already exists
+    if os.path.exists(json_output_path):
+        logger.info(f"Found existing JSON file at {json_output_path}, using it for visualization")
+        try:
+            with open(json_output_path, 'r') as f:
+                graph_data = json.load(f)
+                
+            # Extract entities and relations from the existing JSON file
+            unique_entities = graph_data["data"]["entities"]
+            unique_relations = graph_data["data"]["relations"]
+            raw_text = graph_data.get("raw_text", "")
+            
+            logger.info(f"Loaded {len(unique_entities)} entities and {len(unique_relations)} relations from existing JSON file")
+            
+        except Exception as e:
+            logger.error(f"Error loading existing JSON file: {str(e)}")
+            logger.info("Processing input sources to generate new JSON file")
+            # Fall through to process input sources
+            unique_entities, unique_relations, raw_text = process_input_and_get_graph_data(
+                text, files, urls, input_dir, 
+                db_uri, db_username, db_password, 
+                clear_existing, visualization_only, 
+                llm_model, verbose, chunk_size, chunk_overlap, 
+                use_mock, deduplicate_nodes, similarity_threshold, use_embeddings,
+                json_output_path
+            )
+    else:
+        logger.info(f"No existing JSON file found at {json_output_path}, processing input sources")
+        # Process input sources to generate graph data
+        unique_entities, unique_relations, raw_text = process_input_and_get_graph_data(
+            text, files, urls, input_dir, 
+            db_uri, db_username, db_password, 
+            clear_existing, visualization_only, 
+            llm_model, verbose, chunk_size, chunk_overlap, 
+            use_mock, deduplicate_nodes, similarity_threshold, use_embeddings,
+            json_output_path
+        )
+    
+    # Step 2: Generate HTML visualization from the graph data
+    if unique_entities is None or unique_relations is None:
+        logger.error("Failed to generate or load graph data")
+        return False
+    
+    # Create visualization
+    success = visualizer.create_visualization_from_data(
+        entities=unique_entities,
+        relations=unique_relations,
+        output_path=output_path,
+        title=f"Combined Graph",
+        raw_text=raw_text
+    )
+    
+    if success:
+        logger.info(f"Graph visualization saved to {output_path}")
+        return True
+    else:
+        logger.error("Failed to create visualization")
+        return False
+
+
+def process_input_and_get_graph_data(
+    text: Optional[str] = None,
+    files: Optional[List[str]] = None,
+    urls: Optional[List[str]] = None,
+    input_dir: Optional[str] = None,
+    db_uri: str = "bolt://localhost:7687",
+    db_username: str = "neo4j",
+    db_password: str = "password",
+    clear_existing: bool = False,
+    visualization_only: bool = False,
+    llm_model: str = "gpt-4o",
+    verbose: bool = False,
+    chunk_size: int = MAX_CHUNK_SIZE,
+    chunk_overlap: int = CHUNK_OVERLAP,
+    use_mock: bool = False,
+    deduplicate_nodes: bool = False,
+    similarity_threshold: float = 0.85,
+    use_embeddings: bool = True,
+    json_output_path: str = "graph.json"
+) -> Tuple[Optional[List[Dict[str, Any]]], Optional[List[Dict[str, Any]]], str]:
+    """
+    Process input sources and generate graph data.
+    
+    Args:
+        text (Optional[str]): Text to process
+        files (Optional[List[str]]): List of files to process
+        urls (Optional[List[str]]): List of URLs to process
+        input_dir (Optional[str]): Directory containing files to process
+        db_uri (str): Neo4j URI
+        db_username (str): Neo4j username
+        db_password (str): Neo4j password
+        clear_existing (bool): Clear existing data
+        visualization_only (bool): Skip Neo4j connection and only create visualization
+        llm_model (str): LLM model to use
+        verbose (bool): Display detailed information about extracted entities and relations
+        chunk_size (int): Maximum chunk size for processing large texts
+        chunk_overlap (int): Overlap between chunks
+        use_mock (bool): Use MockEntityExtractor instead of LLMEntityExtractor
+        deduplicate_nodes (bool): Whether to deduplicate similar nodes (default: False)
+        similarity_threshold (float): Threshold for string similarity (0.0 to 1.0)
+        use_embeddings (bool): Whether to use LLM embeddings for similarity calculation
+        json_output_path (str): Path to save the JSON output
+        
+    Returns:
+        Tuple[Optional[List[Dict[str, Any]]], Optional[List[Dict[str, Any]]], str]: 
+            Tuple of (entities, relations, raw_text) or (None, None, "") if processing fails
+    """
     # Initialize the input processor
     input_processor = InputProcessor(
         input_dir="input",
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap
     )
-    
-    # Initialize the graph visualizer
-    visualizer = GraphVisualizer()
     
     # Process input sources
     if input_dir:
@@ -326,7 +436,7 @@ def process_input_sources(
     
     if not result["success"]:
         logger.error("Failed to process input sources")
-        return False
+        return None, None, ""
     
     # Initialize the entity extractor
     if use_mock:
@@ -402,7 +512,8 @@ def process_input_sources(
         "data": {
             "entities": unique_entities,
             "relations": unique_relations
-        }
+        },
+        "raw_text": result["merged_text"]
     }
     
     # Apply node deduplication if enabled
@@ -418,7 +529,6 @@ def process_input_sources(
         logger.info(f"After node deduplication: {len(unique_entities)} entities and {len(unique_relations)} relations")
     
     # Save the extracted data to a JSON file
-    json_output_path = output_path.replace('.html', '.json')
     try:
         with open(json_output_path, 'w') as f:
             json.dump({
@@ -429,27 +539,14 @@ def process_input_sources(
                 "data": {
                     "entities": unique_entities,
                     "relations": unique_relations
-                }
+                },
+                "raw_text": result["merged_text"]
             }, f, indent=2)
         logger.info(f"Graph data saved to {json_output_path}")
     except Exception as e:
         logger.error(f"Error saving graph data to JSON: {str(e)}")
     
-    # Create visualization
-    success = visualizer.create_visualization_from_data(
-        entities=unique_entities,
-        relations=unique_relations,
-        output_path=output_path,
-        title=f"Combined Graph",
-        raw_text=result["merged_text"]
-    )
-    
-    if success:
-        logger.info(f"Graph visualization saved to {output_path}")
-        return True
-    else:
-        logger.error("Failed to create visualization")
-        return False
+    return unique_entities, unique_relations, result["merged_text"]
 
 def main():
     """Main entry point for the application."""
