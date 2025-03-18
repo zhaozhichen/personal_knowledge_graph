@@ -12,6 +12,7 @@ import glob
 import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Union
+import uuid
 
 # Add the src directory to the Python path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -34,6 +35,14 @@ from src.graph_db.nlp.mock_entity_extractor import MockEntityExtractor
 
 # Import ConnectionError for exception handling
 from neo4j.exceptions import ServiceUnavailable, AuthError
+
+# Import embedding functions from tools.llm_api
+try:
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+    from tools.llm_api import get_embedding
+except ImportError:
+    print(f"Warning: Could not import embedding functions from tools.llm_api. Edge embeddings will be disabled.", file=sys.stderr)
+    get_embedding = None
 
 # Constants for chunking
 MAX_CHUNK_SIZE = 1000  # Maximum characters per chunk
@@ -371,6 +380,39 @@ def process_input_sources(
         logger.error("Failed to create visualization")
         return False
 
+def get_relation_representation(relation: Dict[str, Any]) -> str:
+    """
+    Create a comprehensive text representation of a relation including entity properties.
+    
+    Args:
+        relation (Dict[str, Any]): The relation dictionary
+        
+    Returns:
+        str: Text representation of the relation
+    """
+    from_entity = relation["from_entity"]
+    to_entity = relation["to_entity"]
+    relation_type = relation["relation"]
+    
+    # Start with basic relation representation
+    representation = f"{from_entity['name']} ({from_entity.get('type', 'UNKNOWN')}) --[{relation_type}]--> {to_entity['name']} ({to_entity.get('type', 'UNKNOWN')})"
+    
+    # Add source entity properties if they exist
+    if "properties" in from_entity and from_entity["properties"]:
+        from_props_str = "; ".join([f"{k}: {v}" for k, v in from_entity["properties"].items()])
+        representation += f"\nSource properties: {from_props_str}"
+    
+    # Add target entity properties if they exist
+    if "properties" in to_entity and to_entity["properties"]:
+        to_props_str = "; ".join([f"{k}: {v}" for k, v in to_entity["properties"].items()])
+        representation += f"\nTarget properties: {to_props_str}"
+    
+    # Add relation properties if they exist
+    if "properties" in relation and relation["properties"]:
+        rel_props_str = "; ".join([f"{k}: {v}" for k, v in relation["properties"].items()])
+        representation += f"\nRelation properties: {rel_props_str}"
+    
+    return representation
 
 def process_input_and_get_graph_data(
     text: Optional[str] = None,
@@ -503,6 +545,46 @@ def process_input_and_get_graph_data(
     
     logger.info(f"After deduplication: {len(unique_entities)} entities and {len(unique_relations)} relations")
     
+    # Apply node deduplication if enabled
+    if deduplicate_nodes:
+        logger.info(f"Applying node deduplication with similarity threshold: {similarity_threshold}")
+        deduplicator = NodeDeduplicator(
+            similarity_threshold=similarity_threshold,
+            use_embeddings=use_embeddings
+        )
+        deduplicated_graph = deduplicator.deduplicate_graph(graph_data)
+        unique_entities = deduplicated_graph["data"]["entities"]
+        unique_relations = deduplicated_graph["data"]["relations"]
+        logger.info(f"After node deduplication: {len(unique_entities)} entities and {len(unique_relations)} relations")
+    
+    # Add embeddings to relations if get_embedding is available
+    if get_embedding is not None:
+        logger.info(f"Generating embeddings for {len(unique_relations)} relations")
+        embedding_cache = {}  # Cache to avoid redundant API calls
+        
+        for relation in unique_relations:
+            # Generate a textual representation of the relation
+            relation_text = get_relation_representation(relation)
+            
+            # Use cache to avoid redundant API calls
+            cache_key = relation_text.lower().strip()
+            if cache_key in embedding_cache:
+                relation["embedding"] = embedding_cache[cache_key]
+            else:
+                # Generate embedding for the relation
+                embedding = get_embedding(relation_text)
+                if embedding:
+                    relation["embedding"] = embedding
+                    embedding_cache[cache_key] = embedding
+                    if verbose:
+                        logger.info(f"Generated embedding for relation: {relation['from_entity']['name']} --[{relation['relation']}]--> {relation['to_entity']['name']}")
+                else:
+                    logger.warning(f"Failed to generate embedding for relation: {relation['from_entity']['name']} --[{relation['relation']}]--> {relation['to_entity']['name']}")
+        
+        logger.info(f"Successfully generated embeddings for relations")
+    else:
+        logger.warning("Embedding generation is disabled because get_embedding function is not available")
+    
     # Create graph data structure
     graph_data = {
         "schema": {
@@ -516,32 +598,10 @@ def process_input_and_get_graph_data(
         "raw_text": result["merged_text"]
     }
     
-    # Apply node deduplication if enabled
-    if deduplicate_nodes:
-        logger.info(f"Applying node deduplication with similarity threshold: {similarity_threshold}")
-        deduplicator = NodeDeduplicator(
-            similarity_threshold=similarity_threshold,
-            use_embeddings=use_embeddings
-        )
-        deduplicated_graph = deduplicator.deduplicate_graph(graph_data)
-        unique_entities = deduplicated_graph["data"]["entities"]
-        unique_relations = deduplicated_graph["data"]["relations"]
-        logger.info(f"After node deduplication: {len(unique_entities)} entities and {len(unique_relations)} relations")
-    
     # Save the extracted data to a JSON file
     try:
         with open(json_output_path, 'w') as f:
-            json.dump({
-                "schema": {
-                    "entity_types": list(set(entity["type"] for entity in unique_entities)),
-                    "relation_types": list(set(relation["relation"] for relation in unique_relations))
-                },
-                "data": {
-                    "entities": unique_entities,
-                    "relations": unique_relations
-                },
-                "raw_text": result["merged_text"]
-            }, f, indent=2)
+            json.dump(graph_data, f, indent=2)
         logger.info(f"Graph data saved to {json_output_path}")
     except Exception as e:
         logger.error(f"Error saving graph data to JSON: {str(e)}")
