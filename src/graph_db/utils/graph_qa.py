@@ -199,13 +199,40 @@ class GraphQA:
         # Sort relations by similarity score (descending)
         relation_id_list.sort(key=lambda rel_id: relation_similarities.get(rel_id, 0.0), reverse=True)
         
+        # Track entities that have been fully described (with properties)
+        described_entities = set()
+        
         # Add relations to context
         for i, rel_id in enumerate(relation_id_list):
             relation = self._get_relation_by_id(rel_id)
-            from src.graph_db.app import get_relation_representation
-            relation_text = get_relation_representation(relation)
+            
+            # Custom relation representation that avoids repeating entity properties
+            from_entity = relation["from_entity"]
+            to_entity = relation["to_entity"]
+            relation_type = relation["relation"]
+            
+            # Start with basic relation representation
+            representation = f"{from_entity['name']} ({from_entity.get('type', 'UNKNOWN')}) --[{relation_type}]--> {to_entity['name']} ({to_entity.get('type', 'UNKNOWN')})"
+            
+            # Add source entity properties if they exist and haven't been described yet
+            if "properties" in from_entity and from_entity["properties"] and from_entity["name"] not in described_entities:
+                from_props_str = "; ".join([f"{k}: {v}" for k, v in from_entity["properties"].items()])
+                representation += f"\nSource properties: {from_props_str}"
+                described_entities.add(from_entity["name"])
+            
+            # Add target entity properties if they exist and haven't been described yet
+            if "properties" in to_entity and to_entity["properties"] and to_entity["name"] not in described_entities:
+                to_props_str = "; ".join([f"{k}: {v}" for k, v in to_entity["properties"].items()])
+                representation += f"\nTarget properties: {to_props_str}"
+                described_entities.add(to_entity["name"])
+            
+            # Add relation properties if they exist
+            if "properties" in relation and relation["properties"]:
+                rel_props_str = "; ".join([f"{k}: {v}" for k, v in relation["properties"].items()])
+                representation += f"\nRelation properties: {rel_props_str}"
+            
             similarity = relation_similarities.get(rel_id, 0.0)
-            context += f"{i+1}. {relation_text} (relevance: {similarity:.2f})\n\n"
+            context += f"{i+1}. {representation} (relevance: {similarity:.2f})\n\n"
         
         # Add raw text to context if provided
         if raw_text:
