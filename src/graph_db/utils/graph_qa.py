@@ -261,6 +261,7 @@ class GraphQA:
         # Step 3: Pick top N relations and extract their entities
         context_relation_ids = set()
         context_entity_set = set()  # Set to track entities in the context
+        visited_entities = set()  # Set to track all entities ever visited
         
         # Add top N most similar relations
         for i, (rel_id, similarity) in enumerate(relation_similarities):
@@ -274,8 +275,12 @@ class GraphQA:
             context_entity_set.add(relation["from_entity"]["name"])
             context_entity_set.add(relation["to_entity"]["name"])
             
+        # Add initial entities to visited set
+        visited_entities.update(context_entity_set)
+            
         logger.info(f"Added {len(context_relation_ids)} initial relations to context")
         logger.info(f"Initial context entity set contains {len(context_entity_set)} entities: {sorted(list(context_entity_set))}")
+        logger.info(f"Initial visited entity set contains {len(visited_entities)} entities: {sorted(list(visited_entities))}")
         
         # Step 4-6: Expand context by adding connected relations
         for d in range(depth):
@@ -345,9 +350,14 @@ class GraphQA:
             
             # The new_entity_set already contains entities from newly added relations
             # To properly implement the requirement, replace the context entity set with 
-            # entities that are in the new set but not in the original set
-            context_entity_set = new_entity_set - original_entity_set
+            # entities that are in the new set but not in the original set and not in visited entities
+            context_entity_set = new_entity_set - original_entity_set - visited_entities
+            
+            # Update visited entities with entities from new_entity_set
+            visited_entities.update(new_entity_set)
+            
             logger.info(f"Updated context entity set contains {len(context_entity_set)} entities (new entities only): {sorted(list(context_entity_set))}")
+            logger.info(f"Visited entity set now contains {len(visited_entities)} entities")
         
         # Step 7: Build context string
         context = self._create_context_from_relations(
