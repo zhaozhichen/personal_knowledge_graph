@@ -296,6 +296,39 @@ class GraphVisualizer:
                     textElement.setAttribute('font-size', val);
                 }});
             }}
+
+            // Function to synchronize model and provider dropdowns
+            function syncModelProvider() {{
+                var modelSelect = document.getElementById('llmModel');
+                var providerSelect = document.getElementById('llmProvider');
+                
+                modelSelect.addEventListener('change', function() {{
+                    var model = modelSelect.value;
+                    if (model === 'gpt-4o') {{
+                        providerSelect.value = 'openai';
+                    }} else if (model === 'deepseek-chat') {{
+                        providerSelect.value = 'deepseek';
+                    }} else if (model === 'claude-3-5-sonnet-20241022') {{
+                        providerSelect.value = 'anthropic';
+                    }}
+                }});
+                
+                providerSelect.addEventListener('change', function() {{
+                    var provider = providerSelect.value;
+                    if (provider === 'openai' && modelSelect.value !== 'gpt-4o') {{
+                        modelSelect.value = 'gpt-4o';
+                    }} else if (provider === 'deepseek' && modelSelect.value !== 'deepseek-chat') {{
+                        modelSelect.value = 'deepseek-chat';
+                    }} else if (provider === 'anthropic' && modelSelect.value !== 'claude-3-5-sonnet-20241022') {{
+                        modelSelect.value = 'claude-3-5-sonnet-20241022';
+                    }}
+                }});
+            }}
+
+            // Initialize dropdown synchronization when the page loads
+            window.addEventListener('load', function() {{
+                syncModelProvider();
+            }});
         </script>
         """
         
@@ -762,6 +795,22 @@ class GraphVisualizer:
                     <input type="checkbox" id="includeRawText">
                     <label for="includeRawText">Include original text in context</label>
                 </div>
+                <div style="margin-top: 10px;">
+                    <label for="llmModel">LLM Model:</label>
+                    <select id="llmModel" style="padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="gpt-4o">OpenAI GPT-4o (Default)</option>
+                        <option value="deepseek-chat">DeepSeek</option>
+                        <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                    </select>
+                </div>
+                <div style="margin-top: 10px;">
+                    <label for="llmProvider">LLM Provider:</label>
+                    <select id="llmProvider" style="padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
+                        <option value="openai">OpenAI (Default)</option>
+                        <option value="deepseek">DeepSeek</option>
+                        <option value="anthropic">Anthropic</option>
+                    </select>
+                </div>
             </div>
             
             <div id="loadingIndicator" style="display: none; margin: 20px 0;">
@@ -856,6 +905,8 @@ class GraphVisualizer:
                 
                 var includeRawText = document.getElementById('includeRawText').checked;
                 var jsonPath = "{json_path}";
+                var llmModel = document.getElementById('llmModel').value;
+                var llmProvider = document.getElementById('llmProvider').value;
                 
                 // Show loading indicator
                 document.getElementById('loadingIndicator').style.display = 'block';
@@ -863,7 +914,7 @@ class GraphVisualizer:
                 document.getElementById('errorContainer').style.display = 'none';
                 
                 // Try to use the API server first
-                fetch('/api/ask', {{
+                fetch('/api/qa', {{
                     method: 'POST',
                     headers: {{
                         'Content-Type': 'application/json',
@@ -871,7 +922,9 @@ class GraphVisualizer:
                     body: JSON.stringify({{
                         question: question,
                         json_path: jsonPath,
-                        include_raw_text: includeRawText
+                        include_raw_text: includeRawText,
+                        llm_model: llmModel,
+                        llm_provider: llmProvider
                     }})
                 }})
                 .then(response => {{
@@ -908,7 +961,9 @@ class GraphVisualizer:
                         '\\n2. Start the API server: python -m src.graph_db.app --api-server' +
                         '\\n3. Open this HTML file in your browser while the server is running' +
                         '\\n\\nAlternatively, you can run the QA functionality directly from the command line:' +
-                        '\\npython -m src.graph_db.app --qa "' + question + '" --qa-json ' + jsonPath + (includeRawText ? ' --qa-include-raw-text' : '');
+                        '\\npython -m src.graph_db.app --qa "' + question + '" --qa-json ' + jsonPath + 
+                        (includeRawText ? ' --qa-include-raw-text' : '') + 
+                        ' --qa-llm-model ' + llmModel + ' --qa-llm-provider ' + llmProvider;
                     
                     document.getElementById('errorText').textContent = fallbackInstructions;
                 }});

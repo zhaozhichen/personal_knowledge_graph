@@ -670,6 +670,10 @@ def main():
                       help='Path to JSON file containing graph data for question answering')
     qa_group.add_argument('--qa-include-raw-text', action='store_true', 
                       help='Include raw text in context for QA')
+    qa_group.add_argument('--qa-llm-model', type=str, default='gpt-4o',
+                      help='LLM model to use for question answering (default: gpt-4o, options: deepseek-chat, claude-3-5-sonnet-20241022)')
+    qa_group.add_argument('--qa-llm-provider', type=str, default='openai',
+                      help='LLM provider to use for question answering (default: openai, options: deepseek, anthropic)')
     
     # Neo4j options
     neo4j_group = parser.add_argument_group('Neo4j Database Options')
@@ -724,7 +728,7 @@ def main():
 
     # Handle Question Answering
     if args.qa:
-        run_graph_qa(args.qa, args.qa_json, args.qa_include_raw_text, args.verbose)
+        run_graph_qa(args.qa, args.qa_json, args.qa_include_raw_text, args.verbose, args.qa_llm_model, args.qa_llm_provider)
         return
     
     # Handle standard graph construction and visualization
@@ -733,7 +737,7 @@ def main():
     else:
         run_graph_construction(args)
 
-def run_graph_qa(question, json_path, include_raw_text=False, verbose=False):
+def run_graph_qa(question, json_path, include_raw_text=False, verbose=False, llm_model=None, llm_provider=None):
     """Run question answering on a graph from a JSON file.
     
     Args:
@@ -741,6 +745,8 @@ def run_graph_qa(question, json_path, include_raw_text=False, verbose=False):
         json_path (str): Path to the JSON file containing the graph data
         include_raw_text (bool): Whether to include raw text in the context
         verbose (bool): Whether to enable verbose output
+        llm_model (str): LLM model to use for question answering
+        llm_provider (str): LLM provider to use for question answering
     """
     if not question:
         logging.error("No question provided for QA mode")
@@ -751,10 +757,14 @@ def run_graph_qa(question, json_path, include_raw_text=False, verbose=False):
         return
     
     try:
-        # Initialize QA module
-        qa = GraphQA(
-            json_file_path=json_path
-        )
+        # Initialize QA module with specified LLM model and provider if provided
+        qa_params = {"json_file_path": json_path}
+        if llm_model:
+            qa_params["llm_model"] = llm_model
+        if llm_provider:
+            qa_params["llm_provider"] = llm_provider
+            
+        qa = GraphQA(**qa_params)
         
         # Run QA
         result = qa.answer_question(
