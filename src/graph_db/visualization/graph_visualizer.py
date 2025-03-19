@@ -759,7 +759,7 @@ class GraphVisualizer:
                     Ask
                 </button>
                 <div style="margin-top: 10px;">
-                    <input type="checkbox" id="includeRawText" checked>
+                    <input type="checkbox" id="includeRawText">
                     <label for="includeRawText">Include original text in context</label>
                 </div>
             </div>
