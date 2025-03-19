@@ -149,7 +149,13 @@ class GraphVisualizer:
                 target_id, 
                 title=title_text, 
                 label=relation_type,
-                arrows="to"
+                arrows="to",
+                color={
+                    "color": "#848484",
+                    "highlight": "#848484",
+                    "hover": "#848484",
+                    "inherit": False
+                }
             )
         
         # Get raw text from graph_data if not provided
@@ -193,7 +199,21 @@ class GraphVisualizer:
                 "color": {
                     "color": "#848484",
                     "highlight": "#848484",
-                    "hover": "#848484"
+                    "hover": "#848484",
+                    "inherit": false
+                },
+                "arrows": {
+                    "to": {
+                        "enabled": true,
+                        "type": "arrow",
+                        "scaleFactor": 1
+                    },
+                    "from": {
+                        "enabled": false
+                    },
+                    "middle": {
+                        "enabled": false
+                    }
                 }
             },
             "physics": {
@@ -483,11 +503,32 @@ class GraphVisualizer:
                                 // Hide label for all edges
                                 edge.options.label = undefined;
                                 
-                                // Make edges less visible
-                                edge.options.color = {
-                                    color: '#e0e0e0',
-                                    highlight: '#e0e0e0'
-                                };
+                                // Make edges less visible but preserve color structure
+                                // Important: maintain the original color structure to avoid changing arrow colors
+                                if (typeof edge.options._originalColor === 'object') {
+                                    // If original color was an object with color properties, maintain structure
+                                    var originalColorObj = edge.options._originalColor;
+                                    edge.options.color = {
+                                        color: '#e0e0e0',
+                                        highlight: originalColorObj.highlight || '#e0e0e0',
+                                        hover: originalColorObj.hover || '#e0e0e0',
+                                        inherit: false,
+                                        opacity: originalColorObj.opacity || 1.0
+                                    };
+                                    
+                                    // Preserve any arrow color settings
+                                    if (originalColorObj.to) edge.options.color.to = originalColorObj.to;
+                                    if (originalColorObj.from) edge.options.color.from = originalColorObj.from;
+                                    if (originalColorObj.middle) edge.options.color.middle = originalColorObj.middle;
+                                } else {
+                                    // Simple color case
+                                    edge.options.color = {
+                                        color: '#e0e0e0',
+                                        highlight: '#e0e0e0',
+                                        hover: '#e0e0e0',
+                                        inherit: false
+                                    };
+                                }
                             }
                         });
                         
@@ -553,6 +594,7 @@ class GraphVisualizer:
                         
                         Object.values(network.body.edges).forEach(function(edge) {
                             if (edge.options && edge.options._originalColor) {
+                                // Ensure we properly restore the original color structure
                                 edge.options.color = edge.options._originalColor;
                                 edge.options.width = edge.options._originalWidth;
                                 edge.options.font = JSON.parse(JSON.stringify(edge.options._originalFont));
@@ -881,7 +923,17 @@ class GraphVisualizer:
                     label=relation["relation"],
                     title=title_text,  # Use plain text title
                     properties=relation.get("properties", {}),
-                    color="#000000"  # Set edge color to black
+                    color={
+                        "color": "#000000",
+                        "highlight": "#000000",
+                        "hover": "#000000",
+                        "inherit": False
+                    },
+                    arrows={
+                        "to": {
+                            "enabled": True
+                        }
+                    }
                 )
             
             # Create a pyvis network
@@ -907,6 +959,19 @@ class GraphVisualizer:
                     "color": {
                         "color": "#000000",
                         "inherit": false
+                    },
+                    "arrows": {
+                        "to": {
+                            "enabled": true,
+                            "type": "arrow",
+                            "scaleFactor": 1
+                        },
+                        "from": {
+                            "enabled": false
+                        },
+                        "middle": {
+                            "enabled": false
+                        }
                     },
                     "smooth": {
                         "type": "continuous",
