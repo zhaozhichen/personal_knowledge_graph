@@ -585,8 +585,163 @@ class GraphVisualizer:
         
         return raw_text_html
     
-    def _add_html_content(self, html_file: str, legend_html: str, raw_text_html: str) -> None:
-        """Add the legend and raw text HTML to the visualization file."""
+    def _generate_qa_html(self, json_path: str) -> str:
+        """Generate HTML for a question answering panel that allows users to ask questions about the graph."""
+        if not json_path:
+            return ""
+            
+        # Ensure we have the relative path to the JSON file from the HTML file
+        json_path = os.path.basename(json_path)
+        
+        qa_html = f"""
+        <div id="qaControlSection" style="position: fixed; bottom: 20px; left: 20px; z-index: 1000;">
+            <button id="toggleQABtn" onclick="toggleQAPanel()" style="padding: 8px 15px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Ask Question</button>
+        </div>
+        <div id="qaPanel" style="position: fixed; bottom: 80px; left: 20px; z-index: 1000; width: 400px; background-color: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); padding: 15px; display: none;">
+            <h3 style="margin-top: 0; margin-bottom: 15px;">Ask about this graph</h3>
+            <div style="margin-bottom: 15px;">
+                <textarea id="questionInput" placeholder="Type your question here..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; resize: vertical; min-height: 80px;"></textarea>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <button id="askQuestionBtn" onclick="askQuestion()" style="padding: 8px 15px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold;">Ask</button>
+                <div>
+                    <label style="margin-right: 10px; cursor: pointer;">
+                        <input type="checkbox" id="includeRawText" style="vertical-align: middle;"> Include source text
+                    </label>
+                </div>
+            </div>
+            <div id="loadingIndicator" style="display: none; text-align: center; margin: 15px 0;">
+                <div style="display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0, 0, 0, 0.1); border-radius: 50%; border-top-color: #2196F3; animation: spin 1s ease-in-out infinite;"></div>
+                <span style="margin-left: 10px; vertical-align: middle;">Processing...</span>
+            </div>
+            <div id="answerContainer" style="margin-top: 15px; display: none;">
+                <h4 style="margin-top: 0; margin-bottom: 10px;">Answer:</h4>
+                <div id="answerText" style="padding: 10px; border: 1px solid #eee; border-radius: 4px; max-height: 300px; overflow-y: auto; white-space: pre-wrap;"></div>
+                <div id="expandButtonContainer" style="margin-top: 5px; text-align: right; display: none;">
+                    <button id="expandButton" onclick="toggleFullContext()" style="padding: 3px 8px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 3px; cursor: pointer; font-size: 12px;">Show full context</button>
+                </div>
+                <div id="contextContainer" style="margin-top: 10px; display: none;">
+                    <h5 style="margin-top: 0; margin-bottom: 5px;">Context used:</h5>
+                    <div id="contextText" style="padding: 10px; border: 1px solid #eee; border-radius: 4px; max-height: 200px; overflow-y: auto; white-space: pre-wrap; font-size: 12px; background-color: #f9f9f9;"></div>
+                </div>
+            </div>
+            <div id="errorContainer" style="margin-top: 15px; display: none; color: #f44336;">
+                <p id="errorText"></p>
+            </div>
+        </div>
+        <style>
+            @keyframes spin {{
+                to {{ transform: rotate(360deg); }}
+            }}
+        </style>
+        <script>
+            function toggleQAPanel() {{
+                var qaPanel = document.getElementById('qaPanel');
+                var btn = document.getElementById('toggleQABtn');
+                
+                if (qaPanel.style.display === 'none') {{
+                    qaPanel.style.display = 'block';
+                    btn.innerText = 'Hide Panel';
+                }} else {{
+                    qaPanel.style.display = 'none';
+                    btn.innerText = 'Ask Question';
+                }}
+            }}
+            
+            function askQuestion() {{
+                var question = document.getElementById('questionInput').value.trim();
+                if (!question) {{
+                    alert("Please enter a question.");
+                    return;
+                }}
+                
+                var includeRawText = document.getElementById('includeRawText').checked;
+                var jsonPath = "{json_path}";
+                
+                // Show loading indicator
+                document.getElementById('loadingIndicator').style.display = 'block';
+                document.getElementById('answerContainer').style.display = 'none';
+                document.getElementById('errorContainer').style.display = 'none';
+                
+                // Try to use the API server first
+                fetch('/api/ask', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json',
+                    }},
+                    body: JSON.stringify({{
+                        question: question,
+                        json_path: jsonPath,
+                        include_raw_text: includeRawText
+                    }})
+                }})
+                .then(response => {{
+                    if (!response.ok) {{
+                        throw new Error('Network response was not ok');
+                    }}
+                    return response.json();
+                }})
+                .then(data => {{
+                    // Hide loading indicator
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    
+                    // Show answer
+                    document.getElementById('answerContainer').style.display = 'block';
+                    document.getElementById('answerText').textContent = data.answer;
+                    
+                    // Show context if available
+                    if (data.context) {{
+                        document.getElementById('expandButtonContainer').style.display = 'block';
+                        document.getElementById('contextText').textContent = data.context;
+                    }} else {{
+                        document.getElementById('expandButtonContainer').style.display = 'none';
+                    }}
+                }})
+                .catch(error => {{
+                    // If the API server fails, show a message with instructions for running the app with --qa
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    document.getElementById('errorContainer').style.display = 'block';
+                    
+                    // Provide detailed instructions for the fallback mechanism
+                    var fallbackInstructions = 'Error: ' + error.message + 
+                        '\\n\\nTo get answers directly in this visualization, please:' +
+                        '\\n1. Close this HTML file if it is open in your browser' +
+                        '\\n2. Start the API server: python -m src.graph_db.app --api-server' +
+                        '\\n3. Open this HTML file in your browser while the server is running' +
+                        '\\n\\nAlternatively, you can run the QA functionality directly from the command line:' +
+                        '\\npython -m src.graph_db.app --qa "' + question + '" --qa-json ' + jsonPath + (includeRawText ? ' --qa-include-raw-text' : '');
+                    
+                    document.getElementById('errorText').textContent = fallbackInstructions;
+                }});
+            }}
+            
+            function toggleFullContext() {{
+                var contextContainer = document.getElementById('contextContainer');
+                var expandButton = document.getElementById('expandButton');
+                
+                if (contextContainer.style.display === 'none') {{
+                    contextContainer.style.display = 'block';
+                    expandButton.textContent = 'Hide context';
+                }} else {{
+                    contextContainer.style.display = 'none';
+                    expandButton.textContent = 'Show full context';
+                }}
+            }}
+            
+            // Handle Enter key in textarea
+            document.getElementById('questionInput').addEventListener('keypress', function(e) {{
+                if (e.key === 'Enter' && !e.shiftKey) {{
+                    e.preventDefault();
+                    askQuestion();
+                }}
+            }});
+        </script>
+        """
+        
+        return qa_html
+    
+    def _add_html_content(self, html_file: str, legend_html: str, raw_text_html: str, qa_html: str = "") -> None:
+        """Add the legend, raw text HTML, and QA panel to the visualization file."""
         with open(html_file, 'r', encoding='utf-8') as f:
             content = f.read()
             
@@ -731,6 +886,10 @@ class GraphVisualizer:
             else:
                 content = content.replace('</body>', f'{raw_text_html}</body>')
         
+        # Insert the QA panel before the closing body tag
+        if qa_html:
+            content = content.replace('</body>', f'{qa_html}</body>')
+        
         # Add the tooltip implementation right before the closing body tag
         content = content.replace('</body>', f'{tooltip_js}</body>')
             
@@ -867,8 +1026,12 @@ class GraphVisualizer:
             legend_html = self._generate_legend_html(used_entity_types)
             raw_text_html = self._generate_raw_text_html(raw_text)
             
-            # Add the legend and raw text to the HTML file
-            self._add_html_content(output_path, legend_html, raw_text_html)
+            # Generate HTML for the QA panel
+            json_path = os.path.splitext(output_path)[0] + '.json'
+            qa_html = self._generate_qa_html(json_path)
+            
+            # Add the legend, raw text, and QA panel to the HTML file
+            self._add_html_content(output_path, legend_html, raw_text_html, qa_html)
             
             # Save the graph data as JSON
             self._save_graph_data_as_json(entities, relations, output_path, raw_text)

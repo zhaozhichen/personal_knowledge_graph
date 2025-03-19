@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple, Union
 import uuid
+from dotenv import load_dotenv, find_dotenv
 
 # Add the src directory to the Python path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
@@ -48,6 +49,9 @@ except ImportError:
 # Constants for chunking
 MAX_CHUNK_SIZE = 1000  # Maximum characters per chunk
 CHUNK_OVERLAP = 50   # Overlap between chunks to maintain context
+
+# Add import for the API server
+from src.graph_db.api_server import start_api_server
 
 def process_text(text: str, 
                 db_uri: str = "bolt://localhost:7687",
@@ -639,163 +643,251 @@ def process_input_and_get_graph_data(
     return unique_entities, unique_relations, result["merged_text"]
 
 def main():
-    """Main entry point for the application."""
-    # Define global variables
-    global MAX_CHUNK_SIZE, CHUNK_OVERLAP
+    parser = argparse.ArgumentParser(description='Graph Construction and Visualization CLI')
     
-    parser = argparse.ArgumentParser(description="Graph Database Application")
+    # Input sources
+    input_group = parser.add_argument_group('Input Sources')
+    input_group.add_argument('--text', type=str, help='Input text to process')
+    input_group.add_argument('--file', type=str, help='Input file path to process')
+    input_group.add_argument('--url', type=str, help='URL to scrape and process')
     
-    # Input source arguments
-    parser.add_argument("--text", help="Text to process")
-    parser.add_argument("--file", action="append", help="File to process (can be specified multiple times, e.g., --file file1.txt --file file2.txt)")
-    parser.add_argument("--url", action="append", help="URL to process (can be specified multiple times, e.g., --url url1 --url url2)")
-    parser.add_argument("--input-dir", help="Directory containing files to process")
+    # Output options
+    output_group = parser.add_argument_group('Output Options')
+    output_group.add_argument('--output', type=str, default='output.html', 
+                         help='Output path for visualization (default: output.html)')
+    output_group.add_argument('--json-output', type=str, 
+                         help='Output path for graph data in JSON format')
+    output_group.add_argument('--visualization-only', action='store_true', 
+                         help='Skip graph construction and only visualize from existing JSON data')
+    output_group.add_argument('--verbose', action='store_true', 
+                         help='Enable verbose output')
     
-    # Output arguments
-    parser.add_argument("--output", default="graph.html", help="Output file path")
-    
-    # Neo4j connection arguments
-    parser.add_argument("--db-uri", default="bolt://localhost:7687", help="Neo4j URI")
-    parser.add_argument("--db-user", default="neo4j", help="Neo4j username")
-    parser.add_argument("--db-pass", default="password", help="Neo4j password")
-    parser.add_argument("--clear", action="store_true", help="Clear existing data")
-    
-    # Processing arguments
-    parser.add_argument("--llm-model", default="gpt-4o", help="LLM model to use")
-    parser.add_argument("--visualization-only", action="store_true", help="Skip Neo4j connection and only create visualization")
-    parser.add_argument("--verbose", action="store_true", help="Display detailed information about extracted entities and relations")
-    parser.add_argument("--chunk-size", type=int, default=MAX_CHUNK_SIZE, help=f"Maximum chunk size for processing large texts (default: {MAX_CHUNK_SIZE})")
-    parser.add_argument("--chunk-overlap", type=int, default=CHUNK_OVERLAP, help=f"Overlap between chunks (default: {CHUNK_OVERLAP})")
-    parser.add_argument("--use-mock", action="store_true", help="Use MockEntityExtractor instead of LLMEntityExtractor")
-    parser.add_argument("--dedup", action="store_true", help="Enable node deduplication")
-    parser.add_argument("--similarity-threshold", type=float, default=0.85, help="Threshold for string similarity in node deduplication (0.0 to 1.0)")
-    parser.add_argument("--use-embeddings", action="store_true", help="Use LLM embeddings for similarity calculation in node deduplication")
-    
-    # QA-specific arguments
+    # Question answering options
     qa_group = parser.add_argument_group('Question Answering')
-    qa_group.add_argument("--qa", help="Enable question answering mode and specify the question")
-    qa_group.add_argument("--qa-json", help="JSON file to use for question answering (defaults to the JSON version of the output file)")
-    qa_group.add_argument("--qa-top-n", type=int, default=10, help="Number of top relations to include in each expansion iteration")
-    qa_group.add_argument("--qa-depth", type=int, default=3, help="Number of relation expansion iterations")
-    qa_group.add_argument("--qa-include-raw-text", action="store_true", help="Include raw text in QA context")
-    qa_group.add_argument("--qa-model", help="LLM model to use for question answering (defaults to --llm-model)")
-    qa_group.add_argument("--qa-provider", default="openai", help="LLM provider to use for question answering")
+    qa_group.add_argument('--qa', type=str, 
+                      help='Question to answer based on the constructed graph')
+    qa_group.add_argument('--qa-json', type=str, 
+                      help='Path to JSON file containing graph data for question answering')
+    qa_group.add_argument('--qa-include-raw-text', action='store_true', 
+                      help='Include raw text in context for QA')
+    
+    # Neo4j options
+    neo4j_group = parser.add_argument_group('Neo4j Database Options')
+    neo4j_group.add_argument('--neo4j-uri', type=str, default='bolt://localhost:7687', 
+                         help='URI for Neo4j connection')
+    neo4j_group.add_argument('--neo4j-user', type=str, default='neo4j', 
+                         help='Username for Neo4j connection')
+    neo4j_group.add_argument('--neo4j-password', type=str, default='password', 
+                         help='Password for Neo4j connection')
+    
+    # API server options
+    api_group = parser.add_argument_group('API Server Options')
+    api_group.add_argument('--api-server', action='store_true', 
+                       help='Start API server for question answering')
+    api_group.add_argument('--api-host', type=str, default='localhost', 
+                       help='Host for API server (default: localhost)')
+    api_group.add_argument('--api-port', type=int, default=8000, 
+                       help='Port for API server (default: 8000)')
+    api_group.add_argument('--with-visualization', action='store_true',
+                       help='Generate visualization in addition to starting API server')
     
     args = parser.parse_args()
     
-    # Update chunk size and overlap if specified
-    if args.chunk_size:
-        MAX_CHUNK_SIZE = args.chunk_size
-    if args.chunk_overlap:
-        CHUNK_OVERLAP = args.chunk_overlap
+    # Initialize logger
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
     
-    # If in QA mode, perform question answering
-    if args.qa:
-        return run_graph_qa(args)
-    
-    # Otherwise, perform graph construction
-    return run_graph_construction(args)
+    # Handle API server
+    if args.api_server:
+        logging.info(f"Starting API server on {args.api_host}:{args.api_port}")
+        if args.with_visualization and (args.file or args.text or args.url or args.visualization_only):
+            # Run both API server and visualization
+            logging.info("Generating visualization before starting API server")
+            
+            # Process the visualization first
+            if args.visualization_only:
+                run_visualization_only(args)
+            else:
+                run_graph_construction(args)
+            
+            # Then start the API server
+            start_api_server(args.api_host, args.api_port)
+        else:
+            # Just run the API server
+            start_api_server(args.api_host, args.api_port)
+        return
 
-def run_graph_qa(args):
-    """
-    Run the graph-based question answering functionality.
+    # Handle Question Answering
+    if args.qa:
+        run_graph_qa(args.qa, args.qa_json, args.qa_include_raw_text, args.verbose)
+        return
+    
+    # Handle standard graph construction and visualization
+    if args.visualization_only:
+        run_visualization_only(args)
+    else:
+        run_graph_construction(args)
+
+def run_graph_qa(question, json_path, include_raw_text=False, verbose=False):
+    """Run question answering on a graph from a JSON file.
     
     Args:
-        args: Command line arguments
-        
-    Returns:
-        bool: True if successful, False otherwise
+        question (str): The question to answer
+        json_path (str): Path to the JSON file containing the graph data
+        include_raw_text (bool): Whether to include raw text in the context
+        verbose (bool): Whether to enable verbose output
     """
-    # Determine which JSON file to use
-    json_file_path = args.qa_json
-    if not json_file_path:
-        # Default to the JSON version of the output file
-        json_file_path = args.output.replace('.html', '.json')
-        
-    if not os.path.exists(json_file_path):
-        logger.error(f"JSON file not found: {json_file_path}")
-        print(f"Error: JSON file not found: {json_file_path}")
-        print("You must first generate a graph before using the QA functionality.")
-        return False
-        
+    if not question:
+        logging.error("No question provided for QA mode")
+        return
+    
+    if not json_path:
+        logging.error("No JSON file provided for QA mode")
+        return
+    
     try:
         # Initialize QA module
-        qa_model = args.qa_model if args.qa_model else args.llm_model
         qa = GraphQA(
-            json_file_path=json_file_path,
-            llm_model=qa_model,
-            llm_provider=args.qa_provider
+            json_file_path=json_path,
+            verbose=verbose
         )
         
-        # Get answer
+        # Run QA
         result = qa.answer_question(
-            question=args.qa,
-            top_n=args.qa_top_n,
-            depth=args.qa_depth,
-            include_raw_text=args.qa_include_raw_text
+            question=question,
+            include_raw_text=include_raw_text
         )
         
-        # Log the full prompt sent to the LLM
-        logger.info("=="*40)
-        logger.info("FULL PROMPT SENT TO LLM:")
-        logger.info(result['metadata'].get('full_prompt', 'Prompt not available'))
-        logger.info("=="*40)
+        # Print result
+        print("\nQuestion:", question)
+        print("\nAnswer:", result["answer"])
+        print(f"\n{len(result['relations'])} relations used to generate this answer.")
         
-        # Print answer
-        print("\n" + "="*80)
-        print(f"Question: {result['question']}")
-        print("="*80)
-        print(f"Answer: {result['answer']}")
-        print("="*80)
-        print(f"Used {result['metadata']['relations_used']} relations to generate the answer")
+        if verbose and "relations" in result:
+            print("\nTop relations used:")
+            for rel in result["relations"][:10]:  # Print top 10 relations
+                print(f"- {rel['source_entity']} --[{rel['relation_type']}]--> {rel['target_entity']} (Score: {rel['relevance_score']:.4f})")
         
-        if args.verbose:
-            print("\nContext used:")
-            print(result['metadata']['context'])
-            
-        return True
+        return result
+    
     except Exception as e:
-        logger.error(f"Error in QA mode: {str(e)}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        print(f"Error: {str(e)}")
-        return False
+        logging.error(f"Error in QA mode: {e}")
+        if verbose:
+            logging.exception("Detailed error:")
+        return None
 
-def run_graph_construction(args):
-    """
-    Run the graph construction and visualization functionality.
+def run_visualization_only(args):
+    """Run visualization from existing JSON data without constructing a new graph.
     
     Args:
         args: Command line arguments
-        
-    Returns:
-        bool: True if successful, False otherwise
     """
-    if not args.text and not args.file and not args.url and not args.input_dir:
-        print_help_and_examples()
-        return False
+    if not args.json_output and not hasattr(args, 'visualization_only'):
+        logging.error("No JSON file specified for visualization-only mode")
+        return
     
-    # Process all input sources using the unified function
-    return process_input_sources(
-        text=args.text,
-        files=args.file,
-        urls=args.url,
-        input_dir=args.input_dir,
-        output_path=args.output,
-        db_uri=args.db_uri,
-        db_username=args.db_user,
-        db_password=args.db_pass,
-        clear_existing=args.clear,
-        visualization_only=args.visualization_only,
-        llm_model=args.llm_model,
-        verbose=args.verbose,
-        chunk_size=MAX_CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        use_mock=args.use_mock,
-        deduplicate_nodes=args.dedup,
-        similarity_threshold=args.similarity_threshold,
-        use_embeddings=args.use_embeddings,
-    )
+    json_path = args.json_output
+    output_path = args.output
+    
+    try:
+        # Load graph data from JSON
+        with open(json_path, 'r', encoding='utf-8') as f:
+            graph_data = json.load(f)
+        
+        # Check if raw_text is empty and try to load from original file if needed
+        if 'raw_text' in graph_data and not graph_data['raw_text'] and args.file:
+            try:
+                with open(args.file, 'r', encoding='utf-8') as f:
+                    graph_data['raw_text'] = f.read()
+                logging.info(f"Loaded raw text from {args.file}")
+            except Exception as e:
+                logging.warning(f"Could not load raw text from {args.file}: {e}")
+        
+        # Create visualization
+        visualizer = GraphVisualizer()
+        html_path = visualizer.visualize(
+            graph_data=graph_data,
+            output_path=output_path,
+            title="Knowledge Graph Visualization",
+            json_path=json_path  # Pass JSON path for QA functionality
+        )
+        
+        logging.info(f"Graph visualization created at {html_path}")
+        return html_path
+    
+    except Exception as e:
+        logging.error(f"Error in visualization-only mode: {e}")
+        if args.verbose:
+            logging.exception("Detailed error:")
+        return None
+
+def run_graph_construction(args):
+    """Run graph construction and visualization.
+    
+    Args:
+        args: Command line arguments
+    """
+    # Validate input args
+    if not args.text and not args.file and not args.url:
+        logging.error("No input source provided (--text, --file, or --url)")
+        return
+    
+    try:
+        # Process input
+        input_processor = InputProcessor()
+        
+        if args.text:
+            input_data = args.text
+            raw_text = args.text
+        elif args.file:
+            with open(args.file, 'r', encoding='utf-8') as f:
+                input_data = f.read()
+                raw_text = input_data
+        elif args.url:
+            input_data = input_processor.process_url(args.url)
+            raw_text = input_data
+        else:
+            logging.error("No valid input source provided")
+            return
+        
+        # Build graph
+        builder = GraphBuilder(
+            input_text=input_data,
+            raw_text=raw_text,
+            neo4j_uri=args.neo4j_uri,
+            neo4j_user=args.neo4j_user,
+            neo4j_password=args.neo4j_password,
+            verbose=args.verbose
+        )
+        
+        # Extract entities and relations
+        graph_data = builder.build_graph()
+        
+        # Save graph data to JSON if specified
+        if args.json_output:
+            with open(args.json_output, 'w', encoding='utf-8') as f:
+                json.dump(graph_data, f, indent=2)
+            logging.info(f"Graph data saved to {args.json_output}")
+        
+        # Create visualization
+        visualizer = GraphVisualizer()
+        html_path = visualizer.visualize(
+            graph_data=graph_data,
+            output_path=args.output,
+            title="Knowledge Graph Visualization",
+            json_path=args.json_output if args.json_output else None  # Pass JSON path for QA functionality
+        )
+        
+        logging.info(f"Graph visualization created at {html_path}")
+        return html_path
+    
+    except Exception as e:
+        logging.error(f"Error in graph construction: {e}")
+        if args.verbose:
+            logging.exception("Detailed error:")
+        return None
 
 def print_help_and_examples():
     """Print help text and examples for the application."""
@@ -810,6 +902,41 @@ def print_help_and_examples():
     print("    python -m src.graph_db.app --input-dir input --output graph.html --visualization-only")
     print("\n  Ask a question using an existing graph:")
     print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --output graph.html")
+    print("\n  Start the API server for handling QA requests in the visualization:")
+    print("    python -m src.graph_db.app --api-server --api-port 5000")
+    print("\n  Start API server and generate visualization at the same time:")
+    print("    python -m src.graph_db.app --file input/text.md --output output.html --api-server --with-visualization")
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    # Load environment variables
+    logging.info("Loading environment variables from .env and .env.example files")
+    load_dotenv(find_dotenv())
+    load_dotenv(find_dotenv('.env.example'))
+    
+    # Example usage for --help
+    if len(sys.argv) == 1:
+        print("""
+Graph Construction and Visualization CLI
+
+Examples:
+  # Process text from file and visualize
+  python -m src.graph_db.app --file input/text.md --output output.html
+  
+  # Process URL content and visualize
+  python -m src.graph_db.app --url https://example.com --output output.html
+  
+  # Only visualize existing JSON data
+  python -m src.graph_db.app --visualization-only --json-output graph_data.json --output vis.html
+  
+  # Question answering based on graph
+  python -m src.graph_db.app --qa "Who is Frodo?" --qa-json example/lotr_graph.json
+  
+  # Start API server for question answering
+  python -m src.graph_db.app --api-server --api-host localhost --api-port 8000
+  
+  # Start API server and generate visualization at the same time
+  python -m src.graph_db.app --file input/text.md --output output.html --api-server --with-visualization
+        """)
+        sys.exit(0)
+    
     main() 

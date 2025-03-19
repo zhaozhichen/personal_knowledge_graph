@@ -12,78 +12,105 @@ A tool for automatically extracting entities and relationships from text to buil
 
 ## Installation
 
-### Prerequisites
+### Basic Requirements
 
-- Python 3.9+
-- Neo4j (optional, for database storage)
-
-### Setup
-
-1. Clone the repository:
+1. Clone this repository
+2. Install the required Python packages:
    ```
-   git clone https://github.com/yourusername/personal_knowledge_graph.git
-   cd personal_knowledge_graph
-   ```
-
-2. Create a virtual environment and install dependencies:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -r requirements.txt
    ```
 
-3. Set up environment variables (optional, for Neo4j):
+### Neo4j Database (Optional)
+
+For full functionality including persistent graph storage:
+
+1. Install [Neo4j Desktop](https://neo4j.com/download/) or use a Neo4j cloud instance
+2. Create a new database or use an existing one
+3. Update connection details in your environment or command arguments
+
+### API Server Requirements (Optional)
+
+For interactive question answering in the HTML visualization:
+
+1. Install the additional API server requirements:
    ```
-   export NEO4J_URI="bolt://localhost:7687"
-   export NEO4J_USER="neo4j"
-   export NEO4J_PASSWORD="password"
+   pip install -r requirements-api.txt
    ```
 
-   Alternatively, create a `.env` file in the project root with these variables.
+## Environment Setup
+
+Create a `.env` file in the project root with:
+
+```
+OPENAI_API_KEY=your_openai_api_key
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USER=neo4j
+NEO4J_PASSWORD=your_password
+```
 
 ## Usage
 
-### Process Text
+### Basic Graph Generation
 
-```bash
-python -m src.graph_db.app --text "Your text here" --output graph.html
+Process text from a file:
+```
+python -m src.graph_db.app --file input/sample.txt --output graph.html
 ```
 
-### Process File
-
-```bash
-python -m src.graph_db.app --file path/to/file.txt --output graph.html
+Process text from a URL:
+```
+python -m src.graph_db.app --url https://example.com/article --output graph.html
 ```
 
-### Process URL
+### Visualization Only
 
-```bash
-python -m src.graph_db.app --url "https://example.com" --output graph.html
+Visualize an existing JSON graph without rebuilding:
+```
+python -m src.graph_db.app --visualization-only --json-output graph_data.json --output graph.html
 ```
 
-### Visualization Only (No Neo4j)
+### Question Answering
 
-Add the `--visualization-only` flag to skip Neo4j database operations:
-
-```bash
-python -m src.graph_db.app --text "Your text here" --visualization-only --output graph.html
+Ask questions about a constructed graph:
+```
+python -m src.graph_db.app --qa "Who is Frodo Baggins?" --qa-json example/lotr_graph.json
 ```
 
-### Mock Mode (For UI Debugging)
-
-Use the `--use-mock` flag to generate mock data for UI debugging without making LLM API calls:
-
-```bash
-python -m src.graph_db.app --text "Newton, Einstein, and Descartes" --use-mock --visualization-only --output graph.html
+Include raw text in context for better answers:
+```
+python -m src.graph_db.app --qa "What happened at Mount Doom?" --qa-json example/lotr_graph.json --qa-include-raw-text
 ```
 
-### Verbose Mode
+### API Server
 
-Add the `--verbose` flag to see detailed logging information:
-
-```bash
-python -m src.graph_db.app --file path/to/file.txt --verbose --output graph.html
+Start the API server for interactive QA in the visualization:
 ```
+python -m src.graph_db.app --api-server --api-host localhost --api-port 8000
+```
+
+Generate visualization and start API server:
+```
+python -m src.graph_db.app --file input/sample.txt --output graph.html --api-server --with-visualization
+```
+
+### Neo4j Integration
+
+To use Neo4j for graph storage:
+```
+python -m src.graph_db.app --file input/sample.txt --output graph.html --neo4j-uri bolt://localhost:7687 --neo4j-user neo4j --neo4j-password password
+```
+
+## Visualization Features
+
+The HTML visualization provides:
+
+- Interactive graph with draggable nodes
+- Color coding for different entity types
+- Hover information for nodes and edges
+- Zooming and panning capabilities
+- Legend showing entity types
+- "Show Text" button to view the original source text
+- Question Answering panel for asking questions about the graph
 
 ## Examples
 
