@@ -275,7 +275,7 @@ class GraphQA:
             context_entity_set.add(relation["to_entity"]["name"])
             
         logger.info(f"Added {len(context_relation_ids)} initial relations to context")
-        logger.info(f"Initial context entity set contains {len(context_entity_set)} entities")
+        logger.info(f"Initial context entity set contains {len(context_entity_set)} entities: {sorted(list(context_entity_set))}")
         
         # Step 4-6: Expand context by adding connected relations
         for d in range(depth):
@@ -340,11 +340,14 @@ class GraphQA:
             # Store the original entity set for calculating the difference
             original_entity_set = context_entity_set.copy()
             
+            # Log the entities in the new entity set
+            logger.info(f"New entity set contains {len(new_entity_set)} entities: {sorted(list(new_entity_set))}")
+            
             # The new_entity_set already contains entities from newly added relations
             # To properly implement the requirement, replace the context entity set with 
             # entities that are in the new set but not in the original set
             context_entity_set = new_entity_set - original_entity_set
-            logger.info(f"Updated context entity set contains {len(context_entity_set)} entities (new entities only)")
+            logger.info(f"Updated context entity set contains {len(context_entity_set)} entities (new entities only): {sorted(list(context_entity_set))}")
         
         # Step 7: Build context string
         context = self._create_context_from_relations(
