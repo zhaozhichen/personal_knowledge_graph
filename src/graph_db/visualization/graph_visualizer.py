@@ -107,7 +107,8 @@ class GraphVisualizer:
                 color=color,
                 shape="dot",
                 size=8,
-                entity_type=entity_type
+                entity_type=entity_type,
+                font={'color': color}  # Add font color to match node color
             )
         
         # Add edges with attributes
@@ -156,7 +157,8 @@ class GraphVisualizer:
             "nodes": {
                 "font": {
                     "size": 14,
-                    "face": "arial"
+                    "face": "arial",
+                    "color": "inherit"
                 },
                 "borderWidth": 2,
                 "borderWidthSelected": 4
