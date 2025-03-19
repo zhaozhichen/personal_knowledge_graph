@@ -189,7 +189,7 @@ class GraphVisualizer:
             self._add_html_content(output_path, legend_html, raw_text_html)
             
             # Save the graph data as JSON
-            self._save_graph_data_as_json(graph_data["entities"], graph_data["relations"], output_path)
+            self._save_graph_data_as_json(graph_data["entities"], graph_data["relations"], output_path, raw_text)
             
             self.logger.info(f"Graph visualization saved to {output_path}")
             return True
@@ -871,7 +871,7 @@ class GraphVisualizer:
             self._add_html_content(output_path, legend_html, raw_text_html)
             
             # Save the graph data as JSON
-            self._save_graph_data_as_json(entities, relations, output_path)
+            self._save_graph_data_as_json(entities, relations, output_path, raw_text)
             
             self.logger.info(f"Graph visualization saved to {output_path}")
             return True
@@ -880,7 +880,7 @@ class GraphVisualizer:
             self.logger.error(f"Error creating visualization: {str(e)}")
             return False
             
-    def _save_graph_data_as_json(self, entities: List[Dict[str, Any]], relations: List[Dict[str, Any]], html_path: str) -> None:
+    def _save_graph_data_as_json(self, entities: List[Dict[str, Any]], relations: List[Dict[str, Any]], html_path: str, raw_text: str = "") -> None:
         """
         Save the graph data (entities and relations) as a JSON file.
         
@@ -888,6 +888,7 @@ class GraphVisualizer:
             entities (List[Dict[str, Any]]): List of entities
             relations (List[Dict[str, Any]]): List of relations
             html_path (str): Path to the HTML visualization file
+            raw_text (str): Raw text used to generate the graph
         """
         try:
             # Create the JSON path by replacing the extension
@@ -908,7 +909,8 @@ class GraphVisualizer:
                 "data": {
                     "entities": entities,
                     "relations": relations
-                }
+                },
+                "raw_text": raw_text
             }
             
             # Save the data

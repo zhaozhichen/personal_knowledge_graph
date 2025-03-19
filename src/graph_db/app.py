@@ -335,6 +335,10 @@ def process_input_sources(
             raw_text = graph_data.get("raw_text", "")
             
             logger.info(f"Loaded {len(unique_entities)} entities and {len(unique_relations)} relations from existing JSON file")
+            if raw_text:
+                logger.info(f"Source text found in JSON file ({len(raw_text)} characters)")
+            else:
+                logger.info("No source text found in JSON file")
             
         except Exception as e:
             logger.error(f"Error loading existing JSON file: {str(e)}")
@@ -492,16 +496,14 @@ def process_input_and_get_graph_data(
     if not visualization_only:
         try:
             graph_builder = GraphBuilder(
-                uri=db_uri,
-                username=db_username,
-                password=db_password,
-                entity_extractor=entity_extractor
+                db_uri=db_uri,
+                db_username=db_username,
+                db_password=db_password,
+                llm_model=llm_model
             )
             
-            # Clear existing data if requested
-            if clear_existing:
-                graph_builder.clear_database()
-                
+            # Note: We'll use clear_existing parameter when calling build_graph_from_text
+            
         except (ServiceUnavailable, AuthError) as e:
             logger.error(f"Failed to connect to Neo4j: {str(e)}")
             logger.info("Falling back to visualization-only mode")
@@ -524,7 +526,9 @@ def process_input_and_get_graph_data(
             all_relations.extend(relations)
         else:
             # Process the chunk with Neo4j
-            entities, relations = graph_builder.process_text(chunk)
+            # Pass the clear_existing flag only for the first chunk
+            should_clear = clear_existing and i == 0
+            entities, relations = graph_builder.build_graph_from_text(chunk, clear_existing=should_clear)
             all_entities.extend(entities)
             all_relations.extend(relations)
     
