@@ -231,7 +231,7 @@ class GraphQA:
             # Add relation properties if they exist
             if "properties" in relation and relation["properties"]:
                 rel_props_str = "; ".join([f"{k}: {v}" for k, v in relation["properties"].items()])
-                representation += f"\nRelation properties: {rel_props_str}"
+                representation += f"\nRelation [{relation_type}] properties: {rel_props_str}"
             
             similarity = relation_similarities.get(rel_id, 0.0)
             context += f"{i+1}. {representation} (relevance: {similarity:.2f})\n\n"
