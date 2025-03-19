@@ -336,8 +336,15 @@ class GraphQA:
                 
             # Step 5: Update context entity set to be the DIFFERENCE
             # between the new context entity set and original context entity set
-            context_entity_set = new_entity_set - context_entity_set
-            logger.info(f"Updated context entity set contains {len(context_entity_set)} entities")
+            # Collect all entities from the expanded context relation set
+            # Store the original entity set for calculating the difference
+            original_entity_set = context_entity_set.copy()
+            
+            # The new_entity_set already contains entities from newly added relations
+            # To properly implement the requirement, replace the context entity set with 
+            # entities that are in the new set but not in the original set
+            context_entity_set = new_entity_set - original_entity_set
+            logger.info(f"Updated context entity set contains {len(context_entity_set)} entities (new entities only)")
         
         # Step 7: Build context string
         context = self._create_context_from_relations(
