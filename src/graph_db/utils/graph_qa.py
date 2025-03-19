@@ -381,6 +381,11 @@ Please provide a comprehensive answer that directly addresses the question based
 If you don't know the answer or the context doesn't contain relevant information, simply state that you don't know based on the available information.
 """
         
+        # Log the full prompt
+        logger.info("========== FULL LLM PROMPT ==========")
+        logger.info(prompt)
+        logger.info("=====================================")
+        
         logger.info(f"Generating answer using LLM ({self.llm_model})")
         answer = query_llm(prompt, model=self.llm_model, provider=self.llm_provider)
         
