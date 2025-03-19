@@ -706,6 +706,12 @@ def run_graph_qa(args):
             include_raw_text=args.qa_include_raw_text
         )
         
+        # Log the full prompt sent to the LLM
+        logger.info("=="*40)
+        logger.info("FULL PROMPT SENT TO LLM:")
+        logger.info(result['metadata'].get('full_prompt', 'Prompt not available'))
+        logger.info("=="*40)
+        
         # Print answer
         print("\n" + "="*80)
         print(f"Question: {result['question']}")

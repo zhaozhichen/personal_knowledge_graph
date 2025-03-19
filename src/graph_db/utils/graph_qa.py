@@ -342,7 +342,8 @@ If you don't know the answer or the context doesn't contain relevant information
             "metadata": {
                 "relations_used": len(context_relation_ids),
                 "context_size": len(context),
-                "context": context  # Include context for debugging
+                "context": context,  # Include context for debugging
+                "full_prompt": prompt  # Include the full prompt for logging
             }
         }
         
