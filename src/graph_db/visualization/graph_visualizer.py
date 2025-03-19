@@ -820,181 +820,350 @@ class GraphVisualizer:
             
     def _add_html_content(self, html_path: str, legend_html: str, raw_text_html: str, qa_html: str) -> None:
         """
-        Add custom HTML content to the visualization HTML file.
+        Add custom HTML content to the visualization file.
         
         Args:
             html_path (str): Path to the HTML visualization file
-            legend_html (str): HTML content for the legend
-            raw_text_html (str): HTML content for raw text display
-            qa_html (str): HTML content for QA functionality
+            legend_html (str): HTML for the legend
+            raw_text_html (str): HTML for the raw text
+            qa_html (str): HTML for the QA functionality
         """
         try:
-            # Read the generated HTML file
-            with open(html_path, "r", encoding="utf-8") as f:
+            # Read the HTML file
+            with open(html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
-            # Remove duplicate Knowledge Graph Visualization title
-            html_content = html_content.replace("<center>\n<h1>Knowledge Graph Visualization</h1>\n</center>", "")
+            # Create the expandable sections container
+            expandable_sections = f"""
+            <div id="expandableSections" style="position: fixed; bottom: 80px; left: 0; right: 0; z-index: 900;">
+                <div id="textSection" style="background-color: white; border-top: 1px solid #ddd; padding: 20px; display: none; height: 300px; overflow-y: auto;">
+                    <h3>Source Text</h3>
+                    {raw_text_html}
+                </div>
+                <div id="qaSection" style="background-color: white; border-top: 1px solid #ddd; padding: 20px; display: none; height: 300px; overflow-y: auto;">
+                    <h3>Ask Questions About This Knowledge Graph</h3>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="questionInput" placeholder="Ask a question about the entities or relationships..." style="flex-grow: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button id="askButton" style="background-color: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Ask</button>
+                    </div>
+                    <div style="margin-top: 5px; font-size: 0.8em;">
+                        <label for="provider-select">LLM Provider:</label>
+                        <select id="provider-select" style="margin-right: 10px;">
+                            <option value="openai" selected>OpenAI</option>
+                            <option value="anthropic">Anthropic</option>
+                            <option value="deepseek">DeepSeek</option>
+                        </select>
+                        <label for="model-select">Model:</label>
+                        <select id="model-select">
+                            <option value="gpt-4o" selected>GPT-4o</option>
+                            <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
+                            <option value="deepseek-chat">DeepSeek Chat</option>
+                        </select>
+                    </div>
+                    <div id="loadingIndicator" style="display: none; margin-top: 10px; text-align: center;">
+                        <p>Processing your question...</p>
+                    </div>
+                    <div id="answerContainer" style="display: none; margin-top: 10px; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                        <h4>Answer:</h4>
+                        <p id="answerContent" style="white-space: pre-line;"></p>
+                        <div id="expandButtonContainer" style="display: none; margin-top: 10px;">
+                            <button id="expandContextButton" style="background-color: #2196F3; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em;">Show Context</button>
+                            <div id="contextContainer" style="display: none; margin-top: 10px; padding: 10px; background-color: #f5f5f5; border-radius: 4px;">
+                                <h5>Supporting Context:</h5>
+                                <div id="contextContent"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="errorContainer" style="display: none; margin-top: 10px; border: 1px solid #f44336; padding: 10px; border-radius: 4px; background-color: #ffebee;">
+                        <h4>Error:</h4>
+                        <p id="errorContent" style="color: #d32f2f;"></p>
+                    </div>
+                </div>
+            </div>
+            """
             
-            # Create custom HTML for legend section
-            legend_div = '<div style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">'
-            legend_div += '<div style="display: flex; flex-wrap: wrap; gap: 10px;">'
-            legend_div += legend_html
-            legend_div += '</div></div>'
+            # Create the control buttons
+            control_buttons = """
+            <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
+                <button id="toggleTextBtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+                <button id="toggleQABtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Ask Questions</button>
+            </div>
+            """
             
-            # Create script section
-            script = '<script>'
-            script += 'function adjustTextSize(val) {'
-            script += '  document.querySelectorAll(\'.vis-network .vis-node text\').forEach(function(textElement) {'
-            script += '    textElement.setAttribute(\'font-size\', val);'
-            script += '  });'
-            script += '  document.querySelectorAll(\'.vis-network .vis-edge text\').forEach(function(textElement) {'
-            script += '    textElement.setAttribute(\'font-size\', val);'
-            script += '  });'
-            script += '}'
+            # Create JavaScript for the QA functionality
+            json_path_rel = os.path.basename(os.path.splitext(html_path)[0] + '.json')
             
-            script += 'function syncModelProvider() {'
-            script += '  var modelSelect = document.getElementById(\'llmModel\');'
-            script += '  var providerSelect = document.getElementById(\'llmProvider\');'
-            script += '  if (!modelSelect || !providerSelect) return;'
-            script += '  modelSelect.addEventListener(\'change\', function() {'
-            script += '    var model = modelSelect.value;'
-            script += '    if (model === \'gpt-4o\') {'
-            script += '      providerSelect.value = \'openai\';'
-            script += '    } else if (model === \'deepseek-chat\') {'
-            script += '      providerSelect.value = \'deepseek\';'
-            script += '    } else if (model === \'claude-3-5-sonnet-20241022\') {'
-            script += '      providerSelect.value = \'anthropic\';'
-            script += '    }'
-            script += '  });'
+            qa_js = f"""
+            <script>
+                // Store the JSON path for the QA functionality
+                const jsonPath = '{json_path_rel}';
+                console.log('JSON Path:', jsonPath);
+                
+                document.addEventListener('DOMContentLoaded', function() {{
+                    console.log('DOM loaded for QA functionality');
+                    
+                    // Handle button clicks
+                    const textBtn = document.getElementById('toggleTextBtn');
+                    const textSection = document.getElementById('textSection');
+                    const qaBtn = document.getElementById('toggleQABtn');
+                    const qaSection = document.getElementById('qaSection');
+                    const networkContainer = document.getElementById('mynetwork');
+                    
+                    // Ensure sections are initially hidden
+                    if (textSection) {{
+                        textSection.style.display = 'none';
+                        console.log('Initialized textSection to hidden');
+                    }}
+                    
+                    if (qaSection) {{
+                        qaSection.style.display = 'none';
+                        console.log('Initialized qaSection to hidden');
+                    }}
+                    
+                    // Text button click handler
+                    if (textBtn && textSection) {{
+                        textBtn.addEventListener('click', function() {{
+                            console.log('Text button clicked');
+                            // Check if section is visible
+                            const isVisible = textSection.style.display === 'block';
+                            
+                            // Hide QA section if visible
+                            if (qaSection && qaSection.style.display === 'block') {{
+                                qaSection.style.display = 'none';
+                                if (qaBtn) qaBtn.style.backgroundColor = '#2196F3';
+                            }}
+                            
+                            // Toggle text section
+                            textSection.style.display = isVisible ? 'none' : 'block';
+                            textBtn.style.backgroundColor = isVisible ? '#4CAF50' : '#f44336';
+                            
+                            // Adjust network height
+                            adjustNetworkHeight();
+                        }});
+                    }}
+                    
+                    // QA button click handler
+                    if (qaBtn && qaSection) {{
+                        qaBtn.addEventListener('click', function() {{
+                            console.log('QA button clicked');
+                            // Check if section is visible
+                            const isVisible = qaSection.style.display === 'block';
+                            
+                            // Hide text section if visible
+                            if (textSection && textSection.style.display === 'block') {{
+                                textSection.style.display = 'none';
+                                if (textBtn) textBtn.style.backgroundColor = '#4CAF50';
+                            }}
+                            
+                            // Toggle QA section
+                            qaSection.style.display = isVisible ? 'none' : 'block';
+                            qaBtn.style.backgroundColor = isVisible ? '#2196F3' : '#f44336';
+                            
+                            // Adjust network height
+                            adjustNetworkHeight();
+                        }});
+                    }}
+                    
+                    // Handle question submission
+                    const askButton = document.getElementById('askButton');
+                    const questionInput = document.getElementById('questionInput');
+                    const loadingIndicator = document.getElementById('loadingIndicator');
+                    const answerContainer = document.getElementById('answerContainer');
+                    const answerContent = document.getElementById('answerContent');
+                    const errorContainer = document.getElementById('errorContainer');
+                    const errorContent = document.getElementById('errorContent');
+                    const providerSelect = document.getElementById('provider-select');
+                    const modelSelect = document.getElementById('model-select');
+                    
+                    if (askButton && questionInput) {{
+                        askButton.addEventListener('click', function() {{
+                            const question = questionInput.value.trim();
+                            if (!question) {{
+                                alert('Please enter a question');
+                                return;
+                            }}
+                            
+                            // Hide any previous results
+                            if (answerContainer) answerContainer.style.display = 'none';
+                            if (errorContainer) errorContainer.style.display = 'none';
+                            
+                            // Show loading indicator
+                            if (loadingIndicator) loadingIndicator.style.display = 'block';
+                            
+                            // Get selected provider and model
+                            const provider = providerSelect ? providerSelect.value : 'openai';
+                            const model = modelSelect ? modelSelect.value : 'gpt-4o';
+                            
+                            console.log('Submitting question:', question);
+                            console.log('Provider:', provider);
+                            console.log('Model:', model);
+                            console.log('JSON Path:', jsonPath);
+                            
+                            // Get the current window location to determine API endpoint
+                            const currentHost = window.location.hostname || 'localhost';
+                            const apiPort = 8000; // Default API port
+                            const apiUrl = `http://${{currentHost}}:${{apiPort}}/api/qa`;
+                            
+                            console.log('API URL:', apiUrl);
+                            
+                            // Make API request
+                            fetch(apiUrl, {{
+                                method: 'POST',
+                                headers: {{
+                                    'Content-Type': 'application/json'
+                                }},
+                                body: JSON.stringify({{
+                                    question: question,
+                                    llm_provider: provider,
+                                    llm_model: model,
+                                    include_raw_text: true,
+                                    json_path: jsonPath
+                                }})
+                            }})
+                            .then(response => {{
+                                if (!response.ok) {{
+                                    return response.text().then(text => {{
+                                        throw new Error(`HTTP error! Status: ${{response.status}}, Response: ${{text}}`);
+                                    }});
+                                }}
+                                return response.json();
+                            }})
+                            .then(data => {{
+                                console.log('API response:', data);
+                                
+                                // Hide loading indicator
+                                if (loadingIndicator) loadingIndicator.style.display = 'none';
+                                
+                                // Show answer container
+                                if (answerContainer) answerContainer.style.display = 'block';
+                                
+                                // Update answer content
+                                if (answerContent) answerContent.textContent = data.answer;
+                                
+                                // Handle context if available
+                                const expandButtonContainer = document.getElementById('expandButtonContainer');
+                                const expandContextButton = document.getElementById('expandContextButton');
+                                const contextContainer = document.getElementById('contextContainer');
+                                const contextContent = document.getElementById('contextContent');
+                                
+                                if (data.context && contextContent) {{
+                                    // Format the context string as HTML
+                                    contextContent.innerHTML = `<pre>${data.context}</pre>`;
+                                    
+                                    // Show expand button
+                                    if (expandButtonContainer) expandButtonContainer.style.display = 'block';
+                                }}
+                            }})
+                            .catch(error => {{
+                                console.error('Error:', error);
+                                
+                                // Hide loading indicator
+                                if (loadingIndicator) loadingIndicator.style.display = 'none';
+                                
+                                // Show error message
+                                if (errorContent) errorContent.textContent = error.message || 'An error occurred while processing your question.';
+                                
+                                // Show error container
+                                if (errorContainer) errorContainer.style.display = 'block';
+                            }});
+                        }});
+                    }}
+                    
+                    // Handle context expansion
+                    const expandContextButton = document.getElementById('expandContextButton');
+                    const contextContainer = document.getElementById('contextContainer');
+                    
+                    if (expandContextButton && contextContainer) {{
+                        expandContextButton.addEventListener('click', function() {{
+                            const isVisible = contextContainer.style.display === 'block';
+                            contextContainer.style.display = isVisible ? 'none' : 'block';
+                            expandContextButton.textContent = isVisible ? 'Show Context' : 'Hide Context';
+                        }});
+                    }}
+                    
+                    // Initialize network height
+                    adjustNetworkHeight();
+                }});
+                
+                // Function to adjust network height based on visible sections
+                function adjustNetworkHeight() {{
+                    const networkContainer = document.getElementById('mynetwork');
+                    if (!networkContainer) return;
+                    
+                    const textSection = document.getElementById('textSection');
+                    const qaSection = document.getElementById('qaSection');
+                    
+                    const textVisible = textSection && textSection.style.display === 'block';
+                    const qaVisible = qaSection && qaSection.style.display === 'block';
+                    
+                    if (!textVisible && !qaVisible) {{
+                        // Maximize height when no sections are visible
+                        const windowHeight = window.innerHeight;
+                        const networkTop = networkContainer.getBoundingClientRect().top;
+                        const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom
+                        networkContainer.style.height = newHeight + 'px';
+                    }} else {{
+                        // Fixed height when a section is visible
+                        networkContainer.style.height = '600px';
+                    }}
+                    
+                    // Redraw the network
+                    if (typeof network !== 'undefined') {{
+                        network.fit();
+                    }}
+                }}
+                
+                // Add provider-model synchronization
+                const modelSelect = document.getElementById('model-select');
+                const providerSelect = document.getElementById('provider-select');
+                
+                if (modelSelect && providerSelect) {{
+                    modelSelect.addEventListener('change', function() {{
+                        const model = modelSelect.value;
+                        if (model === 'gpt-4o') {{
+                            providerSelect.value = 'openai';
+                        }} else if (model === 'deepseek-chat') {{
+                            providerSelect.value = 'deepseek';
+                        }} else if (model === 'claude-3-5-sonnet-20241022') {{
+                            providerSelect.value = 'anthropic';
+                        }}
+                    }});
+                    
+                    providerSelect.addEventListener('change', function() {{
+                        const provider = providerSelect.value;
+                        if (provider === 'openai' && modelSelect.value !== 'gpt-4o') {{
+                            modelSelect.value = 'gpt-4o';
+                        }} else if (provider === 'deepseek' && modelSelect.value !== 'deepseek-chat') {{
+                            modelSelect.value = 'deepseek-chat';
+                        }} else if (provider === 'anthropic' && modelSelect.value !== 'claude-3-5-sonnet-20241022') {{
+                            modelSelect.value = 'claude-3-5-sonnet-20241022';
+                        }}
+                    }});
+                }}
+            </script>
+            """
             
-            script += '  providerSelect.addEventListener(\'change\', function() {'
-            script += '    var provider = providerSelect.value;'
-            script += '    if (provider === \'openai\' && modelSelect.value !== \'gpt-4o\') {'
-            script += '      modelSelect.value = \'gpt-4o\';'
-            script += '    } else if (provider === \'deepseek\' && modelSelect.value !== \'deepseek-chat\') {'
-            script += '      modelSelect.value = \'deepseek-chat\';'
-            script += '    } else if (provider === \'anthropic\' && modelSelect.value !== \'claude-3-5-sonnet-20241022\') {'
-            script += '      modelSelect.value = \'claude-3-5-sonnet-20241022\';'
-            script += '    }'
-            script += '  });'
-            script += '}'
+            # Combine all the components
+            combined_html = f"""
+            <div style="position: absolute; top: 10px; right: 10px; background-color: white; border: 1px solid #ddd; border-radius: 5px; padding: 10px; max-width: 300px; z-index: 1000;">
+                {legend_html}
+            </div>
+            {expandable_sections}
+            {control_buttons}
+            {qa_js}
+            """
             
-            script += 'window.addEventListener(\'load\', function() {'
-            script += '  syncModelProvider();'
-            script += '});'
-            
-            # Add the missing toggle functions
-            script += '// Functions to toggle sections\n'
-            script += 'function toggleTextSection() {\n'
-            script += '    console.log("Toggling text section");\n'
-            script += '    const textSection = document.getElementById("textSection");\n'
-            script += '    const textBtn = document.getElementById("toggleTextBtn");\n'
-            script += '    const qaSection = document.getElementById("qaSection");\n'
-            script += '    const qaBtn = document.getElementById("toggleQABtn");\n'
-            script += '    \n'
-            script += '    if (!textSection) {\n'
-            script += '        console.error("Text section not found");\n'
-            script += '        return;\n'
-            script += '    }\n'
-            script += '    \n'
-            script += '    // Check if section is visible\n'
-            script += '    const isVisible = textSection.style.display === "block";\n'
-            script += '    \n'
-            script += '    // Hide QA section if visible\n'
-            script += '    if (qaSection && qaSection.style.display === "block") {\n'
-            script += '        qaSection.style.display = "none";\n'
-            script += '        if (qaBtn) qaBtn.style.backgroundColor = "#2196F3";\n'
-            script += '    }\n'
-            script += '    \n'
-            script += '    // Toggle text section\n'
-            script += '    textSection.style.display = isVisible ? "none" : "block";\n'
-            script += '    if (textBtn) {\n'
-            script += '        textBtn.style.backgroundColor = isVisible ? "#4CAF50" : "#f44336";\n'
-            script += '    }\n'
-            script += '    \n'
-            script += '    // Adjust network height\n'
-            script += '    const networkContainer = document.getElementById("mynetwork");\n'
-            script += '    if (networkContainer) {\n'
-            script += '        if (isVisible) {\n'
-            script += '            // Maximize height when section is hidden\n'
-            script += '            const windowHeight = window.innerHeight;\n'
-            script += '            const networkTop = networkContainer.getBoundingClientRect().top;\n'
-            script += '            const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom\n'
-            script += '            networkContainer.style.height = newHeight + "px";\n'
-            script += '        } else {\n'
-            script += '            // Fixed height when a section is visible\n'
-            script += '            networkContainer.style.height = "600px";\n'
-            script += '        }\n'
-            script += '        // Redraw the network\n'
-            script += '        if (typeof network !== "undefined") {\n'
-            script += '            network.fit();\n'
-            script += '        }\n'
-            script += '    }\n'
-            script += '}\n'
-            
-            script += '\n'
-            script += 'function toggleQASection() {\n'
-            script += '    console.log("Toggling QA section");\n'
-            script += '    const qaSection = document.getElementById("qaSection");\n'
-            script += '    const qaBtn = document.getElementById("toggleQABtn");\n'
-            script += '    const textSection = document.getElementById("textSection");\n'
-            script += '    const textBtn = document.getElementById("toggleTextBtn");\n'
-            script += '    \n'
-            script += '    if (!qaSection) {\n'
-            script += '        console.error("QA section not found");\n'
-            script += '        return;\n'
-            script += '    }\n'
-            script += '    \n'
-            script += '    // Check if section is visible\n'
-            script += '    const isVisible = qaSection.style.display === "block";\n'
-            script += '    \n'
-            script += '    // Hide text section if visible\n'
-            script += '    if (textSection && textSection.style.display === "block") {\n'
-            script += '        textSection.style.display = "none";\n'
-            script += '        if (textBtn) textBtn.style.backgroundColor = "#4CAF50";\n'
-            script += '    }\n'
-            script += '    \n'
-            script += '    // Toggle QA section\n'
-            script += '    qaSection.style.display = isVisible ? "none" : "block";\n'
-            script += '    if (qaBtn) {\n'
-            script += '        qaBtn.style.backgroundColor = isVisible ? "#2196F3" : "#f44336";\n'
-            script += '    }\n'
-            script += '    \n'
-            script += '    // Adjust network height\n'
-            script += '    const networkContainer = document.getElementById("mynetwork");\n'
-            script += '    if (networkContainer) {\n'
-            script += '        if (isVisible) {\n'
-            script += '            // Maximize height when section is hidden\n'
-            script += '            const windowHeight = window.innerHeight;\n'
-            script += '            const networkTop = networkContainer.getBoundingClientRect().top;\n'
-            script += '            const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom\n'
-            script += '            networkContainer.style.height = newHeight + "px";\n'
-            script += '        } else {\n'
-            script += '            // Fixed height when a section is visible\n'
-            script += '            networkContainer.style.height = "600px";\n'
-            script += '        }\n'
-            script += '        // Redraw the network\n'
-            script += '        if (typeof network !== "undefined") {\n'
-            script += '            network.fit();\n'
-            script += '        }\n'
-            script += '    }\n'
-            script += '}\n'
-            
-            script += '</script>'
-            
-            # Combine all components
-            custom_html = legend_div + raw_text_html + qa_html + script
-            
-            # Insert before closing body tag
-            html_content = html_content.replace("</body>", custom_html + "</body>")
+            # Insert the combined HTML before the closing body tag
+            html_content = html_content.replace("</body>", combined_html + "</body>")
             
             # Write the modified HTML back to the file
-            with open(html_path, "w", encoding="utf-8") as f:
+            with open(html_path, 'w', encoding='utf-8') as f:
                 f.write(html_content)
                 
         except Exception as e:
-            self.logger.error(f"Error adding HTML content: {str(e)}") 
+            self.logger.error(f"Error adding HTML content: {str(e)}")
+            import traceback
+            self.logger.error(traceback.format_exc())
 
     def _generate_legend_html(self):
         """Generate HTML for the entity type legend."""
@@ -1500,9 +1669,15 @@ class GraphVisualizer:
                     const model = llmModelSelect ? llmModelSelect.value : 'gpt-4o';
                     
                     // Get the current window location to determine API endpoint
-                    const currentHost = window.location.hostname;
+                    const currentHost = window.location.hostname || 'localhost';
                     const apiPort = 8000; // Default API port
                     const apiUrl = `http://${currentHost}:${apiPort}/api/qa`;
+                    
+                    console.log('Sending request to:', apiUrl);
+                    console.log('Question:', question);
+                    console.log('Provider:', provider);
+                    console.log('Model:', model);
+                    console.log('JSON Path:', jsonPath);
                     
                     // Make API request with error handling
                     fetch(apiUrl, {
@@ -1512,15 +1687,17 @@ class GraphVisualizer:
                         },
                         body: JSON.stringify({
                             question: question,
-                            provider: provider,
-                            model: model,
-                            include_context: false,
+                            llm_provider: provider,
+                            llm_model: model,
+                            include_raw_text: true,
                             json_path: jsonPath
                         })
                     })
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
+                            return response.text().then(text => {
+                                throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+                            });
                         }
                         return response.json();
                     })
@@ -1539,29 +1716,12 @@ class GraphVisualizer:
                         answerContent.textContent = data.answer;
                         
                         // Handle context if available
-                        if (data.context && data.context.length > 0 && contextContent) {
-                            let contextHtml = '<ul>';
-                            data.context.forEach(item => {
-                                contextHtml += `<li><strong>${item.relation_type}</strong>: ${item.source_name} → ${item.target_name}</li>`;
-                            });
-                            contextHtml += '</ul>';
-                            
-                            contextContent.innerHTML = contextHtml;
+                        if (data.context && contextContent) {
+                            // Format the context string as HTML
+                            contextContent.innerHTML = `<pre>${data.context}</pre>`;
                             
                             // Show expand button
                             document.getElementById('expandButtonContainer').style.display = 'block';
-                            
-                            // Set up context expansion
-                            const expandButton = document.getElementById('expandContextButton');
-                            const contextContainer = document.getElementById('contextContainer');
-                            
-                            expandButton.onclick = function() {
-                                if (contextContainer.style.display === 'none' || !contextContainer.style.display) {
-                                    contextContainer.style.display = 'block';
-                                } else {
-                                    contextContainer.style.display = 'none';
-                                }
-                            }
                         }
                     })
                     .catch(error => {
@@ -1805,9 +1965,15 @@ class GraphVisualizer:
                     const model = llmModelSelect ? llmModelSelect.value : 'gpt-4o';
                     
                     // Get the current window location to determine API endpoint
-                    const currentHost = window.location.hostname;
+                    const currentHost = window.location.hostname || 'localhost';
                     const apiPort = 8000; // Default API port
                     const apiUrl = `http://${currentHost}:${apiPort}/api/qa`;
+                    
+                    console.log('Sending request to:', apiUrl);
+                    console.log('Question:', question);
+                    console.log('Provider:', provider);
+                    console.log('Model:', model);
+                    console.log('JSON Path:', jsonPath);
                     
                     // Make API request with error handling
                     fetch(apiUrl, {
@@ -1817,15 +1983,17 @@ class GraphVisualizer:
                         },
                         body: JSON.stringify({
                             question: question,
-                            provider: provider,
-                            model: model,
-                            include_context: false,
+                            llm_provider: provider,
+                            llm_model: model,
+                            include_raw_text: true,
                             json_path: jsonPath
                         })
                     })
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
+                            return response.text().then(text => {
+                                throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+                            });
                         }
                         return response.json();
                     })
@@ -1844,29 +2012,12 @@ class GraphVisualizer:
                         answerContent.textContent = data.answer;
                         
                         // Handle context if available
-                        if (data.context && data.context.length > 0 && contextContent) {
-                            let contextHtml = '<ul>';
-                            data.context.forEach(item => {
-                                contextHtml += `<li><strong>${item.relation_type}</strong>: ${item.source_name} → ${item.target_name}</li>`;
-                            });
-                            contextHtml += '</ul>';
-                            
-                            contextContent.innerHTML = contextHtml;
+                        if (data.context && contextContent) {
+                            // Format the context string as HTML
+                            contextContent.innerHTML = `<pre>${data.context}</pre>`;
                             
                             // Show expand button
                             document.getElementById('expandButtonContainer').style.display = 'block';
-                            
-                            // Set up context expansion
-                            const expandButton = document.getElementById('expandContextButton');
-                            const contextContainer = document.getElementById('contextContainer');
-                            
-                            expandButton.onclick = function() {
-                                if (contextContainer.style.display === 'none' || !contextContainer.style.display) {
-                                    contextContainer.style.display = 'block';
-                                } else {
-                                    contextContainer.style.display = 'none';
-                                }
-                            }
                         }
                     })
                     .catch(error => {
