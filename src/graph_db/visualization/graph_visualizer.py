@@ -1335,25 +1335,6 @@ class GraphVisualizer:
 
     def _generate_qa_html(self, json_path: str) -> str:
         """Generate HTML for QA functionality."""
-    def _generate_control_sections_html(self, raw_text: str = None, json_path: str = None) -> str:
-        """
-        Generate HTML for the button control panel and expandable sections.
-        
-        Args:
-            raw_text (str, optional): Raw text to display in the text section.
-            json_path (str, optional): Path to the JSON file for QA functionality.
-                
-        Returns:
-            str: HTML for the control panel and expandable sections.
-        """
-        # Create buttons for text and QA sections
-        buttons_html = """
-        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
-            <button id="toggleTextBtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
-            <button id="toggleQABtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Ask Questions</button>
-        </div>
-        """
-        
         # Create JavaScript to toggle sections
         toggle_js = """
         <script>
@@ -1372,6 +1353,10 @@ class GraphVisualizer:
                 console.log('qaBtn exists:', !!qaBtn);
                 console.log('qaSection exists:', !!qaSection);
                 console.log('expandableSections exists:', !!expandableSections);
+                
+                // Store JSON path for QA functionality
+                const jsonPath = '""" + (json_path if json_path else "") + """';
+                console.log('JSON Path:', jsonPath);
                 
                 // Ensure sections are initially hidden
                 if (textSection) {
@@ -1530,7 +1515,312 @@ class GraphVisualizer:
                             provider: provider,
                             model: model,
                             include_context: false,
-                            json_path: "{json_path if json_path else ''}"
+                            json_path: jsonPath
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('API response:', data);
+                        
+                        // Hide loading indicator
+                        document.getElementById('loadingIndicator').style.display = 'none';
+                        
+                        // Show answer container
+                        const answerContainer = document.getElementById('answerContainer');
+                        answerContainer.style.display = 'block';
+                        
+                        // Update answer content with markdown support
+                        const answerContent = document.getElementById('answerContent');
+                        answerContent.textContent = data.answer;
+                        
+                        // Handle context if available
+                        if (data.context && data.context.length > 0 && contextContent) {
+                            let contextHtml = '<ul>';
+                            data.context.forEach(item => {
+                                contextHtml += `<li><strong>${item.relation_type}</strong>: ${item.source_name} → ${item.target_name}</li>`;
+                            });
+                            contextHtml += '</ul>';
+                            
+                            contextContent.innerHTML = contextHtml;
+                            
+                            // Show expand button
+                            document.getElementById('expandButtonContainer').style.display = 'block';
+                            
+                            // Set up context expansion
+                            const expandButton = document.getElementById('expandContextButton');
+                            const contextContainer = document.getElementById('contextContainer');
+                            
+                            expandButton.onclick = function() {
+                                if (contextContainer.style.display === 'none' || !contextContainer.style.display) {
+                                    contextContainer.style.display = 'block';
+                                } else {
+                                    contextContainer.style.display = 'none';
+                                }
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting question:', error);
+                        // Show error message
+                        const errorContent = document.getElementById('errorContent');
+                        errorContent.textContent = 'An error occurred while submitting the question. Please try again later.';
+                        
+                        // Show error container
+                        document.getElementById('errorContainer').style.display = 'block';
+                    });
+                });
+                
+                // Handle context expansion
+                if (expandContextButton && contextContainer) {
+                    expandContextButton.addEventListener('click', function() {
+                        const isVisible = contextContainer.style.display === 'block';
+                        contextContainer.style.display = isVisible ? 'none' : 'block';
+                        expandContextButton.textContent = isVisible ? 'Show Context' : 'Hide Context';
+                    });
+                }
+                
+                // Setup model-provider sync
+                syncModelProvider();
+            }
+            
+            function syncModelProvider() {
+                const modelSelect = document.getElementById('model-select');
+                const providerSelect = document.getElementById('provider-select');
+                if (!modelSelect || !providerSelect) return;
+                
+                modelSelect.addEventListener('change', function() {
+                    const model = modelSelect.value;
+                    if (model === 'gpt-4o') {
+                        providerSelect.value = 'openai';
+                    } else if (model === 'deepseek-chat') {
+                        providerSelect.value = 'deepseek';
+                    } else if (model === 'claude-3-5-sonnet-20241022') {
+                        providerSelect.value = 'anthropic';
+                    }
+                });
+                
+                providerSelect.addEventListener('change', function() {
+                    const provider = providerSelect.value;
+                    if (provider === 'openai' && modelSelect.value !== 'gpt-4o') {
+                        modelSelect.value = 'gpt-4o';
+                    } else if (provider === 'deepseek' && modelSelect.value !== 'deepseek-chat') {
+                        modelSelect.value = 'deepseek-chat';
+                    } else if (provider === 'anthropic' && modelSelect.value !== 'claude-3-5-sonnet-20241022') {
+                        modelSelect.value = 'claude-3-5-sonnet-20241022';
+                    }
+                });
+            }
+        </script>
+        """
+        
+        # Return the combined HTML
+        return toggle_js
+
+    def _generate_control_sections_html(self, raw_text: str = None, json_path: str = None) -> str:
+        """
+        Generate HTML for the button control panel and expandable sections.
+        
+        Args:
+            raw_text (str, optional): Raw text to display in the text section.
+            json_path (str, optional): Path to the JSON file for QA functionality.
+                
+        Returns:
+            str: HTML for the control panel and expandable sections.
+        """
+        # Create buttons for text and QA sections
+        buttons_html = """
+        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
+            <button id="toggleTextBtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+            <button id="toggleQABtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Ask Questions</button>
+        </div>
+        """
+        
+        # Create JavaScript to toggle sections
+        toggle_js = """
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get DOM elements
+                const textBtn = document.getElementById('toggleTextBtn');
+                const textSection = document.getElementById('textSection');
+                const qaBtn = document.getElementById('toggleQABtn');
+                const qaSection = document.getElementById('qaSection');
+                const networkContainer = document.getElementById('mynetwork');
+                const expandableSections = document.getElementById('expandableSections');
+                
+                console.log('DOM Content Loaded');
+                console.log('textBtn exists:', !!textBtn);
+                console.log('textSection exists:', !!textSection);
+                console.log('qaBtn exists:', !!qaBtn);
+                console.log('qaSection exists:', !!qaSection);
+                console.log('expandableSections exists:', !!expandableSections);
+                
+                // Store JSON path for QA functionality
+                const jsonPath = '""" + (json_path if json_path else "") + """';
+                console.log('JSON Path:', jsonPath);
+                
+                // Ensure sections are initially hidden
+                if (textSection) {
+                    textSection.style.display = 'none';
+                    console.log('Initialized textSection to hidden');
+                }
+                
+                if (qaSection) {
+                    qaSection.style.display = 'none';
+                    console.log('Initialized qaSection to hidden');
+                }
+                
+                // Make sure expandableSections is visible
+                if (expandableSections) {
+                    expandableSections.style.display = 'block';
+                    console.log('Made expandableSections visible');
+                }
+                
+                // Text button click handler
+                if (textBtn && textSection) {
+                    textBtn.addEventListener('click', function() {
+                        console.log('Text button clicked');
+                        console.log('Current textSection display:', textSection.style.display);
+                        
+                        // Check if section is visible (could be empty string or 'none')
+                        const isVisible = textSection.style.display === 'block';
+                        
+                        // Hide QA section if visible
+                        if (qaSection && qaSection.style.display === 'block') {
+                            qaSection.style.display = 'none';
+                            if (qaBtn) qaBtn.style.backgroundColor = '#2196F3';
+                        }
+                        
+                        // Toggle text section
+                        textSection.style.display = isVisible ? 'none' : 'block';
+                        textBtn.style.backgroundColor = isVisible ? '#4CAF50' : '#f44336';
+                        
+                        console.log('New textSection display:', textSection.style.display);
+                        
+                        // Adjust network height
+                        adjustNetworkHeight();
+                    });
+                }
+                
+                // QA button click handler
+                if (qaBtn && qaSection) {
+                    qaBtn.addEventListener('click', function() {
+                        console.log('QA button clicked');
+                        console.log('Current qaSection display:', qaSection.style.display);
+                        
+                        // Check if section is visible (could be empty string or 'none')
+                        const isVisible = qaSection.style.display === 'block';
+                        
+                        // Hide text section if visible
+                        if (textSection && textSection.style.display === 'block') {
+                            textSection.style.display = 'none';
+                            if (textBtn) textBtn.style.backgroundColor = '#4CAF50';
+                        }
+                        
+                        // Toggle QA section
+                        qaSection.style.display = isVisible ? 'none' : 'block';
+                        qaBtn.style.backgroundColor = isVisible ? '#2196F3' : '#f44336';
+                        
+                        console.log('New qaSection display:', qaSection.style.display);
+                        
+                        // Adjust network height
+                        adjustNetworkHeight();
+                    });
+                }
+                
+                // Initialize network height
+                adjustNetworkHeight();
+                
+                // Function to adjust network height based on visible sections
+                function adjustNetworkHeight() {
+                    if (!networkContainer) return;
+                    
+                    const textVisible = textSection && textSection.style.display === 'block';
+                    const qaVisible = qaSection && qaSection.style.display === 'block';
+                    
+                    if (!textVisible && !qaVisible) {
+                        // Maximize height when no sections are visible
+                        const windowHeight = window.innerHeight;
+                        const networkTop = networkContainer.getBoundingClientRect().top;
+                        const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom
+                        networkContainer.style.height = newHeight + 'px';
+                    } else {
+                        // Fixed height when a section is visible
+                        networkContainer.style.height = '600px';
+                    }
+                    
+                    // Redraw the network
+                    if (typeof network !== 'undefined') {
+                        network.fit();
+                    }
+                }
+                
+                // Add window resize handler to adjust heights
+                window.addEventListener('resize', adjustNetworkHeight);
+                
+                // Setup QA functionality if applicable
+                setupQAFunctionality();
+            });
+            
+            function setupQAFunctionality() {
+                // Get QA elements
+                const askButton = document.getElementById('askButton');
+                const questionInput = document.getElementById('questionInput');
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                const answerContainer = document.getElementById('answerContainer');
+                const answerContent = document.getElementById('answerContent');
+                const expandButtonContainer = document.getElementById('expandButtonContainer');
+                const expandContextButton = document.getElementById('expandContextButton');
+                const contextContainer = document.getElementById('contextContainer');
+                const contextContent = document.getElementById('contextContent');
+                const errorContainer = document.getElementById('errorContainer');
+                const errorContent = document.getElementById('errorContent');
+                const llmProviderSelect = document.getElementById('provider-select');
+                const llmModelSelect = document.getElementById('model-select');
+                
+                // If no QA elements, exit
+                if (!askButton || !questionInput) return;
+                
+                // Handle question submission
+                askButton.addEventListener('click', function() {
+                    const question = questionInput.value.trim();
+                    if (!question) {
+                        alert('Please enter a question');
+                        return;
+                    }
+                    
+                    // Hide any previous results
+                    if (answerContainer) answerContainer.style.display = 'none';
+                    if (errorContainer) errorContainer.style.display = 'none';
+                    
+                    // Show loading indicator
+                    if (loadingIndicator) loadingIndicator.style.display = 'block';
+                    
+                    // Get selected provider and model
+                    const provider = llmProviderSelect ? llmProviderSelect.value : 'openai';
+                    const model = llmModelSelect ? llmModelSelect.value : 'gpt-4o';
+                    
+                    // Get the current window location to determine API endpoint
+                    const currentHost = window.location.hostname;
+                    const apiPort = 8000; // Default API port
+                    const apiUrl = `http://${currentHost}:${apiPort}/api/qa`;
+                    
+                    // Make API request with error handling
+                    fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            question: question,
+                            provider: provider,
+                            model: model,
+                            include_context: false,
+                            json_path: jsonPath
                         })
                     })
                     .then(response => {
