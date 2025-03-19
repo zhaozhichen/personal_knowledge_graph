@@ -740,7 +740,7 @@ class GraphVisualizer:
         # Create a toggle button for the QA panel
         qa_button_html = f"""
         <div id="qaControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
-            <button id="toggleQABtn" onclick="toggleQAPanel()" style="padding: 8px 15px; cursor: pointer; background-color: #007BFF; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Ask Question</button>
+            <button id="toggleQABtn" onclick="toggleQAPanel()" style="padding: 8px 15px; cursor: pointer; background-color: #007BFF; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show QA</button>
         </div>
         """
             
@@ -818,7 +818,7 @@ class GraphVisualizer:
                 }} else {{
                     // Hide QA panel
                     qaPanel.style.display = 'none';
-                    qaBtn.innerText = 'Ask Question';
+                    qaBtn.innerText = 'Show QA';
                     qaBtn.style.backgroundColor = '#007BFF'; // Blue color for show button
                     
                     // Maximize network container height
