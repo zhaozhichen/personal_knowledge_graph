@@ -90,19 +90,28 @@ class GraphVisualizer:
                 entity_type = entity["entity_type"]
                 entity_name = entity["entity_name"]
                 entity_id = entity["entity_id"]
+                properties = entity.get("properties", {})
             else:
                 # Old format (lotr_graph.json)
                 entity_type = entity.get("type", "UNKNOWN")
                 entity_name = entity.get("name", "Unnamed")
                 entity_id = entity.get("id", str(uuid.uuid4()))
+                properties = entity.get("properties", {})
             
             # Get the color for this entity type
             color = self._get_entity_color(entity_type)
             
+            # Create a formatted title with all properties
+            title_text = f"{entity_name} ({entity_type})"
+            if properties:
+                title_text += "\n\nProperties:"
+                for prop_key, prop_value in properties.items():
+                    title_text += f"\n• {prop_key}: {prop_value}"
+            
             # Add node with attributes
             G.add_node(
                 entity_id, 
-                title=f"{entity_name} ({entity_type})", 
+                title=title_text, 
                 label=entity_name, 
                 color=color,
                 shape="dot",
@@ -119,17 +128,26 @@ class GraphVisualizer:
                 source_id = relation["source_id"]
                 target_id = relation["target_id"]
                 relation_type = relation["relation_type"]
+                properties = relation.get("properties", {})
             else:
                 # Old format (lotr_graph.json)
                 source_id = relation.get("from_entity", {}).get("id", "")
                 target_id = relation.get("to_entity", {}).get("id", "")
                 relation_type = relation.get("relation", "UNKNOWN")
+                properties = relation.get("properties", {})
+            
+            # Create a formatted title with all properties
+            title_text = relation_type
+            if properties:
+                title_text += "\n\nProperties:"
+                for prop_key, prop_value in properties.items():
+                    title_text += f"\n• {prop_key}: {prop_value}"
             
             # Add edge with attributes
             G.add_edge(
                 source_id, 
                 target_id, 
-                title=relation_type, 
+                title=title_text, 
                 label=relation_type,
                 arrows="to"
             )
@@ -188,6 +206,23 @@ class GraphVisualizer:
                 "maxVelocity": 50,
                 "minVelocity": 0.1,
                 "solver": "forceAtlas2Based"
+            },
+            "interaction": {
+                "hover": true,
+                "tooltipDelay": 0,
+                "hideEdgesOnDrag": false,
+                "multiselect": true,
+                "hoverConnectedEdges": true
+            },
+            "tooltip": {
+                "delay": 0,
+                "fontColor": "black",
+                "fontSize": 14,
+                "fontFace": "arial",
+                "color": {
+                    "border": "#666",
+                    "background": "#fff"
+                }
             }
         }
         """)
@@ -887,15 +922,23 @@ class GraphVisualizer:
                     "minVelocity": 0.75
                 },
                 "interaction": {
-                    "hover": {
-                        "enabled": true
-                    },
+                    "hover": true,
+                    "tooltipDelay": 0,
                     "navigationButtons": true,
                     "keyboard": true,
-                    "tooltipDelay": 200,
                     "hideEdgesOnDrag": false,
-                    "multiselect": false,
+                    "multiselect": true,
                     "hoverConnectedEdges": true
+                },
+                "tooltip": {
+                    "delay": 0,
+                    "fontColor": "black",
+                    "fontSize": 14,
+                    "fontFace": "Tahoma",
+                    "color": {
+                        "border": "#666",
+                        "background": "#fff"
+                    }
                 }
             }
             """)
