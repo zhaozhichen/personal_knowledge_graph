@@ -272,10 +272,12 @@ class GraphVisualizer:
         with open(html_path, "r", encoding="utf-8") as f:
             html = f.read()
         
+        # Remove duplicate Knowledge Graph Visualization title
+        html = html.replace("<center>\n<h1>Knowledge Graph Visualization</h1>\n</center>", "")
+        
         # Insert custom HTML before the closing body tag
         custom_html = f"""
         <div style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">
-            <h2 style="color: #333;">Entity Types</h2>
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                 {legend_html}
             </div>
@@ -345,7 +347,6 @@ class GraphVisualizer:
         legend_html = """
         <div style="position: absolute; top: 10px; right: 10px; background-color: white; 
                     border: 1px solid #ccc; padding: 10px; border-radius: 5px; max-width: 250px;">
-            <h3 style="margin-top: 0; text-align: center;">Entity Types</h3>
             <table style="width: 100%; border-collapse: collapse;" id="entityTypeTable">
                 <tr>
                     <th style="text-align: left; padding: 5px;">Type</th>
