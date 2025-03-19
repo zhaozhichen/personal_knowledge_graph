@@ -915,7 +915,7 @@ class GraphVisualizer:
                 document.getElementById('errorContainer').style.display = 'none';
                 
                 // Try to use the API server first
-                fetch('/api/qa', {{
+                fetch('http://localhost:8000/api/qa', {{
                     method: 'POST',
                     headers: {{
                         'Content-Type': 'application/json',
@@ -959,7 +959,7 @@ class GraphVisualizer:
                     var fallbackInstructions = 'Error: ' + error.message + 
                         '\\n\\nTo get answers directly in this visualization, please:' +
                         '\\n1. Close this HTML file if it is open in your browser' +
-                        '\\n2. Start the API server: python -m src.graph_db.app --api-server' +
+                        '\\n2. Start the API server: python -m src.graph_db.app --api-server --api-port 8000' +
                         '\\n3. Open this HTML file in your browser while the server is running' +
                         '\\n\\nAlternatively, you can run the QA functionality directly from the command line:' +
                         '\\npython -m src.graph_db.app --qa "' + question + '" --qa-json ' + jsonPath + 
