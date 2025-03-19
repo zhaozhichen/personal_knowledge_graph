@@ -656,9 +656,9 @@ def main():
     output_group.add_argument('--output', type=str, default='output.html', 
                          help='Output path for visualization (default: output.html)')
     output_group.add_argument('--json-output', type=str, 
-                         help='Output path for graph data in JSON format')
+                         help='Output path for graph data in JSON format (optional with --visualization-only, will try to find JSON file with same name as output)')
     output_group.add_argument('--visualization-only', action='store_true', 
-                         help='Skip graph construction and only visualize from existing JSON data (requires --json-output)')
+                         help='Skip graph construction and only visualize from existing JSON data')
     output_group.add_argument('--verbose', action='store_true', 
                          help='Enable verbose output')
     
@@ -699,10 +699,8 @@ def main():
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     
-    # Validate arguments
-    if args.visualization_only and not args.json_output:
-        logging.error("Error: --visualization-only requires --json-output to be specified.")
-        sys.exit(1)
+    # Removed validation that requires --json-output with --visualization-only
+    # The run_visualization_only function will now auto-detect JSON files
     
     # Handle API server
     if args.api_server:
@@ -789,12 +787,28 @@ def run_visualization_only(args):
     Args:
         args: Command line arguments
     """
-    # Check if JSON file path is provided
+    # Check if JSON file path is provided, otherwise derive it from output path
     if args.json_output:
         json_path = args.json_output
     else:
-        logging.error("No JSON file specified for visualization-only mode. Please provide --json-output parameter.")
-        return None
+        # Auto-derive JSON path from output path (replace .html with .json)
+        base_output_path = os.path.splitext(args.output)[0]
+        possible_json_paths = [
+            f"{base_output_path}.json",
+            args.output.replace('.html', '.json')
+        ]
+        
+        # Try to find an existing JSON file
+        json_path = None
+        for path in possible_json_paths:
+            if os.path.exists(path):
+                json_path = path
+                logging.info(f"Found JSON file at {json_path}")
+                break
+        
+        if not json_path:
+            logging.error(f"No JSON file found at {possible_json_paths[0]} or {possible_json_paths[1]}. Please provide --json-output parameter.")
+            return None
     
     output_path = args.output
     
@@ -913,7 +927,10 @@ def print_help_and_examples():
     print("\n  Process all files in a directory:")
     print("    python -m src.graph_db.app --input-dir input --output graph.html")
     print("\n  Visualize an existing JSON graph without building a new one:")
-    print("    python -m src.graph_db.app --visualization-only --json-output example/graph_data.json --output graph.html")
+    print("    python -m src.graph_db.app --visualization-only --output example/graph.html")
+    print("    # Note: Will automatically look for example/graph.json")
+    print("\n  Explicitly specify JSON file for visualization:")
+    print("    python -m src.graph_db.app --visualization-only --json-output example/custom_graph.json --output graph.html")
     print("\n  Ask a question using an existing graph:")
     print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --qa-json example/musk_graph.json")
     print("\n  Start the API server for handling QA requests in the visualization:")
@@ -939,7 +956,10 @@ Examples:
   # Process URL content and visualize
   python -m src.graph_db.app --url https://example.com --output output.html
   
-  # Only visualize existing JSON data
+  # Only visualize existing JSON data (will look for output.json automatically)
+  python -m src.graph_db.app --visualization-only --output output.html
+  
+  # Explicitly specify JSON file for visualization
   python -m src.graph_db.app --visualization-only --json-output graph_data.json --output vis.html
   
   # Question answering based on graph
