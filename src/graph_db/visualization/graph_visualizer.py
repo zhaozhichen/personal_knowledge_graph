@@ -106,7 +106,7 @@ class GraphVisualizer:
                 label=entity_name, 
                 color=color,
                 shape="dot",
-                size=15,
+                size=8,
                 entity_type=entity_type
             )
         
@@ -464,8 +464,8 @@ class GraphVisualizer:
                                 });
                                 
                                 if (nodeMatches) {
-                                    // Make node 3X larger and restore label
-                                    node.options.size = node.options._originalSize * 3;
+                                    // Make node 2X larger and restore label
+                                    node.options.size = node.options._originalSize * 2;
                                     node.options.label = node.options._originalLabel;
                                     
                                     // Restore original color
@@ -855,7 +855,7 @@ class GraphVisualizer:
             {
                 "nodes": {
                     "shape": "dot",
-                    "size": 25,
+                    "size": 10,
                     "font": {
                         "size": 64,
                         "face": "Tahoma",
