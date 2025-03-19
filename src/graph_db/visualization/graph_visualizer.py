@@ -59,289 +59,943 @@ class GraphVisualizer:
         Returns:
             str: Path to the saved HTML file.
         """
-        # Create a directed graph
-        G = nx.DiGraph()
+        try:
+            import traceback
+            # Create a directed graph
+            G = nx.DiGraph()
+            
+            # Figure out where entities and relations are stored
+            entities = []
+            relations = []
+            
+            # Check if entities and relations are at the top level
+            if "entities" in graph_data:
+                entities = graph_data["entities"]
+            # Check if they're inside a "data" field
+            elif "data" in graph_data and "entities" in graph_data["data"]:
+                entities = graph_data["data"]["entities"]
+            
+            # Same for relations
+            if "relations" in graph_data:
+                relations = graph_data["relations"]
+            elif "data" in graph_data and "relations" in graph_data["data"]:
+                relations = graph_data["data"]["relations"]
+            
+            # Extract raw text from graph_data if not provided as parameter
+            if raw_text is None and "raw_text" in graph_data:
+                raw_text = graph_data["raw_text"]
+            
+            # For debugging
+            self.logger.info(f"Found {len(entities)} entities and {len(relations)} relations for visualization")
+            
+            return self._create_visualization(G, entities, relations, output_path, title, raw_text, json_path)
+            
+        except Exception as e:
+            error_msg = f"Error in visualize method: {str(e)}"
+            stack_trace = traceback.format_exc()
+            self.logger.error(f"{error_msg}\n{stack_trace}")
+            print(f"DETAILED ERROR: {error_msg}\n{stack_trace}")
+            return None
+    
+    def _create_visualization(self, G, entities, relations, output_path, title, raw_text=None, json_path=None):
+        """
+        Create and save the actual visualization.
         
-        # Figure out where entities and relations are stored
-        entities = []
-        relations = []
+        Args:
+            G: The NetworkX DiGraph object
+            entities: List of entity dictionaries
+            relations: List of relation dictionaries
+            output_path: Path to save the HTML file
+            title: Title of the visualization
+            raw_text: Optional raw text to display
+            json_path: Optional path to JSON for QA functionality
+            
+        Returns:
+            str: Path to the saved HTML file
+        """
+        print("Debug: Starting _create_visualization")
+        print(f"Debug: raw_text type = {type(raw_text)}")
+        print(f"Debug: json_path type = {type(json_path)}")
+        print(f"Debug: html module = {html}")
+        print(f"Debug: html module id = {id(html)}")
         
-        # Check if entities and relations are at the top level
-        if "entities" in graph_data:
-            entities = graph_data["entities"]
-        # Check if they're inside a "data" field
-        elif "data" in graph_data and "entities" in graph_data["data"]:
-            entities = graph_data["data"]["entities"]
+        try:
+            import traceback
+            import uuid
             
-        # Same for relations
-        if "relations" in graph_data:
-            relations = graph_data["relations"]
-        elif "data" in graph_data and "relations" in graph_data["data"]:
-            relations = graph_data["data"]["relations"]
+            print("Debug: Starting _create_visualization")
+            print(f"Debug: raw_text type = {type(raw_text)}")
+            print(f"Debug: json_path type = {type(json_path)}")
             
-        # Log what we found
-        self.logger.info(f"Found {len(entities)} entities and {len(relations)} relations")
-        
-        # Add nodes with attributes
-        for entity in entities:
-            # Support both new and old entity formats
-            if "entity_name" in entity and "entity_type" in entity and "entity_id" in entity:
-                # New format
-                entity_type = entity["entity_type"]
-                entity_name = entity["entity_name"]
-                entity_id = entity["entity_id"]
-                properties = entity.get("properties", {})
-            else:
-                # Old format (lotr_graph.json)
-                entity_type = entity.get("type", "UNKNOWN")
-                entity_name = entity.get("name", "Unnamed")
-                entity_id = entity.get("id", str(uuid.uuid4()))
-                properties = entity.get("properties", {})
+            # Add nodes with attributes
+            for entity in entities:
+                # Support both new and old entity formats
+                if "entity_name" in entity and "entity_type" in entity and "entity_id" in entity:
+                    # New format
+                    entity_type = entity["entity_type"]
+                    entity_name = entity["entity_name"]
+                    entity_id = entity["entity_id"]
+                    properties = entity.get("properties", {})
+                else:
+                    # Old format (lotr_graph.json)
+                    entity_type = entity.get("type", "UNKNOWN")
+                    entity_name = entity.get("name", "Unnamed")
+                    entity_id = entity.get("id", str(uuid.uuid4()))
+                    properties = entity.get("properties", {})
+                
+                # Get the color for this entity type
+                color = self._get_entity_color(entity_type)
+                
+                # Create a formatted title with all properties
+                title_text = f"{entity_name} ({entity_type})"
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
+                
+                # Add node with attributes
+                G.add_node(
+                    entity_id, 
+                    title=title_text, 
+                    label=entity_name, 
+                    color=color,
+                    shape="dot",
+                    size=8,
+                    entity_type=entity_type,
+                    font={'color': color}  # Add font color to match node color
+                )
             
-            # Get the color for this entity type
-            color = self._get_entity_color(entity_type)
+            # Add edges with attributes
+            for relation in relations:
+                # Support both new and old relation formats
+                if "source_id" in relation and "target_id" in relation and "relation_type" in relation:
+                    # New format
+                    source_id = relation["source_id"]
+                    target_id = relation["target_id"]
+                    relation_type = relation["relation_type"]
+                    properties = relation.get("properties", {})
+                else:
+                    # Old format (lotr_graph.json)
+                    source_id = relation.get("from_entity", {}).get("id", "")
+                    target_id = relation.get("to_entity", {}).get("id", "")
+                    relation_type = relation.get("relation", "UNKNOWN")
+                    properties = relation.get("properties", {})
+                
+                # Create a formatted title with all properties
+                title_text = relation_type
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
+                
+                # Add edge with attributes
+                G.add_edge(
+                    source_id, 
+                    target_id, 
+                    title=title_text, 
+                    label=relation_type,
+                    arrows="to",
+                    color={
+                        "color": "#848484",
+                        "highlight": "#848484",
+                        "hover": "#848484",
+                        "inherit": False
+                    }
+                )
             
-            # Create a formatted title with all properties
-            title_text = f"{entity_name} ({entity_type})"
-            if properties:
-                title_text += "\n\nProperties:"
-                for prop_key, prop_value in properties.items():
-                    title_text += f"\n• {prop_key}: {prop_value}"
+            # Get raw text from graph_data if not provided as parameter
+            if raw_text is None and hasattr(self, 'graph_data') and "raw_text" in self.graph_data:
+                raw_text = self.graph_data["raw_text"]
             
-            # Add node with attributes
-            G.add_node(
-                entity_id, 
-                title=title_text, 
-                label=entity_name, 
-                color=color,
-                shape="dot",
-                size=8,
-                entity_type=entity_type,
-                font={'color': color}  # Add font color to match node color
+            # Create NetworkX graph visualization using PyVis
+            from pyvis.network import Network
+            net = Network(
+                height="800px", 
+                width="100%", 
+                directed=True, 
+                notebook=False,
+                heading=title
             )
-        
-        # Add edges with attributes
-        for relation in relations:
-            # Support both new and old relation formats
-            if "source_id" in relation and "target_id" in relation and "relation_type" in relation:
-                # New format
-                source_id = relation["source_id"]
-                target_id = relation["target_id"]
-                relation_type = relation["relation_type"]
-                properties = relation.get("properties", {})
-            else:
-                # Old format (lotr_graph.json)
-                source_id = relation.get("from_entity", {}).get("id", "")
-                target_id = relation.get("to_entity", {}).get("id", "")
-                relation_type = relation.get("relation", "UNKNOWN")
-                properties = relation.get("properties", {})
             
-            # Create a formatted title with all properties
-            title_text = relation_type
-            if properties:
-                title_text += "\n\nProperties:"
-                for prop_key, prop_value in properties.items():
-                    title_text += f"\n• {prop_key}: {prop_value}"
+            # Copy nodes and edges from NetworkX graph to PyVis network
+            net.from_nx(G)
             
-            # Add edge with attributes
-            G.add_edge(
-                source_id, 
-                target_id, 
-                title=title_text, 
-                label=relation_type,
-                arrows="to",
-                color={
-                    "color": "#848484",
-                    "highlight": "#848484",
-                    "hover": "#848484",
-                    "inherit": False
-                }
-            )
-        
-        # Get raw text from graph_data if not provided
-        if raw_text is None and "raw_text" in graph_data:
-            raw_text = graph_data["raw_text"]
-        
-        # Create NetworkX graph visualization using PyVis
-        net = Network(
-            height="800px", 
-            width="100%", 
-            directed=True, 
-            notebook=False,
-            heading=title
-        )
-        
-        # Copy nodes and edges from NetworkX graph to PyVis network
-        net.from_nx(G)
-        
-        # Configure physics
-        net.toggle_physics(True)
-        net.set_options("""
-        var options = {
-            "nodes": {
-                "font": {
-                    "size": 8,
-                    "face": "arial",
-                    "color": "inherit"
-                },
-                "borderWidth": 2,
-                "borderWidthSelected": 4
-            },
-            "edges": {
-                "smooth": {
-                    "type": "continuous",
-                    "forceDirection": "none"
-                },
-                "font": {
-                    "size": 4,
-                    "align": "middle"
-                },
-                "color": {
-                    "color": "#848484",
-                    "highlight": "#848484",
-                    "hover": "#848484",
-                    "inherit": false
-                },
-                "arrows": {
-                    "to": {
-                        "enabled": true,
-                        "type": "arrow",
-                        "scaleFactor": 1
+            # Configure physics
+            net.toggle_physics(True)
+            physics_options = """
+            var options = {
+                "nodes": {
+                    "font": {
+                        "size": 8,
+                        "face": "arial",
+                        "color": "inherit"
                     },
-                    "from": {
-                        "enabled": false
+                    "borderWidth": 2,
+                    "borderWidthSelected": 4
+                },
+                "edges": {
+                    "smooth": {
+                        "type": "continuous",
+                        "forceDirection": "none"
                     },
-                    "middle": {
-                        "enabled": false
+                    "font": {
+                        "size": 4,
+                        "align": "middle"
+                    },
+                    "color": {
+                        "color": "#848484",
+                        "highlight": "#848484",
+                        "hover": "#848484",
+                        "inherit": false
+                    },
+                    "arrows": {
+                        "to": {
+                            "enabled": true,
+                            "type": "arrow",
+                            "scaleFactor": 1
+                        },
+                        "from": {
+                            "enabled": false
+                        },
+                        "middle": {
+                            "enabled": false
+                        }
+                    }
+                },
+                "physics": {
+                    "forceAtlas2Based": {
+                        "gravitationalConstant": -50,
+                        "centralGravity": 0.01,
+                        "springLength": 150,
+                        "springConstant": 0.08
+                    },
+                    "maxVelocity": 50,
+                    "minVelocity": 0.1,
+                    "solver": "forceAtlas2Based"
+                },
+                "interaction": {
+                    "hover": true,
+                    "tooltipDelay": 0,
+                    "hideEdgesOnDrag": false,
+                    "multiselect": true,
+                    "hoverConnectedEdges": true
+                },
+                "tooltip": {
+                    "delay": 0,
+                    "fontColor": "black",
+                    "fontSize": 14,
+                    "fontFace": "arial",
+                    "color": {
+                        "border": "#666",
+                        "background": "#fff"
                     }
                 }
-            },
-            "physics": {
-                "forceAtlas2Based": {
-                    "gravitationalConstant": -50,
-                    "centralGravity": 0.01,
-                    "springLength": 150,
-                    "springConstant": 0.08
+            }
+            """
+            net.set_options(physics_options)
+            
+            # Generate HTML for color legend
+            legend_html = self._generate_legend_html()
+            
+            # Generate HTML for the button controls and expandable sections
+            control_sections_html = self._generate_control_sections_html(raw_text, json_path)
+            
+            # Save the visualization to file with custom HTML
+            html_path = os.path.abspath(output_path)
+            
+            # Get the path to the directory containing the HTML file
+            html_dir = os.path.dirname(html_path)
+            
+            # Create the directory if it doesn't exist
+            os.makedirs(html_dir, exist_ok=True)
+            
+            # Generate HTML with the custom elements
+            net.save_graph(html_path)
+            
+            # Read the generated HTML file
+            with open(html_path, "r", encoding="utf-8") as f:
+                html_content = f.read()
+            
+            # Remove duplicate Knowledge Graph Visualization title
+            html_content = html_content.replace("<center>\n<h1>Knowledge Graph Visualization</h1>\n</center>", "")
+            
+            # Define all custom HTML as a string without using f-string for improved stability
+            legend_div = '<div style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">'
+            legend_div += '<div style="display: flex; flex-wrap: wrap; gap: 10px;">'
+            legend_div += legend_html
+            legend_div += '</div></div>'
+            
+            # Script for text size adjustment and dropdown synchronization
+            script_section = '<script>'
+            script_section += 'function adjustTextSize(val) {'
+            script_section += '    document.querySelectorAll(".vis-network .vis-node text").forEach(function(textElement) {'
+            script_section += '        textElement.setAttribute("font-size", val);'
+            script_section += '    });'
+            script_section += '    document.querySelectorAll(".vis-network .vis-edge text").forEach(function(textElement) {'
+            script_section += '        textElement.setAttribute("font-size", val);'
+            script_section += '    });'
+            script_section += '}'
+            
+            script_section += 'function syncModelProvider() {'
+            script_section += '    var modelSelect = document.getElementById("llmModel");'
+            script_section += '    var providerSelect = document.getElementById("llmProvider");'
+            script_section += '    if (!modelSelect || !providerSelect) return;'
+            
+            script_section += '    modelSelect.addEventListener("change", function() {'
+            script_section += '        var model = modelSelect.value;'
+            script_section += '        if (model === "gpt-4o") {'
+            script_section += '            providerSelect.value = "openai";'
+            script_section += '        } else if (model === "deepseek-chat") {'
+            script_section += '            providerSelect.value = "deepseek";'
+            script_section += '        } else if (model === "claude-3-5-sonnet-20241022") {'
+            script_section += '            providerSelect.value = "anthropic";'
+            script_section += '        }'
+            script_section += '    });'
+            
+            script_section += '    providerSelect.addEventListener("change", function() {'
+            script_section += '        var provider = providerSelect.value;'
+            script_section += '        if (provider === "openai" && modelSelect.value !== "gpt-4o") {'
+            script_section += '            modelSelect.value = "gpt-4o";'
+            script_section += '        } else if (provider === "deepseek" && modelSelect.value !== "deepseek-chat") {'
+            script_section += '            modelSelect.value = "deepseek-chat";'
+            script_section += '        } else if (provider === "anthropic" && modelSelect.value !== "claude-3-5-sonnet-20241022") {'
+            script_section += '            modelSelect.value = "claude-3-5-sonnet-20241022";'
+            script_section += '        }'
+            script_section += '    });'
+            script_section += '}'
+            
+            script_section += 'window.addEventListener("load", function() {'
+            script_section += '    syncModelProvider();'
+            script_section += '});'
+            
+            # Add the missing toggle functions
+            script_section += '// Functions to toggle sections\n'
+            script_section += 'function toggleTextSection() {\n'
+            script_section += '    console.log("Toggling text section");\n'
+            script_section += '    const textSection = document.getElementById("textSection");\n'
+            script_section += '    const textBtn = document.getElementById("toggleTextBtn");\n'
+            script_section += '    const qaSection = document.getElementById("qaSection");\n'
+            script_section += '    const qaBtn = document.getElementById("toggleQABtn");\n'
+            script_section += '    \n'
+            script_section += '    if (!textSection) {\n'
+            script_section += '        console.error("Text section not found");\n'
+            script_section += '        return;\n'
+            script_section += '    }\n'
+            script_section += '    \n'
+            script_section += '    // Check if section is visible\n'
+            script_section += '    const isVisible = textSection.style.display === "block";\n'
+            script_section += '    \n'
+            script_section += '    // Hide QA section if visible\n'
+            script_section += '    if (qaSection && qaSection.style.display === "block") {\n'
+            script_section += '        qaSection.style.display = "none";\n'
+            script_section += '        if (qaBtn) qaBtn.style.backgroundColor = "#2196F3";\n'
+            script_section += '    }\n'
+            script_section += '    \n'
+            script_section += '    // Toggle text section\n'
+            script_section += '    textSection.style.display = isVisible ? "none" : "block";\n'
+            script_section += '    if (textBtn) {\n'
+            script_section += '        textBtn.style.backgroundColor = isVisible ? "#4CAF50" : "#f44336";\n'
+            script_section += '    }\n'
+            script_section += '    \n'
+            script_section += '    // Adjust network height\n'
+            script_section += '    const networkContainer = document.getElementById("mynetwork");\n'
+            script_section += '    if (networkContainer) {\n'
+            script_section += '        if (isVisible) {\n'
+            script_section += '            // Maximize height when section is hidden\n'
+            script_section += '            const windowHeight = window.innerHeight;\n'
+            script_section += '            const networkTop = networkContainer.getBoundingClientRect().top;\n'
+            script_section += '            const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom\n'
+            script_section += '            networkContainer.style.height = newHeight + "px";\n'
+            script_section += '        } else {\n'
+            script_section += '            // Fixed height when a section is visible\n'
+            script_section += '            networkContainer.style.height = "600px";\n'
+            script_section += '        }\n'
+            script_section += '        // Redraw the network\n'
+            script_section += '        if (typeof network !== "undefined") {\n'
+            script_section += '            network.fit();\n'
+            script_section += '        }\n'
+            script_section += '    }\n'
+            script_section += '}\n'
+            
+            script_section += '\n'
+            script_section += 'function toggleQASection() {\n'
+            script_section += '    console.log("Toggling QA section");\n'
+            script_section += '    const qaSection = document.getElementById("qaSection");\n'
+            script_section += '    const qaBtn = document.getElementById("toggleQABtn");\n'
+            script_section += '    const textSection = document.getElementById("textSection");\n'
+            script_section += '    const textBtn = document.getElementById("toggleTextBtn");\n'
+            script_section += '    \n'
+            script_section += '    if (!qaSection) {\n'
+            script_section += '        console.error("QA section not found");\n'
+            script_section += '        return;\n'
+            script_section += '    }\n'
+            script_section += '    \n'
+            script_section += '    // Check if section is visible\n'
+            script_section += '    const isVisible = qaSection.style.display === "block";\n'
+            script_section += '    \n'
+            script_section += '    // Hide text section if visible\n'
+            script_section += '    if (textSection && textSection.style.display === "block") {\n'
+            script_section += '        textSection.style.display = "none";\n'
+            script_section += '        if (textBtn) textBtn.style.backgroundColor = "#4CAF50";\n'
+            script_section += '    }\n'
+            script_section += '    \n'
+            script_section += '    // Toggle QA section\n'
+            script_section += '    qaSection.style.display = isVisible ? "none" : "block";\n'
+            script_section += '    if (qaBtn) {\n'
+            script_section += '        qaBtn.style.backgroundColor = isVisible ? "#2196F3" : "#f44336";\n'
+            script_section += '    }\n'
+            script_section += '    \n'
+            script_section += '    // Adjust network height\n'
+            script_section += '    const networkContainer = document.getElementById("mynetwork");\n'
+            script_section += '    if (networkContainer) {\n'
+            script_section += '        if (isVisible) {\n'
+            script_section += '            // Maximize height when section is hidden\n'
+            script_section += '            const windowHeight = window.innerHeight;\n'
+            script_section += '            const networkTop = networkContainer.getBoundingClientRect().top;\n'
+            script_section += '            const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom\n'
+            script_section += '            networkContainer.style.height = newHeight + "px";\n'
+            script_section += '        } else {\n'
+            script_section += '            // Fixed height when a section is visible\n'
+            script_section += '            networkContainer.style.height = "600px";\n'
+            script_section += '        }\n'
+            script_section += '        // Redraw the network\n'
+            script_section += '        if (typeof network !== "undefined") {\n'
+            script_section += '            network.fit();\n'
+            script_section += '        }\n'
+            script_section += '    }\n'
+            script_section += '}\n'
+            
+            script_section += '</script>'
+            
+            # Create the sections container
+            sections_html = f"""
+            <div id="expandableSections" style="position: relative; width: 100%; clear: both; padding: 0 20px; z-index: 10; display: block;">
+                <div id="textSection" class="expandable-section" style="position: relative; width: 100%; margin: 20px 0; padding: 20px; display: none; border: 1px solid #eee; border-radius: 4px; background-color: #f9f9f9;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="margin: 0;">Source Text</h3>
+                    </div>
+                    <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px; background-color: white;">
+                        <p style="white-space: pre-wrap;">{raw_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;') if raw_text else "No source text available."}</p>
+                    </div>
+                </div>
+            """
+            
+            # Create the QA section if json_path is available
+            if json_path:
+                # Get available LLM models, order is important to set defaults
+                llm_models = [
+                    "gpt-4o",
+                    "deepseek-chat",
+                    "claude-3-5-sonnet-20241022",
+                    "gemini-pro",
+                    "qwen-local-model"
+                ]
+                
+                # Available LLM providers
+                llm_providers = [
+                    "openai",
+                    "deepseek", 
+                    "anthropic",
+                    "gemini",
+                    "local"
+                ]
+                
+                # Default select values
+                default_model = "gpt-4o"
+                default_provider = "openai"
+                
+                # Create the model and provider selection dropdowns
+                model_options = ""
+                for model in llm_models:
+                    selected = 'selected="selected"' if model == default_model else ''
+                    model_options += f'<option value="{model}" {selected}>{model}</option>'
+                    
+                provider_options = ""
+                for provider in llm_providers:
+                    selected = 'selected="selected"' if provider == default_provider else ''
+                    provider_options += f'<option value="{provider}" {selected}>{provider}</option>'
+
+                sections_html += f"""
+                <div id="qaSection" class="expandable-section" style="position: relative; width: 100%; margin: 20px 0; padding: 20px; display: none; border: 1px solid #eee; border-radius: 4px; background-color: #f9f9f9;">
+                    <h3>Ask Questions About This Knowledge Graph</h3>
+                    
+                    <div style="margin-bottom: 15px; padding: 10px; background-color: #f0f8ff; border-left: 4px solid #2196F3; font-size: 14px;">
+                        <strong>Note:</strong> To use this feature, you need to start the API server in a separate terminal window:
+                        <pre style="margin-top: 5px; background-color: #f5f5f5; padding: 8px; border-radius: 4px; overflow-x: auto;">python src/graph_db/app.py --api-server --api-host localhost --api-port 8000</pre>
+                    </div>
+                    
+                    <div style="margin: 20px 0;">
+                        <div>
+                            <label for="model-select">LLM Model:</label>
+                            <select id="model-select" name="model">
+                                {model_options}
+                            </select>
+                            
+                            <label for="provider-select" style="margin-left: 15px;">LLM Provider:</label>
+                            <select id="provider-select" name="provider">
+                                {provider_options}
+                            </select>
+                        </div>
+                        
+                        <div style="margin-top: 10px;">
+                            <textarea id="questionInput" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" placeholder="Type your question here..."></textarea>
+                        </div>
+                        
+                        <div style="margin-top: 10px;">
+                            <button id="askButton" class="btn" style="background-color: #2196F3; color: white; border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; cursor: pointer; border-radius: 4px;">
+                                Ask Question
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="loadingIndicator" style="display: none; margin: 20px 0;">
+                        <p>Processing your question... <span class="loading-spinner">⏳</span></p>
+                    </div>
+                    
+                    <div id="answerContainer" style="display: none; margin: 20px 0; padding: 15px; background-color: #fff; border-radius: 4px; border: 1px solid #ddd;">
+                        <h4>Answer:</h4>
+                        <div id="answerContent"></div>
+                        
+                        <div id="expandButtonContainer" style="margin-top: 15px; display: none;">
+                            <button id="expandContextButton" class="btn" style="background-color: #999; color: white; border: none; padding: 8px 15px; text-align: center; text-decoration: none; display: inline-block; font-size: 14px; cursor: pointer; border-radius: 4px;">
+                                Show Context
+                            </button>
+                        </div>
+                        
+                        <div id="contextContainer" style="display: none; margin-top: 10px; padding: 10px; background-color: #f1f1f1; border-radius: 4px;">
+                            <h4>Context Information:</h4>
+                            <div id="contextContent"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="errorContainer" style="display: none; margin: 20px 0; padding: 15px; background-color: #ffe6e6; border-radius: 4px;">
+                        <h4>Error:</h4>
+                        <div id="errorContent"></div>
+                    </div>
+                </div>
+                """
+
+            # Close the sections container
+            sections_html += "</div>"
+            
+            # Combine all elements
+            combined_html = legend_div + control_sections_html + sections_html + script_section
+            
+            # Insert custom HTML before closing body tag
+            html_content = html_content.replace("</body>", combined_html + "</body>")
+            
+            # Write the modified HTML back to the file
+            with open(html_path, "w", encoding="utf-8") as f:
+                f.write(html_content)
+            
+            return html_path
+            
+        except Exception as e:
+            self.logger.error(f"Error creating visualization: {str(e)}")
+            return None
+    
+    def _get_entity_color(self, entity_type: str) -> str:
+        """Get the color for a given entity type."""
+        return self.entity_colors.get(entity_type.upper(), self.default_color)
+
+    def create_visualization_from_data(self, 
+                                      entities: List[Dict[str, Any]], 
+                                      relations: List[Dict[str, Any]],
+                                      output_path: str = "graph.html",
+                                      title: str = "Graph Visualization",
+                                      raw_text: str = "") -> bool:
+        """
+        Create a visualization from entities and relations.
+        
+        Args:
+            entities (List[Dict[str, Any]]): List of entities
+            relations (List[Dict[str, Any]]): List of relations
+            output_path (str): Path to save the visualization
+            title (str): Title of the visualization
+            raw_text (str): Raw text used to generate the graph
+            
+        Returns:
+            bool: True if visualization created successfully, False otherwise
+        """
+        try:
+            # Create a networkx graph
+            G = nx.DiGraph()
+            
+            # Add nodes
+            for entity in entities:
+                node_id = entity.get("id", hash(entity["name"]))
+                entity_type = entity["type"].upper()  # Ensure uppercase for color matching
+                color = self.entity_colors.get(entity_type, self.default_color)
+                
+                # Create a formatted title with all properties
+                properties = entity.get("properties", {})
+                title_text = f"{entity['name']} ({entity['type']})"
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
+                
+                G.add_node(
+                    node_id, 
+                    label=entity["name"], 
+                    title=title_text,  # Use plain text title
+                    color=color,  # Explicitly set color instead of group
+                    font={'color': color},  # Set font color to match node color
+                    properties=entity.get("properties", {})
+                )
+            
+            # Add edges
+            for relation in relations:
+                from_id = relation["from_entity"].get("id", hash(relation["from_entity"]["name"]))
+                to_id = relation["to_entity"].get("id", hash(relation["to_entity"]["name"]))
+                
+                # Create a formatted title with all properties
+                properties = relation.get("properties", {})
+                title_text = relation['relation']
+                if properties:
+                    title_text += "\n\nProperties:"
+                    for prop_key, prop_value in properties.items():
+                        title_text += f"\n• {prop_key}: {prop_value}"
+                
+                G.add_edge(
+                    from_id, 
+                    to_id, 
+                    label=relation["relation"],
+                    title=title_text,  # Use plain text title
+                    properties=relation.get("properties", {}),
+                    color={
+                        "color": "#000000",
+                        "highlight": "#000000",
+                        "hover": "#000000",
+                        "inherit": False
+                    },
+                    arrows={
+                        "to": {
+                            "enabled": True
+                        }
+                    }
+                )
+            
+            # Create a pyvis network
+            net = Network(notebook=False, directed=True, height="750px", width="100%")
+            
+            # Set options for create_visualization_from_data method
+            net.set_options("""
+            {
+                "nodes": {
+                    "shape": "dot",
+                    "size": 10,
+                    "font": {
+                        "size": 8,
+                        "face": "Tahoma",
+                        "color": "inherit"
+                    }
                 },
-                "maxVelocity": 50,
-                "minVelocity": 0.1,
-                "solver": "forceAtlas2Based"
-            },
-            "interaction": {
-                "hover": true,
-                "tooltipDelay": 0,
-                "hideEdgesOnDrag": false,
-                "multiselect": true,
-                "hoverConnectedEdges": true
-            },
-            "tooltip": {
-                "delay": 0,
-                "fontColor": "black",
-                "fontSize": 14,
-                "fontFace": "arial",
-                "color": {
-                    "border": "#666",
-                    "background": "#fff"
+                "edges": {
+                    "font": {
+                        "size": 4,
+                        "align": "middle"
+                    },
+                    "color": {
+                        "color": "#000000",
+                        "inherit": false
+                    },
+                    "arrows": {
+                        "to": {
+                            "enabled": true,
+                            "type": "arrow",
+                            "scaleFactor": 1
+                        },
+                        "from": {
+                            "enabled": false
+                        },
+                        "middle": {
+                            "enabled": false
+                        }
+                    },
+                    "smooth": {
+                        "type": "continuous",
+                        "forceDirection": "none"
+                    }
+                },
+                "physics": {
+                    "barnesHut": {
+                        "gravitationalConstant": -80000,
+                        "springLength": 250,
+                        "springConstant": 0.001
+                    },
+                    "minVelocity": 0.75
+                },
+                "interaction": {
+                    "hover": true,
+                    "tooltipDelay": 0,
+                    "navigationButtons": true,
+                    "keyboard": true,
+                    "hideEdgesOnDrag": false,
+                    "multiselect": true,
+                    "hoverConnectedEdges": true
+                },
+                "tooltip": {
+                    "delay": 0,
+                    "fontColor": "black",
+                    "fontSize": 14,
+                    "fontFace": "Tahoma",
+                    "color": {
+                        "border": "#666",
+                        "background": "#fff"
+                    }
                 }
             }
-        }
-        """)
-        
-        # Generate HTML for color legend
-        legend_html = self._generate_legend_html()
-        
-        # Generate HTML for raw text display
-        raw_text_html = self._generate_raw_text_html(raw_text) if raw_text else ""
-        
-        # Generate HTML for the QA panel
-        qa_html = self._generate_qa_html(json_path) if json_path else ""
-        
-        # Save the visualization to file with custom HTML
-        html_path = os.path.abspath(output_path)
-        
-        # Get the path to the directory containing the HTML file
-        html_dir = os.path.dirname(html_path)
-        
-        # Create the directory if it doesn't exist
-        os.makedirs(html_dir, exist_ok=True)
-        
-        # Generate HTML with the custom elements
-        net.save_graph(html_path)
-        
-        # Read the generated HTML file
-        with open(html_path, "r", encoding="utf-8") as f:
-            html = f.read()
-        
-        # Remove duplicate Knowledge Graph Visualization title
-        html = html.replace("<center>\n<h1>Knowledge Graph Visualization</h1>\n</center>", "")
-        
-        # Insert custom HTML before the closing body tag
-        custom_html = f"""
-        <div style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">
-            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                {legend_html}
-            </div>
-        </div>
-        
-        {raw_text_html}
-        
-        {qa_html}
-        
-        <script>
-            // Function to adjust text size based on slider value
-            function adjustTextSize(val) {{
-                document.querySelectorAll('.vis-network .vis-node text').forEach(function(textElement) {{
-                    textElement.setAttribute('font-size', val);
-                }});
-                
-                document.querySelectorAll('.vis-network .vis-edge text').forEach(function(textElement) {{
-                    textElement.setAttribute('font-size', val);
-                }});
-            }}
-
-            // Function to synchronize model and provider dropdowns
-            function syncModelProvider() {{
-                var modelSelect = document.getElementById('llmModel');
-                var providerSelect = document.getElementById('llmProvider');
-                
-                modelSelect.addEventListener('change', function() {{
-                    var model = modelSelect.value;
-                    if (model === 'gpt-4o') {{
-                        providerSelect.value = 'openai';
-                    }} else if (model === 'deepseek-chat') {{
-                        providerSelect.value = 'deepseek';
-                    }} else if (model === 'claude-3-5-sonnet-20241022') {{
-                        providerSelect.value = 'anthropic';
-                    }}
-                }});
-                
-                providerSelect.addEventListener('change', function() {{
-                    var provider = providerSelect.value;
-                    if (provider === 'openai' && modelSelect.value !== 'gpt-4o') {{
-                        modelSelect.value = 'gpt-4o';
-                    }} else if (provider === 'deepseek' && modelSelect.value !== 'deepseek-chat') {{
-                        modelSelect.value = 'deepseek-chat';
-                    }} else if (provider === 'anthropic' && modelSelect.value !== 'claude-3-5-sonnet-20241022') {{
-                        modelSelect.value = 'claude-3-5-sonnet-20241022';
-                    }}
-                }});
-            }}
-
-            // Initialize dropdown synchronization when the page loads
-            window.addEventListener('load', function() {{
-                syncModelProvider();
-            }});
-        </script>
+            """)
+            
+            # Add the networkx graph
+            net.from_nx(G)
+            
+            # Save the visualization
+            net.save_graph(output_path)
+            
+            # Generate HTML for the legend and raw text
+            used_entity_types = set([entity["type"] for entity in entities])
+            legend_html = self._generate_legend_html()
+            raw_text_html = self._generate_raw_text_html(raw_text)
+            
+            # Generate HTML for the QA panel
+            json_path = os.path.splitext(output_path)[0] + '.json'
+            qa_html = self._generate_qa_html(json_path)
+            
+            # Add the legend, raw text, and QA panel to the HTML file
+            self._add_html_content(output_path, legend_html, raw_text_html, qa_html)
+            
+            # Save the graph data as JSON
+            self._save_graph_data_as_json(entities, relations, output_path, raw_text)
+            
+            self.logger.info(f"Graph visualization saved to {output_path}")
+            return True
+            
+        except Exception as e:
+            self.logger.error(f"Error creating visualization: {str(e)}")
+            return False
+            
+    def _save_graph_data_as_json(self, entities: List[Dict[str, Any]], relations: List[Dict[str, Any]], html_path: str, raw_text: str = "") -> None:
         """
+        Save the graph data (entities and relations) as a JSON file.
         
-        html = html.replace("</body>", custom_html + "</body>")
+        Args:
+            entities (List[Dict[str, Any]]): List of entities
+            relations (List[Dict[str, Any]]): List of relations
+            html_path (str): Path to the HTML visualization file
+            raw_text (str): Raw text used to generate the graph
+        """
+        try:
+            # Create the JSON path by replacing the extension
+            json_path = os.path.splitext(html_path)[0] + '.json'
+            
+            # Extract entity types (schema)
+            entity_types = list(set(entity["type"] for entity in entities))
+            
+            # Extract relation types (schema)
+            relation_types = list(set(relation["relation"] for relation in relations))
+            
+            # Prepare the data
+            graph_data = {
+                "schema": {
+                    "entity_types": entity_types,
+                    "relation_types": relation_types
+                },
+                "data": {
+                    "entities": entities,
+                    "relations": relations
+                },
+                "raw_text": raw_text
+            }
+            
+            # Save the data
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(graph_data, f, indent=2, ensure_ascii=False)
+                
+            self.logger.info(f"Graph data saved to {json_path}")
+            
+        except Exception as e:
+            self.logger.error(f"Error saving graph data as JSON: {str(e)}")
+            
+    def _add_html_content(self, html_path: str, legend_html: str, raw_text_html: str, qa_html: str) -> None:
+        """
+        Add custom HTML content to the visualization HTML file.
         
-        # Write the modified HTML back to the file
-        with open(html_path, "w", encoding="utf-8") as f:
-            f.write(html)
-        
-        return html_path
-    
+        Args:
+            html_path (str): Path to the HTML visualization file
+            legend_html (str): HTML content for the legend
+            raw_text_html (str): HTML content for raw text display
+            qa_html (str): HTML content for QA functionality
+        """
+        try:
+            # Read the generated HTML file
+            with open(html_path, "r", encoding="utf-8") as f:
+                html_content = f.read()
+            
+            # Remove duplicate Knowledge Graph Visualization title
+            html_content = html_content.replace("<center>\n<h1>Knowledge Graph Visualization</h1>\n</center>", "")
+            
+            # Create custom HTML for legend section
+            legend_div = '<div style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">'
+            legend_div += '<div style="display: flex; flex-wrap: wrap; gap: 10px;">'
+            legend_div += legend_html
+            legend_div += '</div></div>'
+            
+            # Create script section
+            script = '<script>'
+            script += 'function adjustTextSize(val) {'
+            script += '  document.querySelectorAll(\'.vis-network .vis-node text\').forEach(function(textElement) {'
+            script += '    textElement.setAttribute(\'font-size\', val);'
+            script += '  });'
+            script += '  document.querySelectorAll(\'.vis-network .vis-edge text\').forEach(function(textElement) {'
+            script += '    textElement.setAttribute(\'font-size\', val);'
+            script += '  });'
+            script += '}'
+            
+            script += 'function syncModelProvider() {'
+            script += '  var modelSelect = document.getElementById(\'llmModel\');'
+            script += '  var providerSelect = document.getElementById(\'llmProvider\');'
+            script += '  if (!modelSelect || !providerSelect) return;'
+            script += '  modelSelect.addEventListener(\'change\', function() {'
+            script += '    var model = modelSelect.value;'
+            script += '    if (model === \'gpt-4o\') {'
+            script += '      providerSelect.value = \'openai\';'
+            script += '    } else if (model === \'deepseek-chat\') {'
+            script += '      providerSelect.value = \'deepseek\';'
+            script += '    } else if (model === \'claude-3-5-sonnet-20241022\') {'
+            script += '      providerSelect.value = \'anthropic\';'
+            script += '    }'
+            script += '  });'
+            
+            script += '  providerSelect.addEventListener(\'change\', function() {'
+            script += '    var provider = providerSelect.value;'
+            script += '    if (provider === \'openai\' && modelSelect.value !== \'gpt-4o\') {'
+            script += '      modelSelect.value = \'gpt-4o\';'
+            script += '    } else if (provider === \'deepseek\' && modelSelect.value !== \'deepseek-chat\') {'
+            script += '      modelSelect.value = \'deepseek-chat\';'
+            script += '    } else if (provider === \'anthropic\' && modelSelect.value !== \'claude-3-5-sonnet-20241022\') {'
+            script += '      modelSelect.value = \'claude-3-5-sonnet-20241022\';'
+            script += '    }'
+            script += '  });'
+            script += '}'
+            
+            script += 'window.addEventListener(\'load\', function() {'
+            script += '  syncModelProvider();'
+            script += '});'
+            
+            # Add the missing toggle functions
+            script += '// Functions to toggle sections\n'
+            script += 'function toggleTextSection() {\n'
+            script += '    console.log("Toggling text section");\n'
+            script += '    const textSection = document.getElementById("textSection");\n'
+            script += '    const textBtn = document.getElementById("toggleTextBtn");\n'
+            script += '    const qaSection = document.getElementById("qaSection");\n'
+            script += '    const qaBtn = document.getElementById("toggleQABtn");\n'
+            script += '    \n'
+            script += '    if (!textSection) {\n'
+            script += '        console.error("Text section not found");\n'
+            script += '        return;\n'
+            script += '    }\n'
+            script += '    \n'
+            script += '    // Check if section is visible\n'
+            script += '    const isVisible = textSection.style.display === "block";\n'
+            script += '    \n'
+            script += '    // Hide QA section if visible\n'
+            script += '    if (qaSection && qaSection.style.display === "block") {\n'
+            script += '        qaSection.style.display = "none";\n'
+            script += '        if (qaBtn) qaBtn.style.backgroundColor = "#2196F3";\n'
+            script += '    }\n'
+            script += '    \n'
+            script += '    // Toggle text section\n'
+            script += '    textSection.style.display = isVisible ? "none" : "block";\n'
+            script += '    if (textBtn) {\n'
+            script += '        textBtn.style.backgroundColor = isVisible ? "#4CAF50" : "#f44336";\n'
+            script += '    }\n'
+            script += '    \n'
+            script += '    // Adjust network height\n'
+            script += '    const networkContainer = document.getElementById("mynetwork");\n'
+            script += '    if (networkContainer) {\n'
+            script += '        if (isVisible) {\n'
+            script += '            // Maximize height when section is hidden\n'
+            script += '            const windowHeight = window.innerHeight;\n'
+            script += '            const networkTop = networkContainer.getBoundingClientRect().top;\n'
+            script += '            const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom\n'
+            script += '            networkContainer.style.height = newHeight + "px";\n'
+            script += '        } else {\n'
+            script += '            // Fixed height when a section is visible\n'
+            script += '            networkContainer.style.height = "600px";\n'
+            script += '        }\n'
+            script += '        // Redraw the network\n'
+            script += '        if (typeof network !== "undefined") {\n'
+            script += '            network.fit();\n'
+            script += '        }\n'
+            script += '    }\n'
+            script += '}\n'
+            
+            script += '\n'
+            script += 'function toggleQASection() {\n'
+            script += '    console.log("Toggling QA section");\n'
+            script += '    const qaSection = document.getElementById("qaSection");\n'
+            script += '    const qaBtn = document.getElementById("toggleQABtn");\n'
+            script += '    const textSection = document.getElementById("textSection");\n'
+            script += '    const textBtn = document.getElementById("toggleTextBtn");\n'
+            script += '    \n'
+            script += '    if (!qaSection) {\n'
+            script += '        console.error("QA section not found");\n'
+            script += '        return;\n'
+            script += '    }\n'
+            script += '    \n'
+            script += '    // Check if section is visible\n'
+            script += '    const isVisible = qaSection.style.display === "block";\n'
+            script += '    \n'
+            script += '    // Hide text section if visible\n'
+            script += '    if (textSection && textSection.style.display === "block") {\n'
+            script += '        textSection.style.display = "none";\n'
+            script += '        if (textBtn) textBtn.style.backgroundColor = "#4CAF50";\n'
+            script += '    }\n'
+            script += '    \n'
+            script += '    // Toggle QA section\n'
+            script += '    qaSection.style.display = isVisible ? "none" : "block";\n'
+            script += '    if (qaBtn) {\n'
+            script += '        qaBtn.style.backgroundColor = isVisible ? "#2196F3" : "#f44336";\n'
+            script += '    }\n'
+            script += '    \n'
+            script += '    // Adjust network height\n'
+            script += '    const networkContainer = document.getElementById("mynetwork");\n'
+            script += '    if (networkContainer) {\n'
+            script += '        if (isVisible) {\n'
+            script += '            // Maximize height when section is hidden\n'
+            script += '            const windowHeight = window.innerHeight;\n'
+            script += '            const networkTop = networkContainer.getBoundingClientRect().top;\n'
+            script += '            const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom\n'
+            script += '            networkContainer.style.height = newHeight + "px";\n'
+            script += '        } else {\n'
+            script += '            // Fixed height when a section is visible\n'
+            script += '            networkContainer.style.height = "600px";\n'
+            script += '        }\n'
+            script += '        // Redraw the network\n'
+            script += '        if (typeof network !== "undefined") {\n'
+            script += '            network.fit();\n'
+            script += '        }\n'
+            script += '    }\n'
+            script += '}\n'
+            
+            script += '</script>'
+            
+            # Combine all components
+            custom_html = legend_div + raw_text_html + qa_html + script
+            
+            # Insert before closing body tag
+            html_content = html_content.replace("</body>", custom_html + "</body>")
+            
+            # Write the modified HTML back to the file
+            with open(html_path, "w", encoding="utf-8") as f:
+                f.write(html_content)
+                
+        except Exception as e:
+            self.logger.error(f"Error adding HTML content: {str(e)}") 
+
     def _generate_legend_html(self):
         """Generate HTML for the entity type legend."""
         legend_html = """
@@ -651,549 +1305,333 @@ class GraphVisualizer:
         """
         
         return legend_html
-    
-    def _generate_raw_text_html(self, raw_text: str) -> str:
-        """Generate HTML for displaying the raw text with a show/hide button."""
-        if not raw_text:
-            return ""
-            
-        # Create a fixed position button that's always visible
-        raw_text_html = f"""
-        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 120px; z-index: 1000;">
-            <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
-        </div>
-        <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="margin: 0;">Source Text</h3>
-            </div>
-            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px;">
-                <p style="white-space: pre-wrap;">{html.escape(raw_text)}</p>
-            </div>
-        </div>
-        <script>
-            // Make sure this script runs after the network is initialized
-            document.addEventListener('DOMContentLoaded', function() {{
-                // Ensure network variable is accessible
-                if (typeof network === 'undefined') {{
-                    console.warn('Network variable not found. Some features may not work properly.');
-                }}
-                
-                // Initially maximize the network container height since text is hidden
-                var networkContainer = document.getElementById('mynetwork');
-                var windowHeight = window.innerHeight;
-                var networkTop = networkContainer.getBoundingClientRect().top;
-                var newHeight = windowHeight - networkTop - 20; // 20px padding
-                networkContainer.style.height = newHeight + 'px';
-                
-                // Redraw the network to fit the new container size
-                if (typeof network !== 'undefined') {{
-                    network.fit();
-                }}
-            }});
-            
-            function toggleSourceText() {{
-                var textSection = document.getElementById('textSection');
-                var btn = document.getElementById('toggleTextBtn');
-                var networkContainer = document.getElementById('mynetwork');
-                
-                // Also hide QA panel if it's open when showing text
-                var qaPanel = document.getElementById('qaPanel');
-                var qaBtn = document.getElementById('toggleQABtn');
-                
-                if (textSection.style.display === 'none') {{
-                    // Hide QA panel if it's open
-                    if (qaPanel && qaPanel.style.display !== 'none') {{
-                        qaPanel.style.display = 'none';
-                        if (qaBtn) qaBtn.innerText = 'Ask Question';
-                        if (qaBtn) qaBtn.style.backgroundColor = '#007BFF';
-                    }}
-                    
-                    // Show text
-                    textSection.style.display = 'block';
-                    btn.innerText = 'Hide Text';
-                    btn.style.backgroundColor = '#f44336'; // Red color for hide button
-                    
-                    // Restore original network container height
-                    networkContainer.style.height = '750px';
-                }} else {{
-                    // Hide text
-                    textSection.style.display = 'none';
-                    btn.innerText = 'Show Text';
-                    btn.style.backgroundColor = '#4CAF50'; // Green color for show button
-                    
-                    // Maximize network container height
-                    var windowHeight = window.innerHeight;
-                    var networkTop = networkContainer.getBoundingClientRect().top;
-                    var newHeight = windowHeight - networkTop - 20; // 20px padding
-                    networkContainer.style.height = newHeight + 'px';
-                }}
-                
-                // Redraw the network to fit the new container size
-                if (typeof network !== 'undefined') {{
-                    network.fit();
-                }}
-            }}
-            
-            // Add window resize event listener to adjust the graph size when window is resized
-            window.addEventListener('resize', function() {{
-                var textSection = document.getElementById('textSection');
-                var qaPanel = document.getElementById('qaPanel');
-                var networkContainer = document.getElementById('mynetwork');
-                
-                // Only adjust if both text and QA are hidden
-                if ((textSection.style.display === 'none') && 
-                    (qaPanel === null || qaPanel.style.display === 'none')) {{
-                    var windowHeight = window.innerHeight;
-                    var networkTop = networkContainer.getBoundingClientRect().top;
-                    var newHeight = windowHeight - networkTop - 20; // 20px padding
-                    networkContainer.style.height = newHeight + 'px';
-                    
-                    // Redraw the network to fit the new container size
-                    if (typeof network !== 'undefined') {{
-                        network.fit();
-                    }}
-                }}
-            }});
-        </script>
-        """
-        
-        return raw_text_html
-    
-    def _generate_qa_html(self, json_path: str = None) -> str:
-        """Generate HTML for the Question Answering panel.
-        
-        Args:
-            json_path (str, optional): Path to the JSON file containing graph data.
-            
-        Returns:
-            str: HTML for the QA panel.
-        """
-        if not json_path:
-            return ""
-            
-        # Create a toggle button for the QA panel
-        qa_button_html = f"""
-        <div id="qaControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
-            <button id="toggleQABtn" onclick="toggleQAPanel()" style="padding: 8px 15px; cursor: pointer; background-color: #007BFF; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show QA</button>
-        </div>
-        """
-            
-        # Create the HTML with the JSON path directly embedded
-        qa_html = f"""
-        {qa_button_html}
-        <div id="qaPanel" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
-            <h2 style="color: #333;">Question Answering</h2>
-            <p>Ask questions about the knowledge graph:</p>
-            
-            <div style="margin: 20px 0;">
-                <input type="text" id="questionInput" placeholder="Enter your question..." 
-                       style="width: 70%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px;">
-                <button onclick="askQuestion()" 
-                        style="padding: 10px 20px; font-size: 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    Ask
-                </button>
-                <div style="margin-top: 10px;">
-                    <input type="checkbox" id="includeRawText">
-                    <label for="includeRawText">Include original text in context</label>
-                </div>
-                <div style="margin-top: 10px;">
-                    <label for="llmModel">LLM Model:</label>
-                    <select id="llmModel" style="padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="deepseek-chat" selected>DeepSeek (Default)</option>
-                        <option value="gpt-4o">OpenAI GPT-4o</option>
-                        <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
-                    </select>
-                </div>
-                <div style="margin-top: 10px;">
-                    <label for="llmProvider">LLM Provider:</label>
-                    <select id="llmProvider" style="padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="deepseek" selected>DeepSeek (Default)</option>
-                        <option value="openai">OpenAI</option>
-                        <option value="anthropic">Anthropic</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div id="loadingIndicator" style="display: none; margin: 20px 0;">
-                <p>Processing your question...</p>
-            </div>
-            
-            <div id="answerContainer" style="display: none; margin: 20px 0; padding: 15px; background-color: #f9f9f9; border-radius: 4px;">
-                <h3>Answer:</h3>
-                <p id="answerText" style="font-size: 16px; line-height: 1.5;"></p>
-                
-                <div id="expandButtonContainer" style="margin-top: 15px; display: none;">
-                    <button onclick="toggleContext()" id="toggleContextButton" 
-                            style="padding: 5px 10px; font-size: 14px; background-color: #ddd; border: none; border-radius: 4px; cursor: pointer;">
-                        Show Context
-                    </button>
-                    <div id="contextContainer" style="display: none; margin-top: 10px; padding: 10px; background-color: #f1f1f1; border-radius: 4px;">
-                        <h4>Relations used:</h4>
-                        <pre id="contextText" style="font-family: monospace; white-space: pre-wrap; font-size: 14px;"></pre>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="errorContainer" style="display: none; margin: 20px 0; padding: 15px; background-color: #ffe6e6; border-radius: 4px;">
-                <h3>Error:</h3>
-                <pre id="errorText" style="font-family: monospace; white-space: pre-wrap; font-size: 14px;"></pre>
-            </div>
-        </div>
-        
-        <script>
-            function toggleQAPanel() {{
-                var qaPanel = document.getElementById('qaPanel');
-                var qaBtn = document.getElementById('toggleQABtn');
-                var networkContainer = document.getElementById('mynetwork');
-                
-                // Also hide source text if it's open when showing QA panel
-                var textSection = document.getElementById('textSection');
-                var textBtn = document.getElementById('toggleTextBtn');
-                
-                if (qaPanel.style.display === 'none') {{
-                    // Hide source text if it's open
-                    if (textSection && textSection.style.display !== 'none') {{
-                        textSection.style.display = 'none';
-                        if (textBtn) textBtn.innerText = 'Show Text';
-                        if (textBtn) textBtn.style.backgroundColor = '#4CAF50';
-                    }}
-                    
-                    // Show QA panel
-                    qaPanel.style.display = 'block';
-                    qaBtn.innerText = 'Hide QA';
-                    qaBtn.style.backgroundColor = '#dc3545'; // Red color for hide button
-                    
-                    // Restore original network container height
-                    networkContainer.style.height = '750px';
-                }} else {{
-                    // Hide QA panel
-                    qaPanel.style.display = 'none';
-                    qaBtn.innerText = 'Show QA';
-                    qaBtn.style.backgroundColor = '#007BFF'; // Blue color for show button
-                    
-                    // Maximize network container height
-                    var windowHeight = window.innerHeight;
-                    var networkTop = networkContainer.getBoundingClientRect().top;
-                    var newHeight = windowHeight - networkTop - 20; // 20px padding
-                    networkContainer.style.height = newHeight + 'px';
-                }}
-                
-                // Redraw the network to fit the new container size
-                if (typeof network !== 'undefined') {{
-                    network.fit();
-                }}
-            }}
-            
-            function toggleContext() {{
-                var contextContainer = document.getElementById('contextContainer');
-                var toggleButton = document.getElementById('toggleContextButton');
-                
-                if (contextContainer.style.display === 'none') {{
-                    contextContainer.style.display = 'block';
-                    toggleButton.textContent = 'Hide Context';
-                }} else {{
-                    contextContainer.style.display = 'none';
-                    toggleButton.textContent = 'Show Context';
-                }}
-            }}
-            
-            function askQuestion() {{
-                var question = document.getElementById('questionInput').value.trim();
-                if (!question) {{
-                    alert("Please enter a question.");
-                    return;
-                }}
-                
-                var includeRawText = document.getElementById('includeRawText').checked;
-                var jsonPath = "{json_path}";
-                var llmModel = document.getElementById('llmModel').value;
-                var llmProvider = document.getElementById('llmProvider').value;
-                
-                // Show loading indicator
-                document.getElementById('loadingIndicator').style.display = 'block';
-                document.getElementById('answerContainer').style.display = 'none';
-                document.getElementById('errorContainer').style.display = 'none';
-                
-                // Try to use the API server first
-                fetch('http://localhost:8000/api/qa', {{
-                    method: 'POST',
-                    headers: {{
-                        'Content-Type': 'application/json',
-                    }},
-                    body: JSON.stringify({{
-                        question: question,
-                        json_path: jsonPath,
-                        include_raw_text: includeRawText,
-                        llm_model: llmModel,
-                        llm_provider: llmProvider
-                    }})
-                }})
-                .then(response => {{
-                    if (!response.ok) {{
-                        throw new Error('Network response was not ok');
-                    }}
-                    return response.json();
-                }})
-                .then(data => {{
-                    // Hide loading indicator
-                    document.getElementById('loadingIndicator').style.display = 'none';
-                    
-                    // Show answer
-                    document.getElementById('answerContainer').style.display = 'block';
-                    document.getElementById('answerText').textContent = data.answer;
-                    
-                    // Show context if available
-                    if (data.context) {{
-                        document.getElementById('expandButtonContainer').style.display = 'block';
-                        document.getElementById('contextText').textContent = data.context;
-                    }} else {{
-                        document.getElementById('expandButtonContainer').style.display = 'none';
-                    }}
-                }})
-                .catch(error => {{
-                    // If the API server fails, show a message with instructions for running the app with --qa
-                    document.getElementById('loadingIndicator').style.display = 'none';
-                    document.getElementById('errorContainer').style.display = 'block';
-                    
-                    // Provide detailed instructions for the fallback mechanism
-                    var fallbackInstructions = 'Error: ' + error.message + 
-                        '\\n\\nTo get answers directly in this visualization, please:' +
-                        '\\n1. Close this HTML file if it is open in your browser' +
-                        '\\n2. Start the API server: python -m src.graph_db.app --api-server --api-port 8000' +
-                        '\\n3. Open this HTML file in your browser while the server is running' +
-                        '\\n\\nAlternatively, you can run the QA functionality directly from the command line:' +
-                        '\\npython -m src.graph_db.app --qa "' + question + '" --qa-json ' + jsonPath + 
-                        (includeRawText ? ' --qa-include-raw-text' : '') + 
-                        ' --qa-llm-model ' + llmModel + ' --qa-llm-provider ' + llmProvider;
-                    
-                    document.getElementById('errorText').textContent = fallbackInstructions;
-                }});
-            }}
-        </script>
-        """
-        
-        return qa_html
-    
-    def _get_entity_color(self, entity_type: str) -> str:
-        """Get the color for a given entity type."""
-        return self.entity_colors.get(entity_type.upper(), self.default_color)
 
-    def create_visualization_from_data(self, 
-                                      entities: List[Dict[str, Any]], 
-                                      relations: List[Dict[str, Any]],
-                                      output_path: str = "graph.html",
-                                      title: str = "Graph Visualization",
-                                      raw_text: str = "") -> bool:
+    def _generate_raw_text_html(self, raw_text: str) -> str:
+        """Generate HTML for raw text display."""
+        try:
+            print(f"Debug: In _generate_raw_text_html, raw_text type = {type(raw_text)}")
+            print(f"Debug: html module type = {type(html)}")
+            print(f"Debug: html.escape type = {type(html.escape)}")
+            return f"""
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px; background-color: white;">
+                <p style="white-space: pre-wrap;">{raw_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;') if raw_text else "No source text available."}</p>
+            </div>
+            """
+        except Exception as e:
+            import traceback
+            print(f"Debug: Error in _generate_raw_text_html: {str(e)}")
+            print(f"Debug: Traceback: {traceback.format_exc()}")
+            # Fallback in case html.escape fails
+            if raw_text:
+                # Replace problematic characters manually
+                safe_text = raw_text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#39;')
+            else:
+                safe_text = "No source text available."
+            return f"""
+            <div id="sourceTextContainer" style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; margin-top: 10px; background-color: white;">
+                <p style="white-space: pre-wrap;">{safe_text}</p>
+            </div>
+            """
+
+    def _generate_qa_html(self, json_path: str) -> str:
+        """Generate HTML for QA functionality."""
+    def _generate_control_sections_html(self, raw_text: str = None, json_path: str = None) -> str:
         """
-        Create a visualization from entities and relations.
+        Generate HTML for the button control panel and expandable sections.
         
         Args:
-            entities (List[Dict[str, Any]]): List of entities
-            relations (List[Dict[str, Any]]): List of relations
-            output_path (str): Path to save the visualization
-            title (str): Title of the visualization
-            raw_text (str): Raw text used to generate the graph
-            
+            raw_text (str, optional): Raw text to display in the text section.
+            json_path (str, optional): Path to the JSON file for QA functionality.
+                
         Returns:
-            bool: True if visualization created successfully, False otherwise
+            str: HTML for the control panel and expandable sections.
         """
-        try:
-            # Create a networkx graph
-            G = nx.DiGraph()
-            
-            # Add nodes
-            for entity in entities:
-                node_id = entity.get("id", hash(entity["name"]))
-                entity_type = entity["type"].upper()  # Ensure uppercase for color matching
-                color = self.entity_colors.get(entity_type, self.default_color)
+        # Create buttons for text and QA sections
+        buttons_html = """
+        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
+            <button id="toggleTextBtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
+            <button id="toggleQABtn" class="control-btn" style="padding: 8px 15px; cursor: pointer; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Ask Questions</button>
+        </div>
+        """
+        
+        # Create JavaScript to toggle sections
+        toggle_js = """
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get DOM elements
+                const textBtn = document.getElementById('toggleTextBtn');
+                const textSection = document.getElementById('textSection');
+                const qaBtn = document.getElementById('toggleQABtn');
+                const qaSection = document.getElementById('qaSection');
+                const networkContainer = document.getElementById('mynetwork');
+                const expandableSections = document.getElementById('expandableSections');
                 
-                # Create a formatted title with all properties
-                properties = entity.get("properties", {})
-                title_text = f"{entity['name']} ({entity['type']})"
-                if properties:
-                    title_text += "\n\nProperties:"
-                    for prop_key, prop_value in properties.items():
-                        title_text += f"\n• {prop_key}: {prop_value}"
+                console.log('DOM Content Loaded');
+                console.log('textBtn exists:', !!textBtn);
+                console.log('textSection exists:', !!textSection);
+                console.log('qaBtn exists:', !!qaBtn);
+                console.log('qaSection exists:', !!qaSection);
+                console.log('expandableSections exists:', !!expandableSections);
                 
-                G.add_node(
-                    node_id, 
-                    label=entity["name"], 
-                    title=title_text,  # Use plain text title
-                    color=color,  # Explicitly set color instead of group
-                    font={'color': color},  # Set font color to match node color
-                    properties=entity.get("properties", {})
-                )
-            
-            # Add edges
-            for relation in relations:
-                from_id = relation["from_entity"].get("id", hash(relation["from_entity"]["name"]))
-                to_id = relation["to_entity"].get("id", hash(relation["to_entity"]["name"]))
+                // Ensure sections are initially hidden
+                if (textSection) {
+                    textSection.style.display = 'none';
+                    console.log('Initialized textSection to hidden');
+                }
                 
-                # Create a formatted title with all properties
-                properties = relation.get("properties", {})
-                title_text = relation['relation']
-                if properties:
-                    title_text += "\n\nProperties:"
-                    for prop_key, prop_value in properties.items():
-                        title_text += f"\n• {prop_key}: {prop_value}"
+                if (qaSection) {
+                    qaSection.style.display = 'none';
+                    console.log('Initialized qaSection to hidden');
+                }
                 
-                G.add_edge(
-                    from_id, 
-                    to_id, 
-                    label=relation["relation"],
-                    title=title_text,  # Use plain text title
-                    properties=relation.get("properties", {}),
-                    color={
-                        "color": "#000000",
-                        "highlight": "#000000",
-                        "hover": "#000000",
-                        "inherit": False
-                    },
-                    arrows={
-                        "to": {
-                            "enabled": True
+                // Make sure expandableSections is visible
+                if (expandableSections) {
+                    expandableSections.style.display = 'block';
+                    console.log('Made expandableSections visible');
+                }
+                
+                // Text button click handler
+                if (textBtn && textSection) {
+                    textBtn.addEventListener('click', function() {
+                        console.log('Text button clicked');
+                        console.log('Current textSection display:', textSection.style.display);
+                        
+                        // Check if section is visible (could be empty string or 'none')
+                        const isVisible = textSection.style.display === 'block';
+                        
+                        // Hide QA section if visible
+                        if (qaSection && qaSection.style.display === 'block') {
+                            qaSection.style.display = 'none';
+                            if (qaBtn) qaBtn.style.backgroundColor = '#2196F3';
                         }
-                    }
-                )
-            
-            # Create a pyvis network
-            net = Network(notebook=False, directed=True, height="750px", width="100%")
-            
-            # Set options for create_visualization_from_data method
-            net.set_options("""
-            {
-                "nodes": {
-                    "shape": "dot",
-                    "size": 10,
-                    "font": {
-                        "size": 8,
-                        "face": "Tahoma",
-                        "color": "inherit"
-                    }
-                },
-                "edges": {
-                    "font": {
-                        "size": 4,
-                        "align": "middle"
-                    },
-                    "color": {
-                        "color": "#000000",
-                        "inherit": false
-                    },
-                    "arrows": {
-                        "to": {
-                            "enabled": true,
-                            "type": "arrow",
-                            "scaleFactor": 1
-                        },
-                        "from": {
-                            "enabled": false
-                        },
-                        "middle": {
-                            "enabled": false
+                        
+                        // Toggle text section
+                        textSection.style.display = isVisible ? 'none' : 'block';
+                        textBtn.style.backgroundColor = isVisible ? '#4CAF50' : '#f44336';
+                        
+                        console.log('New textSection display:', textSection.style.display);
+                        
+                        // Adjust network height
+                        adjustNetworkHeight();
+                    });
+                }
+                
+                // QA button click handler
+                if (qaBtn && qaSection) {
+                    qaBtn.addEventListener('click', function() {
+                        console.log('QA button clicked');
+                        console.log('Current qaSection display:', qaSection.style.display);
+                        
+                        // Check if section is visible (could be empty string or 'none')
+                        const isVisible = qaSection.style.display === 'block';
+                        
+                        // Hide text section if visible
+                        if (textSection && textSection.style.display === 'block') {
+                            textSection.style.display = 'none';
+                            if (textBtn) textBtn.style.backgroundColor = '#4CAF50';
                         }
-                    },
-                    "smooth": {
-                        "type": "continuous",
-                        "forceDirection": "none"
+                        
+                        // Toggle QA section
+                        qaSection.style.display = isVisible ? 'none' : 'block';
+                        qaBtn.style.backgroundColor = isVisible ? '#2196F3' : '#f44336';
+                        
+                        console.log('New qaSection display:', qaSection.style.display);
+                        
+                        // Adjust network height
+                        adjustNetworkHeight();
+                    });
+                }
+                
+                // Initialize network height
+                adjustNetworkHeight();
+                
+                // Function to adjust network height based on visible sections
+                function adjustNetworkHeight() {
+                    if (!networkContainer) return;
+                    
+                    const textVisible = textSection && textSection.style.display === 'block';
+                    const qaVisible = qaSection && qaSection.style.display === 'block';
+                    
+                    if (!textVisible && !qaVisible) {
+                        // Maximize height when no sections are visible
+                        const windowHeight = window.innerHeight;
+                        const networkTop = networkContainer.getBoundingClientRect().top;
+                        const newHeight = windowHeight - networkTop - 80; // Allow for buttons at bottom
+                        networkContainer.style.height = newHeight + 'px';
+                    } else {
+                        // Fixed height when a section is visible
+                        networkContainer.style.height = '600px';
                     }
-                },
-                "physics": {
-                    "barnesHut": {
-                        "gravitationalConstant": -80000,
-                        "springLength": 250,
-                        "springConstant": 0.001
-                    },
-                    "minVelocity": 0.75
-                },
-                "interaction": {
-                    "hover": true,
-                    "tooltipDelay": 0,
-                    "navigationButtons": true,
-                    "keyboard": true,
-                    "hideEdgesOnDrag": false,
-                    "multiselect": true,
-                    "hoverConnectedEdges": true
-                },
-                "tooltip": {
-                    "delay": 0,
-                    "fontColor": "black",
-                    "fontSize": 14,
-                    "fontFace": "Tahoma",
-                    "color": {
-                        "border": "#666",
-                        "background": "#fff"
+                    
+                    // Redraw the network
+                    if (typeof network !== 'undefined') {
+                        network.fit();
                     }
                 }
-            }
-            """)
-            
-            # Add the networkx graph
-            net.from_nx(G)
-            
-            # Save the visualization
-            net.save_graph(output_path)
-            
-            # Generate HTML for the legend and raw text
-            used_entity_types = set([entity["type"] for entity in entities])
-            legend_html = self._generate_legend_html()
-            raw_text_html = self._generate_raw_text_html(raw_text)
-            
-            # Generate HTML for the QA panel
-            json_path = os.path.splitext(output_path)[0] + '.json'
-            qa_html = self._generate_qa_html(json_path)
-            
-            # Add the legend, raw text, and QA panel to the HTML file
-            self._add_html_content(output_path, legend_html, raw_text_html, qa_html)
-            
-            # Save the graph data as JSON
-            self._save_graph_data_as_json(entities, relations, output_path, raw_text)
-            
-            self.logger.info(f"Graph visualization saved to {output_path}")
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"Error creating visualization: {str(e)}")
-            return False
-            
-    def _save_graph_data_as_json(self, entities: List[Dict[str, Any]], relations: List[Dict[str, Any]], html_path: str, raw_text: str = "") -> None:
-        """
-        Save the graph data (entities and relations) as a JSON file.
-        
-        Args:
-            entities (List[Dict[str, Any]]): List of entities
-            relations (List[Dict[str, Any]]): List of relations
-            html_path (str): Path to the HTML visualization file
-            raw_text (str): Raw text used to generate the graph
-        """
-        try:
-            # Create the JSON path by replacing the extension
-            json_path = os.path.splitext(html_path)[0] + '.json'
-            
-            # Extract entity types (schema)
-            entity_types = list(set(entity["type"] for entity in entities))
-            
-            # Extract relation types (schema)
-            relation_types = list(set(relation["relation"] for relation in relations))
-            
-            # Prepare the data
-            graph_data = {
-                "schema": {
-                    "entity_types": entity_types,
-                    "relation_types": relation_types
-                },
-                "data": {
-                    "entities": entities,
-                    "relations": relations
-                },
-                "raw_text": raw_text
-            }
-            
-            # Save the data
-            with open(json_path, 'w', encoding='utf-8') as f:
-                json.dump(graph_data, f, indent=2, ensure_ascii=False)
                 
-            self.logger.info(f"Graph data saved to {json_path}")
+                // Add window resize handler to adjust heights
+                window.addEventListener('resize', adjustNetworkHeight);
+                
+                // Setup QA functionality if applicable
+                setupQAFunctionality();
+            });
             
-        except Exception as e:
-            self.logger.error(f"Error saving graph data as JSON: {str(e)}") 
+            function setupQAFunctionality() {
+                // Get QA elements
+                const askButton = document.getElementById('askButton');
+                const questionInput = document.getElementById('questionInput');
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                const answerContainer = document.getElementById('answerContainer');
+                const answerContent = document.getElementById('answerContent');
+                const expandButtonContainer = document.getElementById('expandButtonContainer');
+                const expandContextButton = document.getElementById('expandContextButton');
+                const contextContainer = document.getElementById('contextContainer');
+                const contextContent = document.getElementById('contextContent');
+                const errorContainer = document.getElementById('errorContainer');
+                const errorContent = document.getElementById('errorContent');
+                const llmProviderSelect = document.getElementById('provider-select');
+                const llmModelSelect = document.getElementById('model-select');
+                
+                // If no QA elements, exit
+                if (!askButton || !questionInput) return;
+                
+                // Handle question submission
+                askButton.addEventListener('click', function() {
+                    const question = questionInput.value.trim();
+                    if (!question) {
+                        alert('Please enter a question');
+                        return;
+                    }
+                    
+                    // Hide any previous results
+                    if (answerContainer) answerContainer.style.display = 'none';
+                    if (errorContainer) errorContainer.style.display = 'none';
+                    
+                    // Show loading indicator
+                    if (loadingIndicator) loadingIndicator.style.display = 'block';
+                    
+                    // Get selected provider and model
+                    const provider = llmProviderSelect ? llmProviderSelect.value : 'openai';
+                    const model = llmModelSelect ? llmModelSelect.value : 'gpt-4o';
+                    
+                    // Get the current window location to determine API endpoint
+                    const currentHost = window.location.hostname;
+                    const apiPort = 8000; // Default API port
+                    const apiUrl = `http://${currentHost}:${apiPort}/api/qa`;
+                    
+                    // Make API request with error handling
+                    fetch(apiUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            question: question,
+                            provider: provider,
+                            model: model,
+                            include_context: false,
+                            json_path: "{json_path if json_path else ''}"
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('API response:', data);
+                        
+                        // Hide loading indicator
+                        document.getElementById('loadingIndicator').style.display = 'none';
+                        
+                        // Show answer container
+                        const answerContainer = document.getElementById('answerContainer');
+                        answerContainer.style.display = 'block';
+                        
+                        // Update answer content with markdown support
+                        const answerContent = document.getElementById('answerContent');
+                        answerContent.textContent = data.answer;
+                        
+                        // Handle context if available
+                        if (data.context && data.context.length > 0 && contextContent) {
+                            let contextHtml = '<ul>';
+                            data.context.forEach(item => {
+                                contextHtml += `<li><strong>${item.relation_type}</strong>: ${item.source_name} → ${item.target_name}</li>`;
+                            });
+                            contextHtml += '</ul>';
+                            
+                            contextContent.innerHTML = contextHtml;
+                            
+                            // Show expand button
+                            document.getElementById('expandButtonContainer').style.display = 'block';
+                            
+                            // Set up context expansion
+                            const expandButton = document.getElementById('expandContextButton');
+                            const contextContainer = document.getElementById('contextContainer');
+                            
+                            expandButton.onclick = function() {
+                                if (contextContainer.style.display === 'none' || !contextContainer.style.display) {
+                                    contextContainer.style.display = 'block';
+                                } else {
+                                    contextContainer.style.display = 'none';
+                                }
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error submitting question:', error);
+                        // Show error message
+                        const errorContent = document.getElementById('errorContent');
+                        errorContent.textContent = 'An error occurred while submitting the question. Please try again later.';
+                        
+                        // Show error container
+                        document.getElementById('errorContainer').style.display = 'block';
+                    });
+                });
+                
+                // Handle context expansion
+                if (expandContextButton && contextContainer) {
+                    expandContextButton.addEventListener('click', function() {
+                        const isVisible = contextContainer.style.display === 'block';
+                        contextContainer.style.display = isVisible ? 'none' : 'block';
+                        expandContextButton.textContent = isVisible ? 'Show Context' : 'Hide Context';
+                    });
+                }
+                
+                // Setup model-provider sync
+                syncModelProvider();
+            }
+            
+            function syncModelProvider() {
+                const modelSelect = document.getElementById('model-select');
+                const providerSelect = document.getElementById('provider-select');
+                if (!modelSelect || !providerSelect) return;
+                
+                modelSelect.addEventListener('change', function() {
+                    const model = modelSelect.value;
+                    if (model === 'gpt-4o') {
+                        providerSelect.value = 'openai';
+                    } else if (model === 'deepseek-chat') {
+                        providerSelect.value = 'deepseek';
+                    } else if (model === 'claude-3-5-sonnet-20241022') {
+                        providerSelect.value = 'anthropic';
+                    }
+                });
+                
+                providerSelect.addEventListener('change', function() {
+                    const provider = providerSelect.value;
+                    if (provider === 'openai' && modelSelect.value !== 'gpt-4o') {
+                        modelSelect.value = 'gpt-4o';
+                    } else if (provider === 'deepseek' && modelSelect.value !== 'deepseek-chat') {
+                        modelSelect.value = 'deepseek-chat';
+                    } else if (provider === 'anthropic' && modelSelect.value !== 'claude-3-5-sonnet-20241022') {
+                        modelSelect.value = 'claude-3-5-sonnet-20241022';
+                    }
+                });
+            }
+        </script>
+        """
+        
+        # Return the combined HTML
+        return buttons_html + toggle_js 
