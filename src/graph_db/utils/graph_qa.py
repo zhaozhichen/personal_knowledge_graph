@@ -144,6 +144,7 @@ class GraphQA:
         """
         return self.graph_data["data"]["relations"][relation_id]
     
+    # DEPRECATED: Kept for backward compatibility, no longer used by the answer_question method
     def _find_connected_relations(self, 
                                  relation_ids: Set[int],
                                  excluded_ids: Set[int]) -> List[Tuple[int, Dict[str, Any]]]:
@@ -257,27 +258,44 @@ class GraphQA:
         # Sort by similarity (descending)
         relation_similarities.sort(key=lambda x: x[1], reverse=True)
         
-        # Step 3: Pick top N relations
+        # Step 3: Pick top N relations and extract their entities
         context_relation_ids = set()
-        added_in_iteration = set()
+        context_entity_set = set()  # Set to track entities in the context
         
         # Add top N most similar relations
         for i, (rel_id, similarity) in enumerate(relation_similarities):
             if i >= top_n:
                 break
+            # Add relation to context
             context_relation_ids.add(rel_id)
-            added_in_iteration.add(rel_id)
             
-        logger.info(f"Added {len(added_in_iteration)} initial relations to context")
+            # Add entities from the relation to the context entity set
+            relation = self._get_relation_by_id(rel_id)
+            context_entity_set.add(relation["from_entity"]["name"])
+            context_entity_set.add(relation["to_entity"]["name"])
+            
+        logger.info(f"Added {len(context_relation_ids)} initial relations to context")
+        logger.info(f"Initial context entity set contains {len(context_entity_set)} entities")
         
         # Step 4-6: Expand context by adding connected relations
         for d in range(depth):
-            # Find connected relations
-            connected_relations = self._find_connected_relations(
-                added_in_iteration, 
-                context_relation_ids - added_in_iteration
-            )
+            # Find relations connecting to entities in the context entity set
+            connected_relations = []
             
+            for i, relation in enumerate(self.graph_data["data"]["relations"]):
+                # Skip if this relation is already in the context
+                if i in context_relation_ids:
+                    continue
+                
+                # Check if relation connects to any entity in our entity set
+                if (relation["from_entity"]["name"] in context_entity_set or 
+                    relation["to_entity"]["name"] in context_entity_set):
+                    connected_relations.append((i, relation))
+            
+            if not connected_relations:
+                logger.info(f"No connected relations found in iteration {d+1}, stopping expansion")
+                break
+                
             # Calculate similarity for connected relations
             connected_similarities = []
             for rel_id, relation in connected_relations:
@@ -293,22 +311,33 @@ class GraphQA:
             # Sort by similarity
             connected_similarities.sort(key=lambda x: x[2], reverse=True)
             
-            # Reset the added in this iteration set
-            added_in_iteration = set()
+            # Initialize new entity set for this iteration
+            new_entity_set = set()
             
             # Add top N to context
+            added_relations = 0
             for i, (rel_id, relation, similarity) in enumerate(connected_similarities):
                 if i >= top_n:
                     break
+                    
                 context_relation_ids.add(rel_id)
-                added_in_iteration.add(rel_id)
+                added_relations += 1
+                
+                # Add entities from this relation to the new entity set
+                new_entity_set.add(relation["from_entity"]["name"])
+                new_entity_set.add(relation["to_entity"]["name"])
             
-            logger.info(f"Iteration {d+1}: Added {len(added_in_iteration)} new relations to context")
+            logger.info(f"Iteration {d+1}: Added {added_relations} new relations to context")
             
             # Break if no new relations were added
-            if not added_in_iteration:
+            if added_relations == 0:
                 logger.info(f"No new relations added in iteration {d+1}, stopping expansion")
                 break
+                
+            # Step 5: Update context entity set to be the DIFFERENCE
+            # between the new context entity set and original context entity set
+            context_entity_set = new_entity_set - context_entity_set
+            logger.info(f"Updated context entity set contains {len(context_entity_set)} entities")
         
         # Step 7: Build context string
         context = self._create_context_from_relations(
