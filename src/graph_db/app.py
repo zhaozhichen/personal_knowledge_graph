@@ -615,15 +615,23 @@ def main():
     global MAX_CHUNK_SIZE, CHUNK_OVERLAP
     
     parser = argparse.ArgumentParser(description="Graph Database Application")
+    
+    # Input source arguments
     parser.add_argument("--text", help="Text to process")
     parser.add_argument("--file", action="append", help="File to process (can be specified multiple times, e.g., --file file1.txt --file file2.txt)")
     parser.add_argument("--url", action="append", help="URL to process (can be specified multiple times, e.g., --url url1 --url url2)")
     parser.add_argument("--input-dir", help="Directory containing files to process")
+    
+    # Output arguments
     parser.add_argument("--output", default="graph.html", help="Output file path")
+    
+    # Neo4j connection arguments
     parser.add_argument("--db-uri", default="bolt://localhost:7687", help="Neo4j URI")
     parser.add_argument("--db-user", default="neo4j", help="Neo4j username")
     parser.add_argument("--db-pass", default="password", help="Neo4j password")
     parser.add_argument("--clear", action="store_true", help="Clear existing data")
+    
+    # Processing arguments
     parser.add_argument("--llm-model", default="gpt-4o", help="LLM model to use")
     parser.add_argument("--visualization-only", action="store_true", help="Skip Neo4j connection and only create visualization")
     parser.add_argument("--verbose", action="store_true", help="Display detailed information about extracted entities and relations")
@@ -634,14 +642,15 @@ def main():
     parser.add_argument("--similarity-threshold", type=float, default=0.85, help="Threshold for string similarity in node deduplication (0.0 to 1.0)")
     parser.add_argument("--use-embeddings", action="store_true", help="Use LLM embeddings for similarity calculation in node deduplication")
     
-    # Add QA-specific arguments
-    parser.add_argument("--qa", help="Enable question answering mode and specify the question")
-    parser.add_argument("--qa-json", help="JSON file to use for question answering (defaults to the JSON version of the output file)")
-    parser.add_argument("--qa-top-n", type=int, default=10, help="Number of top relations to include in each expansion iteration")
-    parser.add_argument("--qa-depth", type=int, default=3, help="Number of relation expansion iterations")
-    parser.add_argument("--qa-include-raw-text", action="store_true", help="Include raw text in QA context")
-    parser.add_argument("--qa-model", help="LLM model to use for question answering (defaults to --llm-model)")
-    parser.add_argument("--qa-provider", default="openai", help="LLM provider to use for question answering")
+    # QA-specific arguments
+    qa_group = parser.add_argument_group('Question Answering')
+    qa_group.add_argument("--qa", help="Enable question answering mode and specify the question")
+    qa_group.add_argument("--qa-json", help="JSON file to use for question answering (defaults to the JSON version of the output file)")
+    qa_group.add_argument("--qa-top-n", type=int, default=10, help="Number of top relations to include in each expansion iteration")
+    qa_group.add_argument("--qa-depth", type=int, default=3, help="Number of relation expansion iterations")
+    qa_group.add_argument("--qa-include-raw-text", action="store_true", help="Include raw text in QA context")
+    qa_group.add_argument("--qa-model", help="LLM model to use for question answering (defaults to --llm-model)")
+    qa_group.add_argument("--qa-provider", default="openai", help="LLM provider to use for question answering")
     
     args = parser.parse_args()
     
@@ -653,75 +662,95 @@ def main():
     
     # If in QA mode, perform question answering
     if args.qa:
-        # Determine which JSON file to use
-        json_file_path = args.qa_json
-        if not json_file_path:
-            # Default to the JSON version of the output file
-            json_file_path = args.output.replace('.html', '.json')
-            
-        if not os.path.exists(json_file_path):
-            logger.error(f"JSON file not found: {json_file_path}")
-            print(f"Error: JSON file not found: {json_file_path}")
-            print("You must first generate a graph before using the QA functionality.")
-            return False
-            
-        try:
-            # Initialize QA module
-            qa_model = args.qa_model if args.qa_model else args.llm_model
-            qa = GraphQA(
-                json_file_path=json_file_path,
-                llm_model=qa_model,
-                llm_provider=args.qa_provider
-            )
-            
-            # Get answer
-            result = qa.answer_question(
-                question=args.qa,
-                top_n=args.qa_top_n,
-                depth=args.qa_depth,
-                include_raw_text=args.qa_include_raw_text
-            )
-            
-            # Print answer
-            print("\n" + "="*80)
-            print(f"Question: {result['question']}")
-            print("="*80)
-            print(f"Answer: {result['answer']}")
-            print("="*80)
-            print(f"Used {result['metadata']['relations_used']} relations to generate the answer")
-            
-            if args.verbose:
-                print("\nContext used:")
-                print(result['metadata']['context'])
-                
-            return True
-        except Exception as e:
-            logger.error(f"Error in QA mode: {str(e)}")
-            import traceback
-            logger.error(f"Traceback: {traceback.format_exc()}")
-            print(f"Error: {str(e)}")
-            return False
+        return run_graph_qa(args)
     
+    # Otherwise, perform graph construction
+    return run_graph_construction(args)
+
+def run_graph_qa(args):
+    """
+    Run the graph-based question answering functionality.
+    
+    Args:
+        args: Command line arguments
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    # Determine which JSON file to use
+    json_file_path = args.qa_json
+    if not json_file_path:
+        # Default to the JSON version of the output file
+        json_file_path = args.output.replace('.html', '.json')
+        
+    if not os.path.exists(json_file_path):
+        logger.error(f"JSON file not found: {json_file_path}")
+        print(f"Error: JSON file not found: {json_file_path}")
+        print("You must first generate a graph before using the QA functionality.")
+        return False
+        
+    try:
+        # Initialize QA module
+        qa_model = args.qa_model if args.qa_model else args.llm_model
+        qa = GraphQA(
+            json_file_path=json_file_path,
+            llm_model=qa_model,
+            llm_provider=args.qa_provider
+        )
+        
+        # Get answer
+        result = qa.answer_question(
+            question=args.qa,
+            top_n=args.qa_top_n,
+            depth=args.qa_depth,
+            include_raw_text=args.qa_include_raw_text
+        )
+        
+        # Print answer
+        print("\n" + "="*80)
+        print(f"Question: {result['question']}")
+        print("="*80)
+        print(f"Answer: {result['answer']}")
+        print("="*80)
+        print(f"Used {result['metadata']['relations_used']} relations to generate the answer")
+        
+        if args.verbose:
+            print("\nContext used:")
+            print(result['metadata']['context'])
+            
+        return True
+    except Exception as e:
+        logger.error(f"Error in QA mode: {str(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        print(f"Error: {str(e)}")
+        return False
+
+def run_graph_construction(args):
+    """
+    Run the graph construction and visualization functionality.
+    
+    Args:
+        args: Command line arguments
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
     if not args.text and not args.file and not args.url and not args.input_dir:
-        parser.print_help()
-        print("\nExamples:")
-        print("  Process a single file:")
-        print("    python -m src.graph_db.app --file input/example.txt --output graph.html --visualization-only")
-        print("\n  Process multiple files:")
-        print("    python -m src.graph_db.app --file input/file1.txt --file input/file2.txt --output graph.html --visualization-only")
-        print("\n  Process all files in a directory:")
-        print("    python -m src.graph_db.app --input-dir input --output graph.html --visualization-only")
-        print("\n  Ask a question using an existing graph:")
-        print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --output graph.html")
+        print_help_and_examples()
         return False
     
-    # Process all input sources using the new unified function
+    # Process all input sources using the unified function
     return process_input_sources(
         text=args.text,
         files=args.file,
         urls=args.url,
         input_dir=args.input_dir,
         output_path=args.output,
+        db_uri=args.db_uri,
+        db_username=args.db_user,
+        db_password=args.db_pass,
+        clear_existing=args.clear,
         visualization_only=args.visualization_only,
         llm_model=args.llm_model,
         verbose=args.verbose,
@@ -732,6 +761,20 @@ def main():
         similarity_threshold=args.similarity_threshold,
         use_embeddings=args.use_embeddings,
     )
+
+def print_help_and_examples():
+    """Print help text and examples for the application."""
+    parser = argparse.ArgumentParser(description="Graph Database Application")
+    parser.print_help()
+    print("\nExamples:")
+    print("  Process a single file:")
+    print("    python -m src.graph_db.app --file input/example.txt --output graph.html --visualization-only")
+    print("\n  Process multiple files:")
+    print("    python -m src.graph_db.app --file input/file1.txt --file input/file2.txt --output graph.html --visualization-only")
+    print("\n  Process all files in a directory:")
+    print("    python -m src.graph_db.app --input-dir input --output graph.html --visualization-only")
+    print("\n  Ask a question using an existing graph:")
+    print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --output graph.html")
 
 if __name__ == "__main__":
     main() 

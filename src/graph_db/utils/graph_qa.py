@@ -178,25 +178,33 @@ class GraphQA:
                 
         return connected_relations
     
-    def _create_context_from_relations(self, relation_ids: Set[int], raw_text: Optional[str] = None) -> str:
+    def _create_context_from_relations(self, relation_ids: Set[int], relation_similarities: Dict[int, float], raw_text: Optional[str] = None) -> str:
         """
         Create a context string from the selected relations.
         
         Args:
             relation_ids (Set[int]): Set of relation IDs to include in the context
+            relation_similarities (Dict[int, float]): Dictionary mapping relation IDs to their similarity scores
             raw_text (Optional[str]): The raw text to include at the end of the context
             
         Returns:
             str: Context string for question answering
         """
-        context = "Knowledge Graph Context:\n\n"
+        context = "Knowledge Graph Context (ordered by relevance to the question):\n\n"
+        
+        # Convert set to list for sorting
+        relation_id_list = list(relation_ids)
+        
+        # Sort relations by similarity score (descending)
+        relation_id_list.sort(key=lambda rel_id: relation_similarities.get(rel_id, 0.0), reverse=True)
         
         # Add relations to context
-        for i, rel_id in enumerate(relation_ids):
+        for i, rel_id in enumerate(relation_id_list):
             relation = self._get_relation_by_id(rel_id)
             from src.graph_db.app import get_relation_representation
             relation_text = get_relation_representation(relation)
-            context += f"{i+1}. {relation_text}\n\n"
+            similarity = relation_similarities.get(rel_id, 0.0)
+            context += f"{i+1}. {relation_text} (relevance: {similarity:.2f})\n\n"
         
         return context
     
@@ -234,6 +242,7 @@ class GraphQA:
         
         # Step 2: Calculate similarity with all relations
         relation_similarities = []
+        relation_similarities_dict = {}  # For lookup by relation ID
         for i, relation in enumerate(self.graph_data["data"]["relations"]):
             if query_embedding and "embedding" in relation:
                 # Use embedding similarity
@@ -243,6 +252,7 @@ class GraphQA:
                 similarity = self._calculate_text_similarity(question, relation)
             
             relation_similarities.append((i, similarity))
+            relation_similarities_dict[i] = similarity
         
         # Sort by similarity (descending)
         relation_similarities.sort(key=lambda x: x[1], reverse=True)
@@ -303,12 +313,16 @@ class GraphQA:
         # Step 7: Build context string
         context = self._create_context_from_relations(
             context_relation_ids,
+            relation_similarities_dict,
             self.graph_data.get("raw_text") if include_raw_text else None
         )
         
         # Step 8: Generate answer using LLM
         prompt = f"""You are a helpful question answering system that has access to a knowledge graph. 
 Answer the question based on the provided context from the knowledge graph.
+
+The context contains relations from the knowledge graph, ordered by their relevance to your question.
+Relations with higher relevance scores are more likely to contain information pertinent to answering the question.
 
 {context}
 
