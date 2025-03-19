@@ -62,60 +62,76 @@ class GraphVisualizer:
         # Create a directed graph
         G = nx.DiGraph()
         
-        # Add nodes with attributes
+        # Figure out where entities and relations are stored
+        entities = []
+        relations = []
+        
+        # Check if entities and relations are at the top level
         if "entities" in graph_data:
-            # New schema format
-            for entity in graph_data["entities"]:
-                # Support both new and old entity formats
-                if "entity_name" in entity and "entity_type" in entity and "entity_id" in entity:
-                    # New format
-                    entity_type = entity["entity_type"]
-                    entity_name = entity["entity_name"]
-                    entity_id = entity["entity_id"]
-                else:
-                    # Old format (lotr_graph.json)
-                    entity_type = entity.get("type", "UNKNOWN")
-                    entity_name = entity.get("name", "Unnamed")
-                    entity_id = entity.get("id", str(uuid.uuid4()))
-                
-                # Get the color for this entity type
-                color = self._get_entity_color(entity_type)
-                
-                # Add node with attributes
-                G.add_node(
-                    entity_id, 
-                    title=f"{entity_name} ({entity_type})", 
-                    label=entity_name, 
-                    color=color,
-                    shape="dot",
-                    size=15,
-                    entity_type=entity_type
-                )
+            entities = graph_data["entities"]
+        # Check if they're inside a "data" field
+        elif "data" in graph_data and "entities" in graph_data["data"]:
+            entities = graph_data["data"]["entities"]
+            
+        # Same for relations
+        if "relations" in graph_data:
+            relations = graph_data["relations"]
+        elif "data" in graph_data and "relations" in graph_data["data"]:
+            relations = graph_data["data"]["relations"]
+            
+        # Log what we found
+        self.logger.info(f"Found {len(entities)} entities and {len(relations)} relations")
+        
+        # Add nodes with attributes
+        for entity in entities:
+            # Support both new and old entity formats
+            if "entity_name" in entity and "entity_type" in entity and "entity_id" in entity:
+                # New format
+                entity_type = entity["entity_type"]
+                entity_name = entity["entity_name"]
+                entity_id = entity["entity_id"]
+            else:
+                # Old format (lotr_graph.json)
+                entity_type = entity.get("type", "UNKNOWN")
+                entity_name = entity.get("name", "Unnamed")
+                entity_id = entity.get("id", str(uuid.uuid4()))
+            
+            # Get the color for this entity type
+            color = self._get_entity_color(entity_type)
+            
+            # Add node with attributes
+            G.add_node(
+                entity_id, 
+                title=f"{entity_name} ({entity_type})", 
+                label=entity_name, 
+                color=color,
+                shape="dot",
+                size=15,
+                entity_type=entity_type
+            )
         
         # Add edges with attributes
-        if "relations" in graph_data:
-            # New schema format
-            for relation in graph_data["relations"]:
-                # Support both new and old relation formats
-                if "source_id" in relation and "target_id" in relation and "relation_type" in relation:
-                    # New format
-                    source_id = relation["source_id"]
-                    target_id = relation["target_id"]
-                    relation_type = relation["relation_type"]
-                else:
-                    # Old format (lotr_graph.json)
-                    source_id = relation.get("from_entity", {}).get("id", "")
-                    target_id = relation.get("to_entity", {}).get("id", "")
-                    relation_type = relation.get("relation", "UNKNOWN")
-                
-                # Add edge with attributes
-                G.add_edge(
-                    source_id, 
-                    target_id, 
-                    title=relation_type, 
-                    label=relation_type,
-                    arrows="to"
-                )
+        for relation in relations:
+            # Support both new and old relation formats
+            if "source_id" in relation and "target_id" in relation and "relation_type" in relation:
+                # New format
+                source_id = relation["source_id"]
+                target_id = relation["target_id"]
+                relation_type = relation["relation_type"]
+            else:
+                # Old format (lotr_graph.json)
+                source_id = relation.get("from_entity", {}).get("id", "")
+                target_id = relation.get("to_entity", {}).get("id", "")
+                relation_type = relation.get("relation", "UNKNOWN")
+            
+            # Add edge with attributes
+            G.add_edge(
+                source_id, 
+                target_id, 
+                title=relation_type, 
+                label=relation_type,
+                arrows="to"
+            )
         
         # Get raw text from graph_data if not provided
         if raw_text is None and "raw_text" in graph_data:
