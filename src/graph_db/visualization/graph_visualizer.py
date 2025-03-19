@@ -200,34 +200,31 @@ class GraphVisualizer:
             html = f.read()
         
         # Insert custom HTML before the closing body tag
-        custom_html = """
+        custom_html = f"""
         <div style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">
             <h2 style="color: #333;">Entity Types</h2>
             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                {0}
+                {legend_html}
             </div>
         </div>
         
-        {1}
+        {raw_text_html}
         
-        {2}
+        {qa_html}
         
         <script>
             // Function to adjust text size based on slider value
-            function adjustTextSize(val) {
-                document.querySelectorAll('.vis-network .vis-node text').forEach(function(textElement) {
+            function adjustTextSize(val) {{
+                document.querySelectorAll('.vis-network .vis-node text').forEach(function(textElement) {{
                     textElement.setAttribute('font-size', val);
-                });
+                }});
                 
-                document.querySelectorAll('.vis-network .vis-edge text').forEach(function(textElement) {
+                document.querySelectorAll('.vis-network .vis-edge text').forEach(function(textElement) {{
                     textElement.setAttribute('font-size', val);
-                });
-            }
+                }});
+            }}
         </script>
         """
-        
-        # Format the custom HTML with the appropriate content
-        custom_html = custom_html.format(legend_html, raw_text_html, qa_html)
         
         html = html.replace("</body>", custom_html + "</body>")
         
@@ -632,7 +629,8 @@ class GraphVisualizer:
         if not json_path:
             return ""
             
-        qa_html = """
+        # Create the HTML with the JSON path directly embedded
+        qa_html = f"""
         <div id="qaPanel" style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">
             <h2 style="color: #333;">Question Answering</h2>
             <p>Ask questions about the knowledge graph:</p>
@@ -677,28 +675,28 @@ class GraphVisualizer:
         </div>
         
         <script>
-            function toggleContext() {
+            function toggleContext() {{
                 var contextContainer = document.getElementById('contextContainer');
                 var toggleButton = document.getElementById('toggleContextButton');
                 
-                if (contextContainer.style.display === 'none') {
+                if (contextContainer.style.display === 'none') {{
                     contextContainer.style.display = 'block';
                     toggleButton.textContent = 'Hide Context';
-                } else {
+                }} else {{
                     contextContainer.style.display = 'none';
                     toggleButton.textContent = 'Show Context';
-                }
-            }
+                }}
+            }}
             
-            function askQuestion() {
+            function askQuestion() {{
                 var question = document.getElementById('questionInput').value.trim();
-                if (!question) {
+                if (!question) {{
                     alert("Please enter a question.");
                     return;
-                }
+                }}
                 
                 var includeRawText = document.getElementById('includeRawText').checked;
-                var jsonPath = "{0}";
+                var jsonPath = "{json_path}";
                 
                 // Show loading indicator
                 document.getElementById('loadingIndicator').style.display = 'block';
@@ -706,24 +704,24 @@ class GraphVisualizer:
                 document.getElementById('errorContainer').style.display = 'none';
                 
                 // Try to use the API server first
-                fetch('/api/ask', {
+                fetch('/api/ask', {{
                     method: 'POST',
-                    headers: {
+                    headers: {{
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
+                    }},
+                    body: JSON.stringify({{
                         question: question,
                         json_path: jsonPath,
                         include_raw_text: includeRawText
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
+                    }})
+                }})
+                .then(response => {{
+                    if (!response.ok) {{
                         throw new Error('Network response was not ok');
-                    }
+                    }}
                     return response.json();
-                })
-                .then(data => {
+                }})
+                .then(data => {{
                     // Hide loading indicator
                     document.getElementById('loadingIndicator').style.display = 'none';
                     
@@ -732,14 +730,14 @@ class GraphVisualizer:
                     document.getElementById('answerText').textContent = data.answer;
                     
                     // Show context if available
-                    if (data.context) {
+                    if (data.context) {{
                         document.getElementById('expandButtonContainer').style.display = 'block';
                         document.getElementById('contextText').textContent = data.context;
-                    } else {
+                    }} else {{
                         document.getElementById('expandButtonContainer').style.display = 'none';
-                    }
-                })
-                .catch(error => {
+                    }}
+                }})
+                .catch(error => {{
                     // If the API server fails, show a message with instructions for running the app with --qa
                     document.getElementById('loadingIndicator').style.display = 'none';
                     document.getElementById('errorContainer').style.display = 'block';
@@ -754,13 +752,10 @@ class GraphVisualizer:
                         '\\npython -m src.graph_db.app --qa "' + question + '" --qa-json ' + jsonPath + (includeRawText ? ' --qa-include-raw-text' : '');
                     
                     document.getElementById('errorText').textContent = fallbackInstructions;
-                });
-            }
+                }});
+            }}
         </script>
         """
-        
-        # Replace the placeholder with the actual JSON path
-        qa_html = qa_html.format(json_path)
         
         return qa_html
     
