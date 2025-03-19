@@ -670,10 +670,10 @@ def main():
                       help='Path to JSON file containing graph data for question answering')
     qa_group.add_argument('--qa-include-raw-text', action='store_true', 
                       help='Include raw text in context for QA')
-    qa_group.add_argument('--qa-llm-model', type=str, default='gpt-4o',
-                      help='LLM model to use for question answering (default: gpt-4o, options: deepseek-chat, claude-3-5-sonnet-20241022)')
-    qa_group.add_argument('--qa-llm-provider', type=str, default='openai',
-                      help='LLM provider to use for question answering (default: openai, options: deepseek, anthropic)')
+    qa_group.add_argument('--qa-llm-model', type=str, default='deepseek-chat',
+                      help='LLM model to use for question answering (default: deepseek-chat, options: gpt-4o, claude-3-5-sonnet-20241022)')
+    qa_group.add_argument('--qa-llm-provider', type=str, default='deepseek',
+                      help='LLM provider to use for question answering (default: deepseek, options: openai, anthropic)')
     
     # Neo4j options
     neo4j_group = parser.add_argument_group('Neo4j Database Options')

@@ -798,16 +798,16 @@ class GraphVisualizer:
                 <div style="margin-top: 10px;">
                     <label for="llmModel">LLM Model:</label>
                     <select id="llmModel" style="padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="gpt-4o">OpenAI GPT-4o (Default)</option>
-                        <option value="deepseek-chat">DeepSeek</option>
+                        <option value="deepseek-chat" selected>DeepSeek (Default)</option>
+                        <option value="gpt-4o">OpenAI GPT-4o</option>
                         <option value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet</option>
                     </select>
                 </div>
                 <div style="margin-top: 10px;">
                     <label for="llmProvider">LLM Provider:</label>
                     <select id="llmProvider" style="padding: 5px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;">
-                        <option value="openai">OpenAI (Default)</option>
-                        <option value="deepseek">DeepSeek</option>
+                        <option value="deepseek" selected>DeepSeek (Default)</option>
+                        <option value="openai">OpenAI</option>
                         <option value="anthropic">Anthropic</option>
                     </select>
                 </div>

@@ -181,13 +181,23 @@ def query_llm(prompt: str, client=None, model=None, provider="openai", image_pat
             response = client.chat.completions.create(**kwargs)
             thinking_time = time.time() - start_time
             
-            # Track token usage
-            token_usage = TokenUsage(
-                prompt_tokens=response.usage.prompt_tokens,
-                completion_tokens=response.usage.completion_tokens,
-                total_tokens=response.usage.total_tokens,
-                reasoning_tokens=response.usage.completion_tokens_details.reasoning_tokens if hasattr(response.usage, 'completion_tokens_details') else None
-            )
+            # Track token usage with special handling for DeepSeek
+            if provider == "deepseek":
+                # Create token usage object without completion_tokens_details
+                token_usage = TokenUsage(
+                    prompt_tokens=response.usage.prompt_tokens,
+                    completion_tokens=response.usage.completion_tokens,
+                    total_tokens=response.usage.total_tokens,
+                    reasoning_tokens=None
+                )
+            else:
+                # Standard OpenAI-compatible token usage
+                token_usage = TokenUsage(
+                    prompt_tokens=response.usage.prompt_tokens,
+                    completion_tokens=response.usage.completion_tokens,
+                    total_tokens=response.usage.total_tokens,
+                    reasoning_tokens=response.usage.completion_tokens_details.reasoning_tokens if hasattr(response.usage, 'completion_tokens_details') else None
+                )
             
             # Calculate cost
             cost = get_token_tracker().calculate_openai_cost(
