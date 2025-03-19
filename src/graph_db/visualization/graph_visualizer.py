@@ -891,12 +891,12 @@ class GraphVisualizer:
             """
             
             # Create JavaScript for the QA functionality
-            json_path_rel = os.path.basename(os.path.splitext(html_path)[0] + '.json')
+            json_path_abs = os.path.abspath(os.path.splitext(html_path)[0] + '.json')
             
             qa_js = f"""
             <script>
                 // Store the JSON path for the QA functionality
-                const jsonPath = '{json_path_rel}';
+                const jsonPath = '{json_path_abs}';
                 console.log('JSON Path:', jsonPath);
                 
                 document.addEventListener('DOMContentLoaded', function() {{
