@@ -339,6 +339,18 @@ def process_input_sources(
                 logger.info(f"Source text found in JSON file ({len(raw_text)} characters)")
             else:
                 logger.info("No source text found in JSON file")
+                # If raw text is empty but we have input files or text, try to recover the raw text
+                if files and len(files) == 1:
+                    try:
+                        logger.info(f"Attempting to load raw text from original file: {files[0]}")
+                        with open(files[0], 'r', encoding='utf-8') as f:
+                            raw_text = f.read()
+                        logger.info(f"Successfully loaded raw text from file ({len(raw_text)} characters)")
+                    except Exception as e:
+                        logger.error(f"Failed to load raw text from file: {str(e)}")
+                elif text:
+                    raw_text = text
+                    logger.info(f"Using provided text as raw text ({len(raw_text)} characters)")
             
         except Exception as e:
             logger.error(f"Error loading existing JSON file: {str(e)}")
@@ -591,6 +603,19 @@ def process_input_and_get_graph_data(
         logger.warning("Embedding generation is disabled because get_embedding function is not available")
     
     # Create graph data structure
+    raw_text_for_json = result["merged_text"]
+    
+    # If raw text is very large, truncate it for JSON storage to avoid memory issues
+    # but keep enough to make the Show Text button functional
+    max_raw_text_length = 100000  # Limit to ~100KB of text
+    if len(raw_text_for_json) > max_raw_text_length:
+        logger.warning(f"Raw text is very large ({len(raw_text_for_json)} characters). Truncating to {max_raw_text_length} characters for JSON storage.")
+        truncation_message = f"\n\n... Text truncated due to size ({len(raw_text_for_json)} total characters) ...\n\n"
+        # Keep the beginning and some of the end
+        beginning_size = int(max_raw_text_length * 0.7)  # 70% from beginning
+        end_size = max_raw_text_length - beginning_size - len(truncation_message)
+        raw_text_for_json = raw_text_for_json[:beginning_size] + truncation_message + raw_text_for_json[-end_size:]
+    
     graph_data = {
         "schema": {
             "entity_types": list(set(entity["type"] for entity in unique_entities)),
@@ -600,7 +625,7 @@ def process_input_and_get_graph_data(
             "entities": unique_entities,
             "relations": unique_relations
         },
-        "raw_text": result["merged_text"]
+        "raw_text": raw_text_for_json
     }
     
     # Save the extracted data to a JSON file
