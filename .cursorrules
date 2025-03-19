@@ -127,6 +127,9 @@ If needed, you can further use the `web_scraper.py` file to scrape the web page 
 - When using seaborn styles in matplotlib, use 'seaborn-v0_8' instead of 'seaborn' as the style name due to recent seaborn version changes
 - Use `gpt-4o` as the model name for OpenAI. It is the latest GPT model and has vision capabilities as well. `o1` is the most advanced and expensive model from OpenAI. Use it when you need to do reasoning, planning, or get blocked.
 - Use `claude-3-5-sonnet-20241022` as the model name for Claude. It is the latest Claude model and has vision capabilities as well.
+- When working with HTML and JavaScript in Python, avoid variable shadowing that can cause conflicts (e.g., a local variable named 'html' can shadow the 'html' module)
+- When interpolating variables in JavaScript from Python f-strings, ensure proper variable declaration and scope in the generated JavaScript code
+- Add debug print statements when troubleshooting complex visualization code to identify the types of variables and module imports
 
 # Multi-Agent Scratchpad
 
@@ -196,6 +199,8 @@ Potential challenges include robust entity and relation extraction, managing dyn
    - Implemented GraphVisualizer class using pyvis/networkx
    - Added customizable visualization options
    - Created interactive HTML output with node and edge styling
+   - Fixed issues with the legend display, control buttons, and QA functionality
+   - Implemented proper JavaScript integration for expandable sections
 
 7. Application Integration (DONE):
    - Created main application module with CLI
@@ -236,4 +241,11 @@ The implementation of the graph database system is complete, with a focus on the
 
 The codebase has been cleaned up to remove all traces of spaCy/BERT-based extraction, focusing solely on the LLM-based approach. Testing shows that the LLM-based approach provides significantly better entity and relation extraction, correctly identifying full entity names and extracting meaningful relationships with high confidence scores.
 
-The system includes a visualization-only mode for testing without Neo4j, and the test script demonstrates the extraction and visualization capabilities using a sample text about Elon Musk and his companies.
+The visualization functionality has been significantly improved, addressing several issues:
+1. Fixed the legend display in the HTML output
+2. Added the missing `_generate_control_sections_html` method
+3. Resolved variable shadowing issues with the `html` module
+4. Fixed the JavaScript code for the "Show Text" and "Ask Questions" buttons
+5. Corrected the JSON path handling in the QA functionality to properly use JavaScript variables
+
+The system now provides a complete end-to-end solution for text-to-graph conversion with an interactive visualization that includes a legend for entity types, expandable text sections, and a question-answering interface.
