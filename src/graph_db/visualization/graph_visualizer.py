@@ -625,7 +625,7 @@ class GraphVisualizer:
             
         # Create a fixed position button that's always visible
         raw_text_html = f"""
-        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <div id="textControlSection" style="position: fixed; bottom: 20px; right: 120px; z-index: 1000;">
             <button id="toggleTextBtn" onclick="toggleSourceText()" style="padding: 8px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Show Text</button>
         </div>
         <div id="textSection" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
@@ -662,7 +662,18 @@ class GraphVisualizer:
                 var btn = document.getElementById('toggleTextBtn');
                 var networkContainer = document.getElementById('mynetwork');
                 
+                // Also hide QA panel if it's open when showing text
+                var qaPanel = document.getElementById('qaPanel');
+                var qaBtn = document.getElementById('toggleQABtn');
+                
                 if (textSection.style.display === 'none') {{
+                    // Hide QA panel if it's open
+                    if (qaPanel && qaPanel.style.display !== 'none') {{
+                        qaPanel.style.display = 'none';
+                        if (qaBtn) qaBtn.innerText = 'Ask Question';
+                        if (qaBtn) qaBtn.style.backgroundColor = '#007BFF';
+                    }}
+                    
                     // Show text
                     textSection.style.display = 'block';
                     btn.innerText = 'Hide Text';
@@ -692,10 +703,12 @@ class GraphVisualizer:
             // Add window resize event listener to adjust the graph size when window is resized
             window.addEventListener('resize', function() {{
                 var textSection = document.getElementById('textSection');
+                var qaPanel = document.getElementById('qaPanel');
                 var networkContainer = document.getElementById('mynetwork');
                 
-                // Only adjust if text is hidden
-                if (textSection.style.display === 'none') {{
+                // Only adjust if both text and QA are hidden
+                if ((textSection.style.display === 'none') && 
+                    (qaPanel === null || qaPanel.style.display === 'none')) {{
                     var windowHeight = window.innerHeight;
                     var networkTop = networkContainer.getBoundingClientRect().top;
                     var newHeight = windowHeight - networkTop - 20; // 20px padding
@@ -724,9 +737,17 @@ class GraphVisualizer:
         if not json_path:
             return ""
             
+        # Create a toggle button for the QA panel
+        qa_button_html = f"""
+        <div id="qaControlSection" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+            <button id="toggleQABtn" onclick="toggleQAPanel()" style="padding: 8px 15px; cursor: pointer; background-color: #007BFF; color: white; border: none; border-radius: 4px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Ask Question</button>
+        </div>
+        """
+            
         # Create the HTML with the JSON path directly embedded
         qa_html = f"""
-        <div id="qaPanel" style="margin: 20px; padding: 20px; border-top: 1px solid #ddd;">
+        {qa_button_html}
+        <div id="qaPanel" style="position: relative; margin-top: 20px; padding-top: 10px; display: none;">
             <h2 style="color: #333;">Question Answering</h2>
             <p>Ask questions about the knowledge graph:</p>
             
@@ -770,6 +791,49 @@ class GraphVisualizer:
         </div>
         
         <script>
+            function toggleQAPanel() {{
+                var qaPanel = document.getElementById('qaPanel');
+                var qaBtn = document.getElementById('toggleQABtn');
+                var networkContainer = document.getElementById('mynetwork');
+                
+                // Also hide source text if it's open when showing QA panel
+                var textSection = document.getElementById('textSection');
+                var textBtn = document.getElementById('toggleTextBtn');
+                
+                if (qaPanel.style.display === 'none') {{
+                    // Hide source text if it's open
+                    if (textSection && textSection.style.display !== 'none') {{
+                        textSection.style.display = 'none';
+                        if (textBtn) textBtn.innerText = 'Show Text';
+                        if (textBtn) textBtn.style.backgroundColor = '#4CAF50';
+                    }}
+                    
+                    // Show QA panel
+                    qaPanel.style.display = 'block';
+                    qaBtn.innerText = 'Hide QA';
+                    qaBtn.style.backgroundColor = '#dc3545'; // Red color for hide button
+                    
+                    // Restore original network container height
+                    networkContainer.style.height = '750px';
+                }} else {{
+                    // Hide QA panel
+                    qaPanel.style.display = 'none';
+                    qaBtn.innerText = 'Ask Question';
+                    qaBtn.style.backgroundColor = '#007BFF'; // Blue color for show button
+                    
+                    // Maximize network container height
+                    var windowHeight = window.innerHeight;
+                    var networkTop = networkContainer.getBoundingClientRect().top;
+                    var newHeight = windowHeight - networkTop - 20; // 20px padding
+                    networkContainer.style.height = newHeight + 'px';
+                }}
+                
+                // Redraw the network to fit the new container size
+                if (typeof network !== 'undefined') {{
+                    network.fit();
+                }}
+            }}
+            
             function toggleContext() {{
                 var contextContainer = document.getElementById('contextContainer');
                 var toggleButton = document.getElementById('toggleContextButton');
