@@ -658,7 +658,7 @@ def main():
     output_group.add_argument('--json-output', type=str, 
                          help='Output path for graph data in JSON format')
     output_group.add_argument('--visualization-only', action='store_true', 
-                         help='Skip graph construction and only visualize from existing JSON data')
+                         help='Skip graph construction and only visualize from existing JSON data (requires --json-output)')
     output_group.add_argument('--verbose', action='store_true', 
                          help='Enable verbose output')
     
@@ -698,6 +698,11 @@ def main():
         level=logging.DEBUG if args.verbose else logging.INFO,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
+    
+    # Validate arguments
+    if args.visualization_only and not args.json_output:
+        logging.error("Error: --visualization-only requires --json-output to be specified.")
+        sys.exit(1)
     
     # Handle API server
     if args.api_server:
@@ -784,14 +789,21 @@ def run_visualization_only(args):
     Args:
         args: Command line arguments
     """
-    if not args.json_output and not hasattr(args, 'visualization_only'):
-        logging.error("No JSON file specified for visualization-only mode")
-        return
+    # Check if JSON file path is provided
+    if args.json_output:
+        json_path = args.json_output
+    else:
+        logging.error("No JSON file specified for visualization-only mode. Please provide --json-output parameter.")
+        return None
     
-    json_path = args.json_output
     output_path = args.output
     
     try:
+        # Check if JSON file exists
+        if not os.path.exists(json_path):
+            logging.error(f"JSON file not found: {json_path}")
+            return None
+            
         # Load graph data from JSON
         with open(json_path, 'r', encoding='utf-8') as f:
             graph_data = json.load(f)
@@ -895,15 +907,17 @@ def print_help_and_examples():
     parser.print_help()
     print("\nExamples:")
     print("  Process a single file:")
-    print("    python -m src.graph_db.app --file input/example.txt --output graph.html --visualization-only")
+    print("    python -m src.graph_db.app --file input/example.txt --output graph.html")
     print("\n  Process multiple files:")
-    print("    python -m src.graph_db.app --file input/file1.txt --file input/file2.txt --output graph.html --visualization-only")
+    print("    python -m src.graph_db.app --file input/file1.txt --output graph.html")
     print("\n  Process all files in a directory:")
-    print("    python -m src.graph_db.app --input-dir input --output graph.html --visualization-only")
+    print("    python -m src.graph_db.app --input-dir input --output graph.html")
+    print("\n  Visualize an existing JSON graph without building a new one:")
+    print("    python -m src.graph_db.app --visualization-only --json-output example/graph_data.json --output graph.html")
     print("\n  Ask a question using an existing graph:")
-    print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --output graph.html")
+    print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --qa-json example/musk_graph.json")
     print("\n  Start the API server for handling QA requests in the visualization:")
-    print("    python -m src.graph_db.app --api-server --api-port 5000")
+    print("    python -m src.graph_db.app --api-server --api-host localhost --api-port 8000")
     print("\n  Start API server and generate visualization at the same time:")
     print("    python -m src.graph_db.app --file input/text.md --output output.html --api-server --with-visualization")
 
