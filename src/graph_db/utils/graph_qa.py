@@ -101,6 +101,36 @@ class GraphQA:
             # Normalize from [-1, 1] to [0, 1]
             return (raw_similarity + 1) / 2
         return 0.0
+
+    def _calculate_text_similarity(self, query: str, relation: Dict[str, Any]) -> float:
+        """
+        Calculate text similarity between query and relation as a fallback.
+        
+        Args:
+            query (str): The question to answer
+            relation (Dict[str, Any]): The relation to compare
+            
+        Returns:
+            float: Similarity score (0.0 to 1.0)
+        """
+        from src.graph_db.app import get_relation_representation
+        
+        # Get relation text representation
+        relation_text = get_relation_representation(relation).lower()
+        query = query.lower()
+        
+        # Simple word matching approach
+        query_words = set(query.split())
+        relation_words = set(relation_text.split())
+        
+        # Count matching words
+        matching_words = query_words.intersection(relation_words)
+        
+        # Calculate Jaccard similarity
+        if len(query_words) + len(relation_words) > 0:
+            similarity = len(matching_words) / (len(query_words) + len(relation_words) - len(matching_words))
+            return similarity
+        return 0.0
     
     def _get_relation_by_id(self, relation_id: int) -> Dict[str, Any]:
         """
@@ -181,28 +211,37 @@ class GraphQA:
         Args:
             question (str): The question to answer
             top_n (int): Number of top relations to select in each iteration
-            depth (int): Number of expansion iterations
+            depth (int): Number of relation expansion iterations
             include_raw_text (bool): Whether to include the raw text in the context
             
         Returns:
             Dict[str, Any]: Dictionary containing the answer and metadata
         """
-        if not get_embedding or not cosine_similarity or not query_llm:
-            raise ImportError("Required embedding functions not available")
-            
-        # Step 1: Embed the query
-        logger.info(f"Generating embedding for question: {question}")
-        query_embedding = self._embed_query(question)
+        # Check if embeddings are available
+        has_embeddings = False
+        for relation in self.graph_data["data"]["relations"]:
+            if "embedding" in relation:
+                has_embeddings = True
+                break
+        
+        # Step 1: Embed the query if embeddings are available
+        query_embedding = None
+        if has_embeddings and get_embedding and cosine_similarity:
+            logger.info(f"Generating embedding for question: {question}")
+            query_embedding = self._embed_query(question)
+        else:
+            logger.info("Embeddings not available in the graph data, using text similarity as fallback")
         
         # Step 2: Calculate similarity with all relations
         relation_similarities = []
         for i, relation in enumerate(self.graph_data["data"]["relations"]):
-            # Skip relations without embeddings
-            if "embedding" not in relation:
-                logger.warning(f"Relation {i} does not have an embedding, skipping")
-                continue
-                
-            similarity = self._calculate_similarity(query_embedding, relation["embedding"])
+            if query_embedding and "embedding" in relation:
+                # Use embedding similarity
+                similarity = self._calculate_similarity(query_embedding, relation["embedding"])
+            else:
+                # Use text similarity as fallback
+                similarity = self._calculate_text_similarity(question, relation)
+            
             relation_similarities.append((i, similarity))
         
         # Sort by similarity (descending)
@@ -232,11 +271,13 @@ class GraphQA:
             # Calculate similarity for connected relations
             connected_similarities = []
             for rel_id, relation in connected_relations:
-                # Skip relations without embeddings
-                if "embedding" not in relation:
-                    continue
-                    
-                similarity = self._calculate_similarity(query_embedding, relation["embedding"])
+                if query_embedding and "embedding" in relation:
+                    # Use embedding similarity
+                    similarity = self._calculate_similarity(query_embedding, relation["embedding"])
+                else:
+                    # Use text similarity as fallback
+                    similarity = self._calculate_text_similarity(question, relation)
+                
                 connected_similarities.append((rel_id, relation, similarity))
             
             # Sort by similarity
