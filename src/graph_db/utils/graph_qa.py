@@ -217,13 +217,15 @@ class GraphQA:
             # Add source entity properties if they exist and haven't been described yet
             if "properties" in from_entity and from_entity["properties"] and from_entity["name"] not in described_entities:
                 from_props_str = "; ".join([f"{k}: {v}" for k, v in from_entity["properties"].items()])
-                representation += f"\nSource properties: {from_props_str}"
+                from_entity_type = from_entity.get('type', 'UNKNOWN')
+                representation += f"\n{from_entity['name']} ({from_entity_type}) properties: {from_props_str}"
                 described_entities.add(from_entity["name"])
             
             # Add target entity properties if they exist and haven't been described yet
             if "properties" in to_entity and to_entity["properties"] and to_entity["name"] not in described_entities:
                 to_props_str = "; ".join([f"{k}: {v}" for k, v in to_entity["properties"].items()])
-                representation += f"\nTarget properties: {to_props_str}"
+                to_entity_type = to_entity.get('type', 'UNKNOWN')
+                representation += f"\n{to_entity['name']} ({to_entity_type}) properties: {to_props_str}"
                 described_entities.add(to_entity["name"])
             
             # Add relation properties if they exist
