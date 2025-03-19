@@ -753,8 +753,7 @@ def run_graph_qa(question, json_path, include_raw_text=False, verbose=False):
     try:
         # Initialize QA module
         qa = GraphQA(
-            json_file_path=json_path,
-            verbose=verbose
+            json_file_path=json_path
         )
         
         # Run QA
@@ -766,12 +765,17 @@ def run_graph_qa(question, json_path, include_raw_text=False, verbose=False):
         # Print result
         print("\nQuestion:", question)
         print("\nAnswer:", result["answer"])
-        print(f"\n{len(result['relations'])} relations used to generate this answer.")
         
-        if verbose and "relations" in result:
-            print("\nTop relations used:")
-            for rel in result["relations"][:10]:  # Print top 10 relations
-                print(f"- {rel['source_entity']} --[{rel['relation_type']}]--> {rel['target_entity']} (Score: {rel['relevance_score']:.4f})")
+        # Check if we have relations information
+        if "relations" in result:
+            print(f"\n{len(result['relations'])} relations used to generate this answer.")
+            
+            if verbose and "relations" in result:
+                print("\nTop relations used:")
+                for rel in result["relations"][:10]:  # Print top 10 relations
+                    print(f"- {rel['source_entity']} --[{rel['relation_type']}]--> {rel['target_entity']} (Score: {rel['relevance_score']:.4f})")
+        else:
+            print("\nNo specific relations data available for this answer.")
         
         return result
     
@@ -880,16 +884,23 @@ def run_graph_construction(args):
         
         # Build graph
         builder = GraphBuilder(
-            input_text=input_data,
-            raw_text=raw_text,
-            neo4j_uri=args.neo4j_uri,
-            neo4j_user=args.neo4j_user,
-            neo4j_password=args.neo4j_password,
-            verbose=args.verbose
+            db_uri=args.neo4j_uri,
+            db_username=args.neo4j_user,
+            db_password=args.neo4j_password,
+            llm_model="gpt-4o"  # Use GPT-4o for best extraction
         )
         
         # Extract entities and relations
-        graph_data = builder.build_graph()
+        entities, relations = builder.build_graph_from_text(input_data)
+        
+        # Prepare graph data
+        schema = builder.schema_generator.get_schema()
+        graph_data = {
+            "schema": schema,
+            "entities": entities,
+            "relations": relations,
+            "raw_text": raw_text
+        }
         
         # Save graph data to JSON if specified
         if args.json_output:

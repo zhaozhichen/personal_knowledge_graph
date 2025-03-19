@@ -47,8 +47,7 @@ def ask_question():
         
         # Initialize QA module
         qa = GraphQA(
-            json_file_path=json_path,
-            verbose=True
+            json_file_path=json_path
         )
         
         # Run QA
@@ -65,7 +64,7 @@ def ask_question():
         }
         
         # Add relations to context if available
-        if "relations" in result:
+        if "relations" in result and result["relations"]:
             context_lines = [
                 f"- {rel['source_entity']} --[{rel['relation_type']}]--> {rel['target_entity']} (Score: {rel['relevance_score']:.4f})"
                 for rel in result["relations"][:20]  # Include top 20 relations
