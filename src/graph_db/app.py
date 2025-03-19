@@ -32,6 +32,7 @@ from src.graph_db.utils.node_deduplicator import NodeDeduplicator
 from src.graph_db.input.input_processor import InputProcessor
 from src.graph_db.nlp.llm_entity_extractor import LLMEntityExtractor
 from src.graph_db.nlp.mock_entity_extractor import MockEntityExtractor
+from src.graph_db.utils.graph_qa import GraphQA
 
 # Import ConnectionError for exception handling
 from neo4j.exceptions import ServiceUnavailable, AuthError
@@ -633,6 +634,15 @@ def main():
     parser.add_argument("--similarity-threshold", type=float, default=0.85, help="Threshold for string similarity in node deduplication (0.0 to 1.0)")
     parser.add_argument("--use-embeddings", action="store_true", help="Use LLM embeddings for similarity calculation in node deduplication")
     
+    # Add QA-specific arguments
+    parser.add_argument("--qa", help="Enable question answering mode and specify the question")
+    parser.add_argument("--qa-json", help="JSON file to use for question answering (defaults to the JSON version of the output file)")
+    parser.add_argument("--qa-top-n", type=int, default=10, help="Number of top relations to include in each expansion iteration")
+    parser.add_argument("--qa-depth", type=int, default=3, help="Number of relation expansion iterations")
+    parser.add_argument("--qa-include-raw-text", action="store_true", help="Include raw text in QA context")
+    parser.add_argument("--qa-model", help="LLM model to use for question answering (defaults to --llm-model)")
+    parser.add_argument("--qa-provider", default="openai", help="LLM provider to use for question answering")
+    
     args = parser.parse_args()
     
     # Update chunk size and overlap if specified
@@ -640,6 +650,57 @@ def main():
         MAX_CHUNK_SIZE = args.chunk_size
     if args.chunk_overlap:
         CHUNK_OVERLAP = args.chunk_overlap
+    
+    # If in QA mode, perform question answering
+    if args.qa:
+        # Determine which JSON file to use
+        json_file_path = args.qa_json
+        if not json_file_path:
+            # Default to the JSON version of the output file
+            json_file_path = args.output.replace('.html', '.json')
+            
+        if not os.path.exists(json_file_path):
+            logger.error(f"JSON file not found: {json_file_path}")
+            print(f"Error: JSON file not found: {json_file_path}")
+            print("You must first generate a graph before using the QA functionality.")
+            return False
+            
+        try:
+            # Initialize QA module
+            qa_model = args.qa_model if args.qa_model else args.llm_model
+            qa = GraphQA(
+                json_file_path=json_file_path,
+                llm_model=qa_model,
+                llm_provider=args.qa_provider
+            )
+            
+            # Get answer
+            result = qa.answer_question(
+                question=args.qa,
+                top_n=args.qa_top_n,
+                depth=args.qa_depth,
+                include_raw_text=args.qa_include_raw_text
+            )
+            
+            # Print answer
+            print("\n" + "="*80)
+            print(f"Question: {result['question']}")
+            print("="*80)
+            print(f"Answer: {result['answer']}")
+            print("="*80)
+            print(f"Used {result['metadata']['relations_used']} relations to generate the answer")
+            
+            if args.verbose:
+                print("\nContext used:")
+                print(result['metadata']['context'])
+                
+            return True
+        except Exception as e:
+            logger.error(f"Error in QA mode: {str(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            print(f"Error: {str(e)}")
+            return False
     
     if not args.text and not args.file and not args.url and not args.input_dir:
         parser.print_help()
@@ -650,6 +711,8 @@ def main():
         print("    python -m src.graph_db.app --file input/file1.txt --file input/file2.txt --output graph.html --visualization-only")
         print("\n  Process all files in a directory:")
         print("    python -m src.graph_db.app --input-dir input --output graph.html --visualization-only")
+        print("\n  Ask a question using an existing graph:")
+        print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --output graph.html")
         return False
     
     # Process all input sources using the new unified function
