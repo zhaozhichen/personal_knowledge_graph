@@ -207,6 +207,10 @@ class GraphQA:
             similarity = relation_similarities.get(rel_id, 0.0)
             context += f"{i+1}. {relation_text} (relevance: {similarity:.2f})\n\n"
         
+        # Add raw text to context if provided
+        if raw_text:
+            context += "\n\nOriginal Document Text:\n" + raw_text + "\n\n"
+        
         return context
     
     def answer_question(self, 
