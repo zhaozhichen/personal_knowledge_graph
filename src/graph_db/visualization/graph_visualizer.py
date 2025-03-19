@@ -174,7 +174,7 @@ class GraphVisualizer:
         var options = {
             "nodes": {
                 "font": {
-                    "size": 14,
+                    "size": 8,
                     "face": "arial",
                     "color": "inherit"
                 },
@@ -187,7 +187,7 @@ class GraphVisualizer:
                     "forceDirection": "none"
                 },
                 "font": {
-                    "size": 12,
+                    "size": 4,
                     "align": "middle"
                 },
                 "color": {
@@ -318,11 +318,11 @@ class GraphVisualizer:
                 <h4 style="margin-top: 0; text-align: center;">Text Size</h4>
                 <div style="display: flex; align-items: center; margin-top: 5px;">
                     <span style="margin-right: 5px; font-size: 12px;">A</span>
-                    <input type="range" id="textSizeSlider" min="8" max="128" value="64" style="flex-grow: 1;">
+                    <input type="range" id="textSizeSlider" min="2" max="32" value="8" style="flex-grow: 1;">
                     <span style="margin-left: 5px; font-size: 18px;">A</span>
                 </div>
                 <div style="text-align: center; margin-top: 5px;">
-                    <span id="currentTextSize">64px</span>
+                    <span id="currentTextSize">8px</span>
                 </div>
             </div>
             <script>
@@ -894,14 +894,14 @@ class GraphVisualizer:
                     "shape": "dot",
                     "size": 10,
                     "font": {
-                        "size": 64,
+                        "size": 8,
                         "face": "Tahoma",
                         "color": "inherit"
                     }
                 },
                 "edges": {
                     "font": {
-                        "size": 32,
+                        "size": 4,
                         "align": "middle"
                     },
                     "color": {
