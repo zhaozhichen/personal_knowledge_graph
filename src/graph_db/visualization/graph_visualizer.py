@@ -974,6 +974,9 @@ class GraphVisualizer:
                     const errorContent = document.getElementById('errorContent');
                     const providerSelect = document.getElementById('provider-select');
                     const modelSelect = document.getElementById('model-select');
+                    const expandButtonContainer = document.getElementById('expandButtonContainer');
+                    const contextContainer = document.getElementById('contextContainer');
+                    const contextContent = document.getElementById('contextContent');
                     
                     if (askButton && questionInput) {{
                         askButton.addEventListener('click', function() {{
@@ -1000,11 +1003,28 @@ class GraphVisualizer:
                             console.log('JSON Path:', jsonPath);
                             
                             // Get the current window location to determine API endpoint
-                            const currentHost = window.location.hostname || 'localhost';
+                            const currentHost = 'localhost'; // Force localhost to avoid hostname resolution issues
                             const apiPort = 8000; // Default API port
                             const apiUrl = `http://${{currentHost}}:${{apiPort}}/api/qa`;
                             
                             console.log('API URL:', apiUrl);
+                            
+                            // Debug - show request details in the loading indicator
+                            if (loadingIndicator) {{
+                                loadingIndicator.innerHTML = `
+                                <p>Processing your question...</p>
+                                <div style="background-color: #f0f0f0; padding: 10px; border-radius: 5px; font-size: 12px; text-align: left; margin-top: 10px;">
+                                    <p>Request details:</p>
+                                    <pre>
+API URL: ${{apiUrl}}
+Question: ${{question}}
+Provider: ${{provider}}
+Model: ${{model}}
+JSON Path: ${{jsonPath}}
+                                    </pre>
+                                </div>
+                                `;
+                            }}
                             
                             // Make API request
                             fetch(apiUrl, {{
@@ -1021,15 +1041,19 @@ class GraphVisualizer:
                                 }})
                             }})
                             .then(response => {{
+                                console.log('Received response:', response);
                                 if (!response.ok) {{
                                     return response.text().then(text => {{
-                                        throw new Error(`HTTP error! Status: ${{response.status}}, Response: ${{text}}`);
+                                        const errorMsg = `HTTP error! Status: ${{response.status}}, Response: ${{text}}`;
+                                        console.error(errorMsg);
+                                        throw new Error(errorMsg);
                                     }});
                                 }}
+                                console.log('Response is OK, parsing JSON...');
                                 return response.json();
                             }})
                             .then(data => {{
-                                console.log('API response:', data);
+                                console.log('API response data:', data);
                                 
                                 // Hide loading indicator
                                 if (loadingIndicator) loadingIndicator.style.display = 'none';
@@ -1038,41 +1062,39 @@ class GraphVisualizer:
                                 if (answerContainer) answerContainer.style.display = 'block';
                                 
                                 // Update answer content
-                                if (answerContent) answerContent.textContent = data.answer;
+                                if (answerContent) answerContent.textContent = data.answer || 'No answer received';
                                 
                                 // Handle context if available
-                                const expandButtonContainer = document.getElementById('expandButtonContainer');
-                                const expandContextButton = document.getElementById('expandContextButton');
-                                const contextContainer = document.getElementById('contextContainer');
-                                const contextContent = document.getElementById('contextContent');
-                                
                                 if (data.context && contextContent) {{
                                     // Format the context string as HTML
-                                    contextContent.innerHTML = `<pre>${data.context}</pre>`;
+                                    contextContent.innerHTML = `<pre>${{data.context}}</pre>`;
                                     
                                     // Show expand button
                                     if (expandButtonContainer) expandButtonContainer.style.display = 'block';
                                 }}
                             }})
                             .catch(error => {{
-                                console.error('Error:', error);
+                                console.error('Error in fetch:', error);
                                 
-                                // Hide loading indicator
-                                if (loadingIndicator) loadingIndicator.style.display = 'none';
+                                // Show error in loading indicator
+                                if (loadingIndicator) {{
+                                    loadingIndicator.innerHTML = `
+                                    <p>Error processing your question:</p>
+                                    <div style="background-color: #ffebee; color: #d32f2f; padding: 10px; border-radius: 5px; text-align: left; margin-top: 10px;">
+                                        ${{error.message || 'Unknown error occurred'}}
+                                    </div>
+                                    <p>Check your browser console for more details.</p>
+                                    `;
+                                }}
                                 
-                                // Show error message
+                                // Show error in error container as well
                                 if (errorContent) errorContent.textContent = error.message || 'An error occurred while processing your question.';
-                                
-                                // Show error container
                                 if (errorContainer) errorContainer.style.display = 'block';
                             }});
                         }});
                     }}
                     
                     // Handle context expansion
-                    const expandContextButton = document.getElementById('expandContextButton');
-                    const contextContainer = document.getElementById('contextContainer');
-                    
                     if (expandContextButton && contextContainer) {{
                         expandContextButton.addEventListener('click', function() {{
                             const isVisible = contextContainer.style.display === 'block';
