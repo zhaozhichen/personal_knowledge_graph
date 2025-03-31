@@ -658,7 +658,7 @@ def main():
     output_group.add_argument('--json-output', type=str, 
                          help='Output path for graph data in JSON format (optional with --visualization-only, will try to find JSON file with same name as output)')
     output_group.add_argument('--visualization-only', action='store_true', 
-                         help='Skip graph construction and only visualize from existing JSON data')
+                         help='Skip graph construction and only visualize from existing JSON data. If no --json-output is provided, looks for a JSON file with the same base name as the output file')
     output_group.add_argument('--verbose', action='store_true', 
                          help='Enable verbose output')
     
@@ -822,6 +822,7 @@ def run_visualization_only(args):
         
         if not json_path:
             logging.error(f"No JSON file found at {possible_json_paths[0]} or {possible_json_paths[1]}. Please provide --json-output parameter.")
+            logging.error(f"Note that if the JSON file does not exist, you need to generate it first by running without the --visualization-only flag.")
             return None
     
     output_path = args.output
@@ -950,8 +951,11 @@ def print_help_and_examples():
     print("\n  Visualize an existing JSON graph without building a new one:")
     print("    python -m src.graph_db.app --visualization-only --output example/graph.html")
     print("    # Note: Will automatically look for example/graph.json")
-    print("\n  Explicitly specify JSON file for visualization:")
-    print("    python -m src.graph_db.app --visualization-only --json-output example/custom_graph.json --output graph.html")
+    print("\n  Generate JSON data first, then visualize it later:")
+    print("    # Step 1: Generate the graph data with JSON output")
+    print("    python -m src.graph_db.app --file input/example.txt --output graph.html --json-output graph.json")
+    print("    # Step 2: Visualize the existing JSON data")
+    print("    python -m src.graph_db.app --visualization-only --output graph.html")
     print("\n  Ask a question using an existing graph:")
     print("    python -m src.graph_db.app --qa \"Who is Elon Musk?\" --qa-json example/musk_graph.json")
     print("\n  Start the API server for handling QA requests in the visualization:")
@@ -979,6 +983,12 @@ Examples:
   
   # Only visualize existing JSON data (will look for output.json automatically)
   python -m src.graph_db.app --visualization-only --output output.html
+  
+  # Generate JSON data first, then visualize it later:
+  # Step 1: Generate the graph data with JSON output
+  python -m src.graph_db.app --file input/example.txt --output graph.html --json-output graph.json
+  # Step 2: Visualize the existing JSON data
+  python -m src.graph_db.app --visualization-only --output graph.html
   
   # Explicitly specify JSON file for visualization
   python -m src.graph_db.app --visualization-only --json-output graph_data.json --output vis.html
